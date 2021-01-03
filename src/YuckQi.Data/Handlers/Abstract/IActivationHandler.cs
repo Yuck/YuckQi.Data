@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
-using YuckQi.Data.Abstract;
+using YuckQi.Data.Entities.Abstract;
+using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract
 {
-    internal interface IActivationHandler<TEntity, in TKey> where TEntity : IEntity<TKey> where TKey : struct, IActivated
+    public interface IActivationHandler<TEntity, in TKey> where TEntity : IEntity<TKey>, IActivated where TKey : struct
     {
-        // TODO: What should these return? bool? The entity?
-        Task ActivateAsync(TKey key);
-        Task DeactivateAsync(TKey key);
+        Task<TEntity> ActivateAsync(TEntity entity);
+        Task<TEntity> DeactivateAsync(TEntity entity);
     }
 }

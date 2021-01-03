@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace YuckQi.Data.Abstract
+namespace YuckQi.Data.Entities.Abstract
 {
-    internal interface ICreated
+    public interface ICreated
     {
         DateTime CreationMomentUtc { get; set; }
     }

@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Threading.Tasks;
-using YuckQi.Data.Abstract;
-using YuckQi.Data.Repositories.Abstract;
+using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract
 {
-    internal interface IRetrievalHandler<TEntity, in TKey> where TEntity : IEntity<TKey> where TKey : struct
+    public interface IRetrievalHandler<TEntity, in TKey> where TEntity : IEntity<TKey> where TKey : struct
     {
-        Task<TEntity> GetAsync(TKey key, IUnitOfWork uow = null);
-        Task<TEntity> GetAsync(object parameters, IUnitOfWork uow = null); // TODO: Rather have this be dictionary or set of kvp?
-        Task<IReadOnlyCollection<TEntity>> GetListAsync(object parameters, IUnitOfWork uow = null); // TODO: Like search, but doesn't support paging
+        Task<TEntity> GetAsync(TKey key);
+        Task<TEntity> GetAsync(IReadOnlyCollection<IDataParameter> parameters);
+        Task<TEntity> GetAsync(object parameters);
+        Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<IDataParameter> parameters = null);
+        Task<IReadOnlyCollection<TEntity>> GetListAsync(object parameters = null);
     }
 }

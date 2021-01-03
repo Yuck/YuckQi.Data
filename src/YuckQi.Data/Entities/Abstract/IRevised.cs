@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace YuckQi.Data.Abstract
+namespace YuckQi.Data.Entities.Abstract
 {
-    internal interface IRevised
+    public interface IRevised
     {
         DateTime RevisionMomentUtc { get; set; }
     }

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace YuckQi.Data.Abstract
+namespace YuckQi.Data.Entities.Abstract
 {
-    internal interface IDeleted
+    public interface IDeleted
     {
         DateTime? DeletionMomentUtc { get; set; }
     }

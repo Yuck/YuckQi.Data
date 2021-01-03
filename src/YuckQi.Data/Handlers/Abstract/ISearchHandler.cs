@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
-using YuckQi.Data.Abstract;
-using YuckQi.Data.Repositories.Abstract;
+using YuckQi.Data.Sorting.Abstract;
+using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract
 {
-    internal interface ISearchHandler<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
+    public interface ISearchHandler<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
     {
-        Task<IReadOnlyCollection<TEntity>> SearchAsync(object parameters, object page_criteria, IUnitOfWork uow = null); // TODO: As with IRetrievalHandler ... better way to collect this
+        Task<IReadOnlyCollection<TEntity>> SearchAsync(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression> sort);
+        Task<IReadOnlyCollection<TEntity>> SearchAsync(object parameters, IPage page, IOrderedEnumerable<ISortExpression> sort);
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace YuckQi.Data.Abstract
+namespace YuckQi.Data.Entities.Abstract
 {
-    internal interface IActivated
+    public interface IActivated
     {
         DateTime? ActivationMomentUtc { get; set; }
     }

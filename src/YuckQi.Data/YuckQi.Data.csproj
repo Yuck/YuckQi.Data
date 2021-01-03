@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Kevin J Lambert</Authors>
+    <Version>0.0.1</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YuckQi.Domain" Version="0.4.0" />
+  </ItemGroup>
 
 </Project>

@@ -1,11 +1,11 @@
 ﻿using System.Threading.Tasks;
-using YuckQi.Data.Abstract;
-using YuckQi.Data.Repositories.Abstract;
+using YuckQi.Data.Entities.Abstract;
+using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract
 {
-    internal interface IRevisionHandler<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct, IRevised
+    public interface IRevisionHandler<TEntity, TKey> where TEntity : IEntity<TKey>, IRevised where TKey : struct
     {
-        Task<TEntity> ReviseAsync(TEntity entity, IUnitOfWork uow = null);
+        Task<TEntity> ReviseAsync(TEntity entity);
     }
 }
