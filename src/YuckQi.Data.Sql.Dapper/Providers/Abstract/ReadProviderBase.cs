@@ -39,7 +39,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
         #region Protected Methods
 
-        protected string BuildParameterizedSql(IReadOnlyCollection<IDataParameter> parameters, IPage page = null, IOrderedEnumerable<ISortExpression> sort = null)
+        protected string BuildParameterizedSql(IReadOnlyCollection<IDataParameter> parameters, IPage page = null, IOrderedEnumerable<ISortExpression> sort = null, bool forRecordCount = false)
         {
             var filter = string.Join(" and ", parameters.Select(t =>
             {
@@ -64,12 +64,12 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
             var top = page == null ? "top 2 " : string.Empty;
             var sorting = sort != null ? string.Join(", ", sort.Select(t => t.GetSortExpression())) : string.Empty;
 
-            var select = $"select {top}{columns}";
+            var select = forRecordCount ? "select count(*)" : $"select {top}{columns}";
             var from = $"from [{SchemaName}].[{TableName}]";
             var where = $"{(string.IsNullOrWhiteSpace(filter) ? "" : $"where {filter}")};";
-            var order = !string.IsNullOrWhiteSpace(sorting) ? $"order by {sorting}" : string.Empty;
+            var order = ! string.IsNullOrWhiteSpace(sorting) ? $"order by {sorting}" : string.Empty;
             var limit = page != null ? $"offset {(page.PageNumber - 1) * page.PageSize} rows fetch first {page.PageSize} only" : string.Empty;
-            var sql = string.Join(" ", new[] { select, from, where, order, limit }.Where(t => !string.IsNullOrWhiteSpace(t)));
+            var sql = string.Join(" ", new[] { select, from, where, order, limit }.Where(t => ! string.IsNullOrWhiteSpace(t)));
 
             return sql;
         }

@@ -12,6 +12,7 @@ using YuckQi.Data.Providers.Abstract;
 using YuckQi.Data.Sorting.Abstract;
 using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Domain.ValueObjects;
 using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
@@ -29,7 +30,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
-        public async Task<IReadOnlyCollection<TEntity>> SearchAsync(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
+        public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -41,13 +42,30 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             var sql = BuildParameterizedSql(parameters, page, sort);
             var records = await Db.QueryAsync<TRecord>(sql, parameters, Transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var total = await CountAsync(parameters);
 
-            return entities;
+            return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
         }
 
-        public Task<IReadOnlyCollection<TEntity>> SearchAsync(object parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
+        public Task<IPage<TEntity>> SearchAsync(object parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
         {
             return SearchAsync(parameters?.ToParameterCollection<SqlParameter>(), page, sort);
+        }
+
+        #endregion
+
+
+        #region Supporting Methods
+
+        private Task<int> CountAsync(IReadOnlyCollection<IDataParameter> parameters)
+        {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
+            var sql = BuildParameterizedSql(parameters, forRecordCount: true);
+            var total = Db.RecordCountAsync<TRecord>(sql, parameters, Transaction);
+
+            return total;
         }
 
         #endregion
