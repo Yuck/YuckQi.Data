@@ -2,9 +2,9 @@
 using System.Data;
 using YuckQi.Data.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
+namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 {
-    public abstract class DataHandlerBase
+    public abstract class DataProviderBase
     {
         #region Private Members
 
@@ -23,7 +23,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
 
         #region Constructors
 
-        protected DataHandlerBase(IUnitOfWork uow)
+        protected DataProviderBase(IUnitOfWork uow)
         {
             _uow = uow ?? throw new ArgumentNullException(nameof(uow));
         }

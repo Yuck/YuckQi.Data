@@ -7,17 +7,17 @@ using Dapper;
 using Mapster;
 using YuckQi.Data.Abstract;
 using YuckQi.Data.Extensions;
-using YuckQi.Data.Handlers.Abstract;
-using YuckQi.Data.Sql.Dapper.Handlers.Abstract;
+using YuckQi.Data.Providers.Abstract;
+using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers
+namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class RetrievalHandler<TEntity, TKey, TRecord> : ReadHandlerBase<TRecord>, IRetrievalHandler<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
+    public class RetrievalProvider<TEntity, TKey, TRecord> : ReadProviderBase<TRecord>, IRetrievalProvider<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
     {
         #region Constructors
 
-        public RetrievalHandler(IUnitOfWork uow) : base(uow)
+        public RetrievalProvider(IUnitOfWork uow) : base(uow)
         {
         }
 
@@ -38,6 +38,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
+
             var sql = BuildParameterizedSql(parameters);
             var record = await Db.QuerySingleOrDefaultAsync<TRecord>(sql, parameters, Transaction);
             var entity = record.Adapt<TEntity>();

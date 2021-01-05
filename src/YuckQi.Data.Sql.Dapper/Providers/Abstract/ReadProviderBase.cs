@@ -7,9 +7,9 @@ using YuckQi.Data.Abstract;
 using YuckQi.Data.Sorting.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
+namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 {
-    public abstract class ReadHandlerBase<TRecord> : DataHandlerBase
+    public abstract class ReadProviderBase<TRecord> : DataProviderBase
     {
         #region Private Members
 
@@ -30,7 +30,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
 
         #region Constructors
 
-        protected ReadHandlerBase(IUnitOfWork uow) : base(uow)
+        protected ReadProviderBase(IUnitOfWork uow) : base(uow)
         {
         }
 

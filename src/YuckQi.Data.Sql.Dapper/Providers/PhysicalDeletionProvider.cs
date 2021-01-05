@@ -4,17 +4,17 @@ using Dapper;
 using Mapster;
 using YuckQi.Data.Abstract;
 using YuckQi.Data.Exceptions;
-using YuckQi.Data.Handlers.Abstract;
-using YuckQi.Data.Sql.Dapper.Handlers.Abstract;
+using YuckQi.Data.Providers.Abstract;
+using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers
+namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class PhysicalDeletionHandler<TEntity, TKey, TRecord> : DataHandlerBase, IPhysicalDeletionHandler<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
+    public class PhysicalDeletionProvider<TEntity, TKey, TRecord> : DataProviderBase, IPhysicalDeletionProvider<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
     {
         #region Constructors
 
-        public PhysicalDeletionHandler(IUnitOfWork uow) : base(uow)
+        public PhysicalDeletionProvider(IUnitOfWork uow) : base(uow)
         {
         }
 

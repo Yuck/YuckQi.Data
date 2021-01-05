@@ -2,24 +2,24 @@
 using System.Threading.Tasks;
 using YuckQi.Data.Abstract;
 using YuckQi.Data.Entities.Abstract;
-using YuckQi.Data.Handlers.Abstract;
-using YuckQi.Data.Sql.Dapper.Handlers.Abstract;
+using YuckQi.Data.Providers.Abstract;
+using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers
+namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class LogicalDeletionHandler<TEntity, TKey> : DataHandlerBase, ILogicalDeletionHandler<TEntity, TKey> where TEntity : IEntity<TKey>, IDeleted, IRevised where TKey : struct
+    public class LogicalDeletionProvider<TEntity, TKey> : DataProviderBase, ILogicalDeletionProvider<TEntity, TKey> where TEntity : IEntity<TKey>, IDeleted, IRevised where TKey : struct
     {
         #region Private Members
 
-        private readonly IRevisionHandler<TEntity, TKey> _reviser;
+        private readonly IRevisionProvider<TEntity, TKey> _reviser;
 
         #endregion
 
 
         #region Constructors
 
-        public LogicalDeletionHandler(IUnitOfWork uow, IRevisionHandler<TEntity, TKey> reviser) : base(uow)
+        public LogicalDeletionProvider(IUnitOfWork uow, IRevisionProvider<TEntity, TKey> reviser) : base(uow)
         {
             _reviser = reviser ?? throw new ArgumentNullException(nameof(reviser));
         }

@@ -5,17 +5,17 @@ using Mapster;
 using YuckQi.Data.Abstract;
 using YuckQi.Data.Entities.Abstract;
 using YuckQi.Data.Exceptions;
-using YuckQi.Data.Handlers.Abstract;
-using YuckQi.Data.Sql.Dapper.Handlers.Abstract;
+using YuckQi.Data.Providers.Abstract;
+using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers
+namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class RevisionHandler<TEntity, TKey, TRecord> : DataHandlerBase, IRevisionHandler<TEntity, TKey> where TEntity : IEntity<TKey>, IRevised where TKey : struct
+    public class RevisionProvider<TEntity, TKey, TRecord> : DataProviderBase, IRevisionProvider<TEntity, TKey> where TEntity : IEntity<TKey>, IRevised where TKey : struct
     {
         #region Constructors
 
-        public RevisionHandler(IUnitOfWork uow) : base(uow)
+        public RevisionProvider(IUnitOfWork uow) : base(uow)
         {
         }
 
