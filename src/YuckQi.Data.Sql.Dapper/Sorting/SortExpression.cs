@@ -1,4 +1,4 @@
-﻿using System.Data.SqlClient;
+﻿using YuckQi.Data.Sorting;
 using YuckQi.Data.Sorting.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Sorting

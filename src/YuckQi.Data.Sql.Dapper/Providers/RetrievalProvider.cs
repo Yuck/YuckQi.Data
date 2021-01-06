@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Threading.Tasks;
 using Dapper;
 using Mapster;
+using Microsoft.Data.SqlClient;
 using YuckQi.Data.Abstract;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Providers.Abstract;

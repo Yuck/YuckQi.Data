@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>An implementation of YuckQi.Data using Dapper and SimpleCRUD.</Description>
   </PropertyGroup>
@@ -12,7 +12,7 @@
   <ItemGroup>
     <PackageReference Include="Dapper.SimpleCRUD" Version="2.2.0.1" />
     <PackageReference Include="Mapster" Version="7.0.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
