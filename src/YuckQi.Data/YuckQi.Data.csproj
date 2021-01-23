@@ -4,13 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>A .NET library providing fine-grained data providers useful in data repository or domain service implementations.</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="YuckQi.Domain" Version="0.4.2" />
+    <PackageReference Include="YuckQi.Domain" Version="0.4.5" />
   </ItemGroup>
 
   <ItemGroup>

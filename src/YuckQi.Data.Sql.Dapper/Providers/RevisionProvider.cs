@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Dapper;
 using Mapster;
 using YuckQi.Data.Abstract;
-using YuckQi.Data.Entities.Abstract;
 using YuckQi.Data.Exceptions;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Data.Sql.Dapper.Providers.Abstract;
+using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
