@@ -23,7 +23,7 @@ namespace YuckQi.Data
 
         #region Constructors
 
-        protected UnitOfWork(IDbConnection connection, IsolationLevel isolation = IsolationLevel.ReadCommitted)
+        public UnitOfWork(IDbConnection connection, IsolationLevel isolation = IsolationLevel.ReadCommitted)
         {
             _transaction = new Lazy<IDbTransaction>(() => Db.BeginTransaction(isolation));
 
