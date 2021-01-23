@@ -4,7 +4,7 @@ using YuckQi.Data.Abstract;
 
 namespace YuckQi.Data
 {
-    public abstract class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         #region Private Members
 
