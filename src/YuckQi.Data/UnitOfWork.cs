@@ -8,6 +8,7 @@ namespace YuckQi.Data
     {
         #region Private Members
 
+        private readonly object _lock = new object();
         private Lazy<IDbTransaction> _transaction;
 
         #endregion
@@ -25,7 +26,16 @@ namespace YuckQi.Data
 
         public UnitOfWork(IDbConnection connection, IsolationLevel isolation = IsolationLevel.ReadCommitted)
         {
-            _transaction = new Lazy<IDbTransaction>(() => Db.BeginTransaction(isolation));
+            _transaction = new Lazy<IDbTransaction>(() =>
+            {
+                lock (_lock)
+                {
+                    if (Db.State == ConnectionState.Closed)
+                        Db.Open();
+
+                    return Db.BeginTransaction(isolation);
+                }
+            });
 
             Db = connection ?? throw new ArgumentNullException(nameof(connection));
         }
@@ -39,8 +49,8 @@ namespace YuckQi.Data
         {
             if (_transaction != null)
             {
-                Transaction.Rollback();
-                Transaction.Dispose();
+                Transaction?.Rollback();
+                Transaction?.Dispose();
 
                 _transaction = null;
             }
@@ -48,19 +58,24 @@ namespace YuckQi.Data
             if (Db == null)
                 return;
 
-            Db.Dispose();
+            Db?.Close();
+            Db?.Dispose();
+
             Db = null;
         }
 
         public void SaveChanges()
         {
-            if (_transaction == null)
-                throw new InvalidOperationException();
+            lock (_lock)
+            {
+                if (_transaction == null)
+                    throw new InvalidOperationException();
 
-            Transaction.Commit();
-            Transaction.Dispose();
+                Transaction.Commit();
+                Transaction.Dispose();
 
-            _transaction = null;
+                _transaction = null;
+            }
         }
 
         #endregion
