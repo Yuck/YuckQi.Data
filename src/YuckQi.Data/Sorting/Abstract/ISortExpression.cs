@@ -1,8 +1,8 @@
 ﻿namespace YuckQi.Data.Sorting.Abstract
 {
-    public interface ISortExpression<T> where T : class
+    public interface ISortExpression
     {
-        SortCriteria<T> Criteria { get; }
+        SortCriteria Criteria { get; }
 
         string GetSortExpression();
     }

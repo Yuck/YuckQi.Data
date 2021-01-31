@@ -3,11 +3,11 @@ using YuckQi.Data.Sorting.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Sorting
 {
-    public class SortExpression : ISortExpression<string>
+    public class SortExpression : ISortExpression
     {
-        public SortCriteria<string> Criteria { get; }
+        public SortCriteria Criteria { get; }
 
-        public SortExpression(SortCriteria<string> criteria)
+        public SortExpression(SortCriteria criteria)
         {
             Criteria = criteria;
         }

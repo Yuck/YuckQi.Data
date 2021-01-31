@@ -61,7 +61,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
             return sql;
         }
 
-        protected string BuildSqlForSearch<TSortExpression>(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression<TSortExpression>> sort) where TSortExpression : class
+        protected string BuildSqlForSearch(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
         {
             var columns = BuildColumnsSql();
             var sorting = string.Join(", ", sort.Select(t => t.GetSortExpression()));
