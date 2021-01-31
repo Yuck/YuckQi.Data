@@ -9,7 +9,7 @@ using Microsoft.Data.SqlClient;
 using YuckQi.Data.Abstract;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Providers.Abstract;
-using YuckQi.Data.Sorting.Abstract;
+using YuckQi.Data.Sorting;
 using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects;
@@ -30,7 +30,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
-        public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
+        public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -47,7 +47,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
         }
 
-        public Task<IPage<TEntity>> SearchAsync(object parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
+        public Task<IPage<TEntity>> SearchAsync(object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
         {
             return SearchAsync(parameters?.ToParameterCollection<SqlParameter>(), page, sort);
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Dapper;
 using YuckQi.Data.Abstract;
-using YuckQi.Data.Sorting.Abstract;
+using YuckQi.Data.Sorting;
 using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
@@ -61,10 +61,10 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
             return sql;
         }
 
-        protected string BuildSqlForSearch(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
+        protected string BuildSqlForSearch(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
         {
             var columns = BuildColumnsSql();
-            var sorting = string.Join(", ", sort.Select(t => t.GetSortExpression()));
+            var sorting = string.Join(", ", sort.Select(t => $"[{t.Expression}] {(t.Order == SortOrder.Descending ? "desc" : "asc")}"));
 
             var select = $"select {columns}";
             var from = BuildFromSql();
