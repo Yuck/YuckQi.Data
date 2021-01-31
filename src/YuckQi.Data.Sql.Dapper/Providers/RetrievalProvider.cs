@@ -39,7 +39,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
-            var sql = BuildParameterizedSql(parameters);
+            var sql = BuildSqlForGet(parameters);
             var record = await Db.QuerySingleOrDefaultAsync<TRecord>(sql, parameters, Transaction);
             var entity = record.Adapt<TEntity>();
 

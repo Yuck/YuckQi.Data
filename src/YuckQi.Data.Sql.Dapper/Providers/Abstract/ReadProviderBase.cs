@@ -39,17 +39,50 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
         #region Protected Methods
 
-        protected string BuildParameterizedSql(IReadOnlyCollection<IDataParameter> parameters, IPage page = null, IOrderedEnumerable<ISortExpression> sort = null, bool forRecordCount = false)
+        protected string BuildSqlForCount(IReadOnlyCollection<IDataParameter> parameters)
         {
-            var filter = string.Join(" and ", parameters.Select(t =>
-            {
-                var column = $"[{t.ParameterName}]";
-                var value = t.Value;
-                var comparison = value != null ? "=" : "is";
-                var parameter = value != null ? $"@{t.ParameterName}" : "null";
+            var select = "select count(*)";
+            var from = BuildFromSql();
+            var where = BuildWhereSql(parameters);
+            var sql = CombineSql(select, from, where);
 
-                return $"({column} {comparison} {parameter})";
-            }));
+            return sql;
+        }
+
+        protected string BuildSqlForGet(IReadOnlyCollection<IDataParameter> parameters)
+        {
+            var columns = BuildColumnsSql();
+
+            var select = $"select {columns}";
+            var from = BuildFromSql();
+            var where = BuildWhereSql(parameters);
+            var sql = CombineSql(select, from, where);
+
+            return sql;
+        }
+
+        protected string BuildSqlForSearch<TSortExpression>(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression<TSortExpression>> sort) where TSortExpression : class
+        {
+            var columns = BuildColumnsSql();
+            var sorting = string.Join(", ", sort.Select(t => t.GetSortExpression()));
+
+            var select = $"select {columns}";
+            var from = BuildFromSql();
+            var where = BuildWhereSql(parameters);
+            var order = ! string.IsNullOrWhiteSpace(sorting) ? $"order by {sorting}" : string.Empty;
+            var limit = page != null ? $"offset {(page.PageNumber - 1) * page.PageSize} rows fetch first {page.PageSize} only" : string.Empty;
+            var sql = CombineSql(select, from, where, order, limit);
+
+            return sql;
+        }
+
+        #endregion
+
+
+        #region Supporting Methods
+
+        private string BuildColumnsSql()
+        {
             var properties = typeof(TRecord).GetProperties().Where(t => t.CustomAttributes.All(u => u.AttributeType != typeof(IgnoreSelectAttribute)));
             var columns = string.Join(", ", properties.Select(t =>
             {
@@ -61,17 +94,34 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
                 return column;
             }));
-            var top = page == null ? "top 2 " : string.Empty;
-            var sorting = sort != null ? string.Join(", ", sort.Select(t => t.GetSortExpression())) : string.Empty;
 
-            var select = forRecordCount ? "select count(*)" : $"select {top}{columns}";
-            var from = $"from [{SchemaName}].[{TableName}]";
+            return columns;
+        }
+
+        private static string BuildFromSql()
+        {
+            return $"from [{SchemaName}].[{TableName}]";
+        }
+
+        private static string BuildWhereSql(IEnumerable<IDataParameter> parameters)
+        {
+            var filter = string.Join(" and ", parameters.Select(t =>
+            {
+                var column = $"[{t.ParameterName}]";
+                var value = t.Value;
+                var comparison = value != null ? "=" : "is";
+                var parameter = value != null ? $"@{t.ParameterName}" : "null";
+
+                return $"({column} {comparison} {parameter})";
+            }));
             var where = $"{(string.IsNullOrWhiteSpace(filter) ? "" : $"where {filter}")};";
-            var order = ! string.IsNullOrWhiteSpace(sorting) ? $"order by {sorting}" : string.Empty;
-            var limit = page != null ? $"offset {(page.PageNumber - 1) * page.PageSize} rows fetch first {page.PageSize} only" : string.Empty;
-            var sql = string.Join(" ", new[] { select, from, where, order, limit }.Where(t => ! string.IsNullOrWhiteSpace(t)));
 
-            return sql;
+            return where;
+        }
+
+        private static string CombineSql(params string[] fragments)
+        {
+            return string.Join(" ", fragments.Where(t => ! string.IsNullOrWhiteSpace(t)));
         }
 
         #endregion

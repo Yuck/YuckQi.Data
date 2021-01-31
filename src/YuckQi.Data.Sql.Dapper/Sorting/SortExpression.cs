@@ -3,23 +3,18 @@ using YuckQi.Data.Sorting.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Sorting
 {
-    public class SortExpression : ISortExpression
+    public class SortExpression : ISortExpression<string>
     {
-        #region Properties
+        public SortCriteria<string> Criteria { get; }
 
-        public string Expression { get; set; }
-        public SortOrder Order { get; set; }
-
-        #endregion
-
-
-        #region Constructors
+        public SortExpression(SortCriteria<string> criteria)
+        {
+            Criteria = criteria;
+        }
 
         public string GetSortExpression()
         {
-            return $"{Expression} {(Order == SortOrder.Descending ? "desc" : "asc")}";
+            return $"[{Criteria.Expression}] {(Criteria.Order == SortOrder.Descending ? "desc" : "asc")}";
         }
-
-        #endregion
     }
 }

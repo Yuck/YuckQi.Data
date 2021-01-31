@@ -30,7 +30,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
-        public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
+        public async Task<IPage<TEntity>> SearchAsync<TSortExpression>(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<ISortExpression<TSortExpression>> sort) where TSortExpression : class
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -39,7 +39,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (sort == null)
                 throw new ArgumentNullException(nameof(sort));
 
-            var sql = BuildParameterizedSql(parameters, page, sort);
+            var sql = BuildSqlForSearch(parameters, page, sort);
             var records = await Db.QueryAsync<TRecord>(sql, parameters, Transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
             var total = await CountAsync(parameters);
@@ -47,7 +47,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
         }
 
-        public Task<IPage<TEntity>> SearchAsync(object parameters, IPage page, IOrderedEnumerable<ISortExpression> sort)
+        public Task<IPage<TEntity>> SearchAsync<TSortExpression>(object parameters, IPage page, IOrderedEnumerable<ISortExpression<TSortExpression>> sort) where TSortExpression : class
         {
             return SearchAsync(parameters?.ToParameterCollection<SqlParameter>(), page, sort);
         }
@@ -62,7 +62,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
-            var sql = BuildParameterizedSql(parameters, forRecordCount: true);
+            var sql = BuildSqlForCount(parameters);
             var total = Db.RecordCountAsync<TRecord>(sql, parameters, Transaction);
 
             return total;
