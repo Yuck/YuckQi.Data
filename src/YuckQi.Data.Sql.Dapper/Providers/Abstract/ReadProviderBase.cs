@@ -44,7 +44,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
             var select = "select count(*)";
             var from = BuildFromSql();
             var where = BuildWhereSql(parameters);
-            var sql = CombineSql(select, from, where);
+            var sql = $"{CombineSql(select, from, where)};";
 
             return sql;
         }
@@ -56,7 +56,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
             var select = $"select {columns}";
             var from = BuildFromSql();
             var where = BuildWhereSql(parameters);
-            var sql = CombineSql(select, from, where);
+            var sql = $"{CombineSql(select, from, where)};";
 
             return sql;
         }
@@ -71,7 +71,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
             var where = BuildWhereSql(parameters);
             var order = ! string.IsNullOrWhiteSpace(sorting) ? $"order by {sorting}" : string.Empty;
             var limit = page != null ? $"offset {(page.PageNumber - 1) * page.PageSize} rows fetch first {page.PageSize} only" : string.Empty;
-            var sql = CombineSql(select, from, where, order, limit);
+            var sql = $"{CombineSql(select, from, where, order, limit)};";
 
             return sql;
         }
@@ -81,7 +81,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
         #region Supporting Methods
 
-        private string BuildColumnsSql()
+        private static string BuildColumnsSql()
         {
             var properties = typeof(TRecord).GetProperties().Where(t => t.CustomAttributes.All(u => u.AttributeType != typeof(IgnoreSelectAttribute)));
             var columns = string.Join(", ", properties.Select(t =>
@@ -114,7 +114,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
                 return $"({column} {comparison} {parameter})";
             }));
-            var where = $"{(string.IsNullOrWhiteSpace(filter) ? "" : $"where {filter}")};";
+            var where = $"{(string.IsNullOrWhiteSpace(filter) ? "" : $"where {filter}")}";
 
             return where;
         }

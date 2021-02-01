@@ -41,16 +41,6 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(sort));
 
             var sql = BuildSqlForSearch(parameters, page, sort);
-
-            var fuckers = new DynamicParameters();
-            foreach (var fuck in parameters)
-            {
-                var name = fuck.ParameterName;
-                var value = fuck.Value;
-
-                fuckers.Add(name, value);
-            }
-
             var records = await Db.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(), Transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
             var total = await CountAsync(parameters);
