@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
@@ -64,13 +65,13 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
         protected string BuildSqlForSearch(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
         {
             var columns = BuildColumnsSql();
-            var sorting = string.Join(", ", sort.Select(t => $"[{t.Expression}] {(t.Order == SortOrder.Descending ? "desc" : "asc")}"));
+            var sorting = string.Join(", ", sort.Select(t => $"[{t.Expression}]{(t.Order == SortOrder.Descending ? " desc" : string.Empty)}"));
 
             var select = $"select {columns}";
             var from = BuildFromSql();
             var where = BuildWhereSql(parameters);
             var order = ! string.IsNullOrWhiteSpace(sorting) ? $"order by {sorting}" : string.Empty;
-            var limit = page != null ? $"offset {(page.PageNumber - 1) * page.PageSize} rows fetch first {page.PageSize} only" : string.Empty;
+            var limit = page != null ? $"offset {(page.PageNumber - 1) * page.PageSize} rows fetch first {page.PageSize} rows only" : string.Empty;
             var sql = $"{CombineSql(select, from, where, order, limit)};";
 
             return sql;
@@ -121,7 +122,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
         private static string CombineSql(params string[] fragments)
         {
-            return string.Join(" ", fragments.Where(t => ! string.IsNullOrWhiteSpace(t)));
+            return string.Join(Environment.NewLine, fragments.Where(t => ! string.IsNullOrWhiteSpace(t)));
         }
 
         #endregion
