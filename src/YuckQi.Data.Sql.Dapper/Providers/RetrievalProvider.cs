@@ -8,6 +8,7 @@ using Microsoft.Data.SqlClient;
 using YuckQi.Data.Abstract;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Providers.Abstract;
+using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
@@ -40,7 +41,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(parameters));
 
             var sql = BuildSqlForGet(parameters);
-            var record = await Db.QuerySingleOrDefaultAsync<TRecord>(sql, parameters, Transaction);
+            var record = await Db.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(), Transaction);
             var entity = record.Adapt<TEntity>();
 
             return entity;
@@ -56,7 +57,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         public async Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<IDataParameter> parameters = null)
         {
-            var records = await Db.GetListAsync<TRecord>(parameters, Transaction);
+            var records = await Db.GetListAsync<TRecord>(parameters?.ToDynamicParameters(), Transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
             return entities;

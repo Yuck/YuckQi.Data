@@ -10,6 +10,7 @@ using YuckQi.Data.Abstract;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Data.Sorting;
+using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects;
@@ -40,7 +41,17 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(sort));
 
             var sql = BuildSqlForSearch(parameters, page, sort);
-            var records = await Db.QueryAsync<TRecord>(sql, parameters, Transaction);
+
+            var fuckers = new DynamicParameters();
+            foreach (var fuck in parameters)
+            {
+                var name = fuck.ParameterName;
+                var value = fuck.Value;
+
+                fuckers.Add(name, value);
+            }
+
+            var records = await Db.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(), Transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
             var total = await CountAsync(parameters);
 
@@ -63,7 +74,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(parameters));
 
             var sql = BuildSqlForCount(parameters);
-            var total = Db.RecordCountAsync<TRecord>(sql, parameters, Transaction);
+            var total = Db.RecordCountAsync<TRecord>(sql, parameters.ToDynamicParameters(), Transaction);
 
             return total;
         }
