@@ -9,11 +9,17 @@ namespace YuckQi.Data.Extensions
     {
         private static readonly IReadOnlyDictionary<Type, DbType> DbTypeMap = new Dictionary<Type, DbType>
         {
-            { typeof(string), DbType.AnsiString },
             { typeof(bool), DbType.Boolean },
+            { typeof(byte), DbType.Byte },
+            { typeof(DateTime), DbType.DateTime2 },
+            { typeof(DateTimeOffset), DbType.DateTimeOffset },
             { typeof(decimal), DbType.Decimal },
+            { typeof(double), DbType.Double },
+            { typeof(float), DbType.Single },
+            { typeof(Guid), DbType.Guid },
             { typeof(int), DbType.Int32 },
-            { typeof(long), DbType.Int64 }
+            { typeof(long), DbType.Int64 },
+            { typeof(string), DbType.AnsiString }
         };
 
         public static IReadOnlyCollection<T> ToParameterCollection<T>(this object parameters, IReadOnlyDictionary<Type, DbType> dbTypeMap = null) where T : IDataParameter, new()
