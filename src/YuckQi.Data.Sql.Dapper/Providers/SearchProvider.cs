@@ -64,7 +64,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(parameters));
 
             var sql = BuildSqlForCount(parameters);
-            var total = Db.RecordCountAsync<TRecord>(sql, parameters.ToDynamicParameters(), Transaction);
+            var total = Db.ExecuteScalarAsync<int>(sql, parameters.ToDynamicParameters(), Transaction);
 
             return total;
         }
