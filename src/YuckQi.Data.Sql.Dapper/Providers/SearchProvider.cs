@@ -22,7 +22,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public SearchProvider(IUnitOfWork uow) : base(uow)
+        public SearchProvider(IUnitOfWork context) : base(context)
         {
         }
 
@@ -41,7 +41,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(sort));
 
             var sql = BuildSqlForSearch(parameters, page, sort);
-            var records = await Db.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(), Transaction);
+            var records = await Context.Db.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(), Context.Transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
             var total = await CountAsync(parameters);
 
@@ -64,7 +64,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(parameters));
 
             var sql = BuildSqlForCount(parameters);
-            var total = Db.ExecuteScalarAsync<int>(sql, parameters.ToDynamicParameters(), Transaction);
+            var total = Context.Db.ExecuteScalarAsync<int>(sql, parameters.ToDynamicParameters(), Context.Transaction);
 
             return total;
         }

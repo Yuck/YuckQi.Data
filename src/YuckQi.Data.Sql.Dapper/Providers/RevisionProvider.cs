@@ -15,7 +15,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public RevisionProvider(IUnitOfWork uow) : base(uow)
+        public RevisionProvider(IUnitOfWork context) : base(context)
         {
         }
 
@@ -31,10 +31,12 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
-            if (await Db.UpdateAsync(entity.Adapt<TRecord>(), Transaction) > 0)
-                return entity;
+            if (await Context.Db.UpdateAsync(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
+                throw new RecordUpdateException<TRecord, TKey>(entity.Key);
 
-            throw new RecordUpdateException<TRecord, TKey>(entity.Key);
+            Context.SaveChanges();
+
+            return entity;
         }
 
         #endregion

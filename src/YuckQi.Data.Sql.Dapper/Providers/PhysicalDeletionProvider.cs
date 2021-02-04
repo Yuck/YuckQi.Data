@@ -14,7 +14,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public PhysicalDeletionProvider(IUnitOfWork uow) : base(uow)
+        public PhysicalDeletionProvider(IUnitOfWork context) : base(context)
         {
         }
 
@@ -28,10 +28,12 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            if (await Db.DeleteAsync(entity.Adapt<TRecord>(), Transaction) > 0)
-                return entity;
+            if (await Context.Db.DeleteAsync(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
+                throw new RecordDeleteException<TRecord, TKey>(entity.Key);
 
-            throw new RecordDeleteException<TRecord, TKey>(entity.Key);
+            Context.SaveChanges();
+
+            return entity;
         }
 
         #endregion

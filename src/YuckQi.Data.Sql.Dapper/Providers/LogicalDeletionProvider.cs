@@ -19,7 +19,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Constructors
 
-        public LogicalDeletionProvider(IUnitOfWork uow, IRevisionProvider<TEntity, TKey> reviser) : base(uow)
+        public LogicalDeletionProvider(IUnitOfWork context, IRevisionProvider<TEntity, TKey> reviser) : base(context)
         {
             _reviser = reviser ?? throw new ArgumentNullException(nameof(reviser));
         }

@@ -18,7 +18,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public RetrievalProvider(IUnitOfWork uow) : base(uow)
+        public RetrievalProvider(IUnitOfWork context) : base(context)
         {
         }
 
@@ -29,7 +29,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         public async Task<TEntity> GetAsync(TKey key)
         {
-            var record = await Db.GetAsync<TRecord>(key, Transaction);
+            var record = await Context.Db.GetAsync<TRecord>(key, Context.Transaction);
             var entity = record.Adapt<TEntity>();
 
             return entity;
@@ -41,7 +41,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(parameters));
 
             var sql = BuildSqlForGet(parameters);
-            var record = await Db.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(), Transaction);
+            var record = await Context.Db.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(), Context.Transaction);
             var entity = record.Adapt<TEntity>();
 
             return entity;
@@ -57,7 +57,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         public async Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<IDataParameter> parameters = null)
         {
-            var records = await Db.GetListAsync<TRecord>(parameters?.ToDynamicParameters(), Transaction);
+            var records = await Context.Db.GetListAsync<TRecord>(parameters?.ToDynamicParameters(), Context.Transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
             return entities;

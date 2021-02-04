@@ -31,7 +31,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
         #region Constructors
 
-        protected ReadProviderBase(IUnitOfWork uow) : base(uow)
+        protected ReadProviderBase(IUnitOfWork context) : base(context)
         {
         }
 

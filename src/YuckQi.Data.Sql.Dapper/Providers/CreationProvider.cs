@@ -15,7 +15,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public CreationProvider(IUnitOfWork uow) : base(uow)
+        public CreationProvider(IUnitOfWork context) : base(context)
         {
         }
 
@@ -31,10 +31,12 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
             entity.CreationMomentUtc = DateTime.UtcNow;
 
-            if (await Db.InsertAsync(entity.Adapt<TRecord>(), Transaction) > 0)
-                return entity;
+            if (! (await Context.Db.InsertAsync(entity.Adapt<TRecord>(), Context.Transaction) > 0))
+                throw new RecordInsertException<TKey>();
 
-            throw new RecordInsertException<TKey>();
+            Context.SaveChanges();
+
+            return entity;
         }
 
         #endregion
