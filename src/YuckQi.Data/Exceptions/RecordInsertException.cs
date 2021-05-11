@@ -6,23 +6,16 @@ namespace YuckQi.Data.Exceptions
     {
         #region Constructors
 
-        public RecordInsertException() : base(GetMessageText())
-        {
-        }
+        public RecordInsertException() : base(GetMessageText()) { }
 
-        public RecordInsertException(Exception inner) : base(GetMessageText(), inner)
-        {
-        }
+        public RecordInsertException(Exception inner) : base(GetMessageText(), inner) { }
 
         #endregion
 
 
         #region Supporting Methods
 
-        private static string GetMessageText()
-        {
-            return $"Failed to insert '{nameof(TRecord)}'.";
-        }
+        private static String GetMessageText() => $"Failed to insert '{nameof(TRecord)}'.";
 
         #endregion
     }

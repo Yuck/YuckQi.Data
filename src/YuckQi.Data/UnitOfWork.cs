@@ -8,7 +8,7 @@ namespace YuckQi.Data
     {
         #region Private Members
 
-        private readonly object _lock = new object();
+        private readonly Object _lock = new Object();
         private Lazy<IDbTransaction> _transaction;
 
         #endregion

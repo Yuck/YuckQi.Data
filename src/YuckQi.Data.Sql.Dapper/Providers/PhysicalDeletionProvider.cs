@@ -14,9 +14,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public PhysicalDeletionProvider(IUnitOfWork context) : base(context)
-        {
-        }
+        public PhysicalDeletionProvider(IUnitOfWork context) : base(context) { }
 
         #endregion
 

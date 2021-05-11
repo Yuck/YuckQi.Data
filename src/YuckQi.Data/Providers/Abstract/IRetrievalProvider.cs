@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using YuckQi.Domain.Entities.Abstract;
@@ -9,8 +10,8 @@ namespace YuckQi.Data.Providers.Abstract
     {
         Task<TEntity> GetAsync(TKey key);
         Task<TEntity> GetAsync(IReadOnlyCollection<IDataParameter> parameters);
-        Task<TEntity> GetAsync(object parameters);
+        Task<TEntity> GetAsync(Object parameters);
         Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<IDataParameter> parameters = null);
-        Task<IReadOnlyCollection<TEntity>> GetListAsync(object parameters = null);
+        Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters = null);
     }
 }

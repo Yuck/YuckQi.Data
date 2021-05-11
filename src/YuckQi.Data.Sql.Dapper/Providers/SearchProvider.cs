@@ -22,9 +22,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public SearchProvider(IUnitOfWork context) : base(context)
-        {
-        }
+        public SearchProvider(IUnitOfWork context) : base(context) { }
 
         #endregion
 
@@ -48,23 +46,20 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
         }
 
-        public Task<IPage<TEntity>> SearchAsync(object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
-        {
-            return SearchAsync(parameters?.ToParameterCollection<SqlParameter>(), page, sort);
-        }
+        public Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort) => SearchAsync(parameters?.ToParameterCollection<SqlParameter>(), page, sort);
 
         #endregion
 
 
         #region Supporting Methods
 
-        private Task<int> CountAsync(IReadOnlyCollection<IDataParameter> parameters)
+        private Task<Int32> CountAsync(IReadOnlyCollection<IDataParameter> parameters)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
             var sql = BuildSqlForCount(parameters);
-            var total = Context.Db.ExecuteScalarAsync<int>(sql, parameters.ToDynamicParameters(), Context.Transaction);
+            var total = Context.Db.ExecuteScalarAsync<Int32>(sql, parameters.ToDynamicParameters(), Context.Transaction);
 
             return total;
         }

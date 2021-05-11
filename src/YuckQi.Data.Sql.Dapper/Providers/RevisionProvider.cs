@@ -15,9 +15,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public RevisionProvider(IUnitOfWork context) : base(context)
-        {
-        }
+        public RevisionProvider(IUnitOfWork context) : base(context) { }
 
         #endregion
 

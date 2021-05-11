@@ -18,9 +18,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public RetrievalProvider(IUnitOfWork context) : base(context)
-        {
-        }
+        public RetrievalProvider(IUnitOfWork context) : base(context) { }
 
         #endregion
 
@@ -47,7 +45,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return entity;
         }
 
-        public Task<TEntity> GetAsync(object parameters)
+        public Task<TEntity> GetAsync(Object parameters)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -63,10 +61,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return entities;
         }
 
-        public Task<IReadOnlyCollection<TEntity>> GetListAsync(object parameters = null)
-        {
-            return GetListAsync(parameters?.ToParameterCollection<SqlParameter>());
-        }
+        public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters = null) => GetListAsync(parameters?.ToParameterCollection<SqlParameter>());
 
         #endregion
     }

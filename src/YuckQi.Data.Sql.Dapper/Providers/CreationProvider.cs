@@ -15,9 +15,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Constructors
 
-        public CreationProvider(IUnitOfWork context) : base(context)
-        {
-        }
+        public CreationProvider(IUnitOfWork context) : base(context) { }
 
         #endregion
 

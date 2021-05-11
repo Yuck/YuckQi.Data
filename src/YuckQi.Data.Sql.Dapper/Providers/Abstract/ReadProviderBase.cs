@@ -14,8 +14,8 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
     {
         #region Private Members
 
-        private const string DefaultSchemaName = "dbo";
-        private static readonly string DefaultTableName = typeof(TRecord).Name;
+        private const String DefaultSchemaName = "dbo";
+        private static readonly String DefaultTableName = typeof(TRecord).Name;
         private static readonly TableAttribute TableAttribute = (TableAttribute) typeof(TRecord).GetCustomAttribute(typeof(TableAttribute));
 
         #endregion
@@ -23,24 +23,22 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
         #region Properties
 
-        private static string SchemaName => TableAttribute?.Schema ?? DefaultSchemaName;
-        private static string TableName => TableAttribute?.Name ?? DefaultTableName;
+        private static String SchemaName => TableAttribute?.Schema ?? DefaultSchemaName;
+        private static String TableName => TableAttribute?.Name ?? DefaultTableName;
 
         #endregion
 
 
         #region Constructors
 
-        protected ReadProviderBase(IUnitOfWork context) : base(context)
-        {
-        }
+        protected ReadProviderBase(IUnitOfWork context) : base(context) { }
 
         #endregion
 
 
         #region Protected Methods
 
-        protected string BuildSqlForCount(IReadOnlyCollection<IDataParameter> parameters)
+        protected String BuildSqlForCount(IReadOnlyCollection<IDataParameter> parameters)
         {
             var select = "select count(*)";
             var from = BuildFromSql();
@@ -50,7 +48,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
             return sql;
         }
 
-        protected string BuildSqlForGet(IReadOnlyCollection<IDataParameter> parameters)
+        protected String BuildSqlForGet(IReadOnlyCollection<IDataParameter> parameters)
         {
             var columns = BuildColumnsSql();
 
@@ -62,16 +60,16 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
             return sql;
         }
 
-        protected string BuildSqlForSearch(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
+        protected String BuildSqlForSearch(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
         {
             var columns = BuildColumnsSql();
-            var sorting = string.Join(", ", sort.Select(t => $"[{t.Expression}]{(t.Order == SortOrder.Descending ? " desc" : string.Empty)}"));
+            var sorting = String.Join(", ", sort.Select(t => $"[{t.Expression}]{(t.Order == SortOrder.Descending ? " desc" : String.Empty)}"));
 
             var select = $"select {columns}";
             var from = BuildFromSql();
             var where = BuildWhereSql(parameters);
-            var order = ! string.IsNullOrWhiteSpace(sorting) ? $"order by {sorting}" : string.Empty;
-            var limit = page != null ? $"offset {(page.PageNumber - 1) * page.PageSize} rows fetch first {page.PageSize} rows only" : string.Empty;
+            var order = ! String.IsNullOrWhiteSpace(sorting) ? $"order by {sorting}" : String.Empty;
+            var limit = page != null ? $"offset {(page.PageNumber - 1) * page.PageSize} rows fetch first {page.PageSize} rows only" : String.Empty;
             var sql = $"{CombineSql(select, from, where, order, limit)};";
 
             return sql;
@@ -82,14 +80,14 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
         #region Supporting Methods
 
-        private static string BuildColumnsSql()
+        private static String BuildColumnsSql()
         {
             var properties = typeof(TRecord).GetProperties().Where(t => t.CustomAttributes.All(u => u.AttributeType != typeof(IgnoreSelectAttribute)));
-            var columns = string.Join(", ", properties.Select(t =>
+            var columns = String.Join(", ", properties.Select(t =>
             {
                 var attribute = t.CustomAttributes.SingleOrDefault(u => u.AttributeType == typeof(ColumnAttribute));
-                var custom = attribute?.ConstructorArguments.FirstOrDefault().Value as string;
-                var column = string.IsNullOrWhiteSpace(custom)
+                var custom = attribute?.ConstructorArguments.FirstOrDefault().Value as String;
+                var column = String.IsNullOrWhiteSpace(custom)
                                  ? $"[{t.Name}]"
                                  : $"[{custom}] [{t.Name}]";
 
@@ -99,14 +97,11 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
             return columns;
         }
 
-        private static string BuildFromSql()
-        {
-            return $"from [{SchemaName}].[{TableName}]";
-        }
+        private static String BuildFromSql() => $"from [{SchemaName}].[{TableName}]";
 
-        private static string BuildWhereSql(IEnumerable<IDataParameter> parameters)
+        private static String BuildWhereSql(IEnumerable<IDataParameter> parameters)
         {
-            var filter = string.Join(" and ", parameters.Select(t =>
+            var filter = String.Join(" and ", parameters.Select(t =>
             {
                 var column = $"[{t.ParameterName}]";
                 var value = t.Value;
@@ -115,14 +110,14 @@ namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 
                 return $"({column} {comparison} {parameter})";
             }));
-            var where = $"{(string.IsNullOrWhiteSpace(filter) ? "" : $"where {filter}")}";
+            var where = $"{(String.IsNullOrWhiteSpace(filter) ? "" : $"where {filter}")}";
 
             return where;
         }
 
-        private static string CombineSql(params string[] fragments)
+        private static String CombineSql(params String[] fragments)
         {
-            return string.Join(Environment.NewLine, fragments.Where(t => ! string.IsNullOrWhiteSpace(t)));
+            return String.Join(Environment.NewLine, fragments.Where(t => ! String.IsNullOrWhiteSpace(t)));
         }
 
         #endregion

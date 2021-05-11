@@ -6,23 +6,16 @@ namespace YuckQi.Data.Exceptions
     {
         #region Constructors
 
-        public RecordUpdateException(TKey key) : base(GetMessageText(key))
-        {
-        }
+        public RecordUpdateException(TKey key) : base(GetMessageText(key)) { }
 
-        public RecordUpdateException(TKey key, Exception inner) : base(GetMessageText(key), inner)
-        {
-        }
+        public RecordUpdateException(TKey key, Exception inner) : base(GetMessageText(key), inner) { }
 
         #endregion
 
 
         #region Supporting Methods
 
-        private static string GetMessageText(TKey key)
-        {
-            return $"Failed to update '{nameof(TRecord)}' with key '{key}'.";
-        }
+        private static String GetMessageText(TKey key) => $"Failed to update '{nameof(TRecord)}' with key '{key}'.";
 
         #endregion
     }
