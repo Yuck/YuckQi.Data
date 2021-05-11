@@ -10,16 +10,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.SqlServer.Providers.Abstract
 {
-    // seems like it's ORM and then the ORM has specific adapters/connectors for different rdbms platforms
-
-    // TODO: This is actually specific to MSSQL and should be YuckQi.Data.Sql.Dapper.SqlServer
-    // TODO: Dapper.SimpleCRUD is probably (?) specific to MSSQL as well and should be moved to that namespace (project)
-
-    // best plan is probably:
-    // 2. add project for ..Sql.Dapper.MySql (commit)
     // 3. figure out which pieces can be shared by SqlServer and MySql and create project YuckQi.Data.Sql.Dapper
-    //    ... and this project most likely doesn't need a nuspec because it isn't useful on its own (?)
-    //    ... unless perhaps someone wants to use that as a basis for their own db-specific library? i guess so....
     public abstract class ReadProviderBase<TRecord> : DataProviderBase
     {
         #region Private Members
