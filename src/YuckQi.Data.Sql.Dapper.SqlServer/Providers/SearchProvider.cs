@@ -10,7 +10,7 @@ using YuckQi.Data.Abstract;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Data.Sorting;
-using YuckQi.Data.Sql.Dapper.SqlServer.Extensions;
+using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Data.Sql.Dapper.SqlServer.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects;

@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using YuckQi.Data.Abstract;
 using YuckQi.Data.Providers.Abstract;
-using YuckQi.Data.Sql.Dapper.SqlServer.Providers.Abstract;
+using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.SqlServer.Providers
+namespace YuckQi.Data.Sql.Dapper.Providers
 {
     public class ActivationProvider<TEntity, TKey> : DataProviderBase, IActivationProvider<TEntity, TKey> where TEntity : IEntity<TKey>, IActivated, IRevised where TKey : struct
     {

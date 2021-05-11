@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.Sql.Dapper.SqlS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.Sql.Dapper.MySql", "src\YuckQi.Data.Sql.Dapper.MySql\YuckQi.Data.Sql.Dapper.MySql.csproj", "{A60AE981-7EA7-4921-91AC-A6B77EC4FA95}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuckQi.Data.Sql.Dapper", "src\YuckQi.Data.Sql.Dapper\YuckQi.Data.Sql.Dapper.csproj", "{9CBDA74A-2A9C-4E43-B432-464DE31E8985}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{A60AE981-7EA7-4921-91AC-A6B77EC4FA95}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A60AE981-7EA7-4921-91AC-A6B77EC4FA95}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A60AE981-7EA7-4921-91AC-A6B77EC4FA95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CBDA74A-2A9C-4E43-B432-464DE31E8985}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CBDA74A-2A9C-4E43-B432-464DE31E8985}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CBDA74A-2A9C-4E43-B432-464DE31E8985}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CBDA74A-2A9C-4E43-B432-464DE31E8985}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

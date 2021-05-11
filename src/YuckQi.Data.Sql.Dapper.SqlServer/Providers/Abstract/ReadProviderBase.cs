@@ -6,11 +6,11 @@ using System.Reflection;
 using Dapper;
 using YuckQi.Data.Abstract;
 using YuckQi.Data.Sorting;
+using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.SqlServer.Providers.Abstract
 {
-    // 3. figure out which pieces can be shared by SqlServer and MySql and create project YuckQi.Data.Sql.Dapper
     public abstract class ReadProviderBase<TRecord> : DataProviderBase
     {
         #region Private Members

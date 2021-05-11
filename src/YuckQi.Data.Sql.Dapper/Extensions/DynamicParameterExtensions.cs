@@ -2,7 +2,7 @@
 using System.Data;
 using Dapper;
 
-namespace YuckQi.Data.Sql.Dapper.SqlServer.Extensions
+namespace YuckQi.Data.Sql.Dapper.Extensions
 {
     public static class DynamicParameterExtensions
     {

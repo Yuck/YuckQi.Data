@@ -1,7 +1,7 @@
 ﻿using System;
 using YuckQi.Data.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.SqlServer.Providers.Abstract
+namespace YuckQi.Data.Sql.Dapper.Providers.Abstract
 {
     public abstract class DataProviderBase
     {
