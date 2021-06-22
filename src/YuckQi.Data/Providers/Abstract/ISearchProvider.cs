@@ -9,9 +9,9 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Providers.Abstract
 {
-    public interface ISearchProvider<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
+    public interface ISearchProvider<TEntity, TKey, in TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TDataParameter : IDataParameter
     {
-        Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
+        Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
         Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
     }
 }

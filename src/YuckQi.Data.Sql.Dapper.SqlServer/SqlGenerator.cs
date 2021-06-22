@@ -4,14 +4,15 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using Dapper;
-using YuckQi.Data.Abstract;
+using Microsoft.Data.SqlClient;
 using YuckQi.Data.Sorting;
-using YuckQi.Data.Sql.Dapper.Providers.Abstract;
+using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
+using SortOrder = YuckQi.Data.Sorting.SortOrder;
 
-namespace YuckQi.Data.Sql.Dapper.SqlServer.Providers.Abstract
+namespace YuckQi.Data.Sql.Dapper.SqlServer
 {
-    public abstract class ReadProviderBase<TRecord> : DataProviderBase
+    public abstract class SqlGenerator<TRecord> : ISqlGenerator<SqlParameter>
     {
         #region Private Members
 
@@ -30,16 +31,9 @@ namespace YuckQi.Data.Sql.Dapper.SqlServer.Providers.Abstract
         #endregion
 
 
-        #region Constructors
+        #region Public Methods
 
-        protected ReadProviderBase(IUnitOfWork context) : base(context) { }
-
-        #endregion
-
-
-        #region Protected Methods
-
-        protected String BuildSqlForCount(IReadOnlyCollection<IDataParameter> parameters)
+        public String GenerateCountQuery(IReadOnlyCollection<SqlParameter> parameters)
         {
             var select = "select count(*)";
             var from = BuildFromSql();
@@ -49,7 +43,7 @@ namespace YuckQi.Data.Sql.Dapper.SqlServer.Providers.Abstract
             return sql;
         }
 
-        protected String BuildSqlForGet(IReadOnlyCollection<IDataParameter> parameters)
+        public String GenerateGetQuery(IReadOnlyCollection<SqlParameter> parameters)
         {
             var columns = BuildColumnsSql();
 
@@ -61,7 +55,7 @@ namespace YuckQi.Data.Sql.Dapper.SqlServer.Providers.Abstract
             return sql;
         }
 
-        protected String BuildSqlForSearch(IReadOnlyCollection<IDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
+        public String GenerateSearchQuery(IReadOnlyCollection<SqlParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
         {
             var columns = BuildColumnsSql();
             var sorting = String.Join(", ", sort.Select(t => $"[{t.Expression}]{(t.Order == SortOrder.Descending ? " desc" : String.Empty)}"));

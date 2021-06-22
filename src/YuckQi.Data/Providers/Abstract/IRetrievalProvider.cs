@@ -6,12 +6,12 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Providers.Abstract
 {
-    public interface IRetrievalProvider<TEntity, in TKey> where TEntity : IEntity<TKey> where TKey : struct
+    public interface IRetrievalProvider<TEntity, in TKey, in TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TDataParameter : IDataParameter, new()
     {
         Task<TEntity> GetAsync(TKey key);
-        Task<TEntity> GetAsync(IReadOnlyCollection<IDataParameter> parameters);
+        Task<TEntity> GetAsync(IReadOnlyCollection<TDataParameter> parameters);
         Task<TEntity> GetAsync(Object parameters);
-        Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<IDataParameter> parameters = null);
+        Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<TDataParameter> parameters = null);
         Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters = null);
     }
 }

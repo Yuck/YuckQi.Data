@@ -9,28 +9,28 @@ using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.SqlServer.Providers
+namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class CreationProvider<TEntity, TKey, TRecord> : DataProviderBase, ICreationProvider<TEntity, TKey> where TEntity : IEntity<TKey>, ICreated where TKey : struct
+    public class RevisionProvider<TEntity, TKey, TRecord> : DataProviderBase, IRevisionProvider<TEntity, TKey> where TEntity : IEntity<TKey>, IRevised where TKey : struct
     {
         #region Constructors
 
-        public CreationProvider(IUnitOfWork context) : base(context) { }
+        public RevisionProvider(IUnitOfWork context) : base(context) { }
 
         #endregion
 
 
         #region Public Methods
 
-        public async Task<TEntity> CreateAsync(TEntity entity)
+        public async Task<TEntity> ReviseAsync(TEntity entity)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            entity.CreationMomentUtc = DateTime.UtcNow;
+            entity.RevisionMomentUtc = DateTime.UtcNow;
 
-            if (! (await Context.Db.InsertAsync(entity.Adapt<TRecord>(), Context.Transaction) > 0))
-                throw new RecordInsertException<TKey>();
+            if (await Context.Db.UpdateAsync(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
+                throw new RecordUpdateException<TRecord, TKey>(entity.Key);
 
             Context.SaveChanges();
 

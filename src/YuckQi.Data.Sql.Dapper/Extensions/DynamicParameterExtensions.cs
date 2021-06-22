@@ -6,7 +6,7 @@ namespace YuckQi.Data.Sql.Dapper.Extensions
 {
     public static class DynamicParameterExtensions
     {
-        public static DynamicParameters ToDynamicParameters(this IEnumerable<IDataParameter> parameters)
+        public static DynamicParameters ToDynamicParameters<TDataParameter>(this IEnumerable<TDataParameter> parameters) where TDataParameter : IDataParameter, new()
         {
             if (parameters == null)
                 return null;
