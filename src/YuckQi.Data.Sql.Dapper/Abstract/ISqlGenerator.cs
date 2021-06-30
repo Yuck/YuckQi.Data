@@ -7,7 +7,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Abstract
 {
-    public interface ISqlGenerator<in TDataParameter> where TDataParameter : IDataParameter
+    public interface ISqlGenerator<TRecord, in TDataParameter> where TDataParameter : IDataParameter
     {
         String GenerateCountQuery(IReadOnlyCollection<TDataParameter> parameters);
         String GenerateGetQuery(IReadOnlyCollection<TDataParameter> parameters);

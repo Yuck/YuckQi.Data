@@ -11,7 +11,7 @@ using SortOrder = YuckQi.Data.Sorting.SortOrder;
 
 namespace YuckQi.Data.Sql.Dapper.SqlServer
 {
-    public class SqlGenerator<TRecord> : ISqlGenerator<SqlParameter>
+    public class SqlGenerator<TRecord> : ISqlGenerator<TRecord, SqlParameter>
     {
         #region Private Members
 

@@ -9,23 +9,23 @@ namespace YuckQi.Data.Extensions
     {
         private static readonly IReadOnlyDictionary<Type, DbType> DbTypeMap = new Dictionary<Type, DbType>
         {
-            {typeof(Boolean), DbType.Boolean},
-            {typeof(Byte), DbType.Byte},
-            {typeof(DateTime), DbType.DateTime2},
-            {typeof(DateTimeOffset), DbType.DateTimeOffset},
-            {typeof(Decimal), DbType.Decimal},
-            {typeof(Double), DbType.Double},
-            {typeof(Single), DbType.Single},
-            {typeof(Guid), DbType.Guid},
-            {typeof(Int32), DbType.Int32},
-            {typeof(Int64), DbType.Int64},
-            {typeof(String), DbType.AnsiString}
+            { typeof(Boolean), DbType.Boolean },
+            { typeof(Byte), DbType.Byte },
+            { typeof(DateTime), DbType.DateTime2 },
+            { typeof(DateTimeOffset), DbType.DateTimeOffset },
+            { typeof(Decimal), DbType.Decimal },
+            { typeof(Double), DbType.Double },
+            { typeof(Single), DbType.Single },
+            { typeof(Guid), DbType.Guid },
+            { typeof(Int32), DbType.Int32 },
+            { typeof(Int64), DbType.Int64 },
+            { typeof(String), DbType.AnsiString }
         };
 
-        public static IReadOnlyCollection<T> ToParameterCollection<T>(this Object parameters, IReadOnlyDictionary<Type, DbType> dbTypeMap = null) where T : IDataParameter, new()
+        public static IReadOnlyCollection<TDataParameter> ToParameterCollection<TDataParameter>(this Object parameters, IReadOnlyDictionary<Type, DbType> dbTypeMap = null) where TDataParameter : IDataParameter, new()
         {
             if (parameters == null)
-                return new List<T>();
+                return new List<TDataParameter>();
 
             return parameters.GetType().GetProperties().Select(t =>
             {
@@ -34,7 +34,7 @@ namespace YuckQi.Data.Extensions
                 var map = dbTypeMap ?? DbTypeMap;
                 var type = value.GetType();
 
-                return new T
+                return new TDataParameter
                 {
                     DbType = map[type],
                     Direction = ParameterDirection.Input,

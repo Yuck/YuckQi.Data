@@ -10,7 +10,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.MySql
 {
-    public class SqlGenerator<TRecord> : ISqlGenerator<MySqlParameter>
+    public class SqlGenerator<TRecord> : ISqlGenerator<TRecord, MySqlParameter>
     {
         #region Private Members
 
