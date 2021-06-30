@@ -18,14 +18,14 @@ namespace YuckQi.Data.Sql.Dapper.Providers
     {
         #region Private Members
 
-        private readonly ISqlGenerator<TDataParameter> _sqlGenerator;
+        private readonly ISqlGenerator<TRecord, TDataParameter> _sqlGenerator;
 
         #endregion
 
 
         #region Constructors
 
-        protected RetrievalProvider(IUnitOfWork context, ISqlGenerator<TDataParameter> sqlGenerator) : base(context)
+        public RetrievalProvider(IUnitOfWork context, ISqlGenerator<TRecord, TDataParameter> sqlGenerator) : base(context)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         }
