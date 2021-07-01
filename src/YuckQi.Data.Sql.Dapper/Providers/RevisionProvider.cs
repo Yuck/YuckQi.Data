@@ -22,6 +22,21 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
+        public TEntity Revise(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            entity.RevisionMomentUtc = DateTime.UtcNow;
+
+            if (Context.Db.Update(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
+                throw new RecordUpdateException<TRecord, TKey>(entity.Key);
+
+            Context.SaveChanges();
+
+            return entity;
+        }
+
         public async Task<TEntity> ReviseAsync(TEntity entity)
         {
             if (entity == null)

@@ -22,6 +22,21 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
+        public TEntity Create(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            entity.CreationMomentUtc = DateTime.UtcNow;
+
+            if (! (Context.Db.Insert(entity.Adapt<TRecord>(), Context.Transaction) > 0))
+                throw new RecordInsertException<TKey>();
+
+            Context.SaveChanges();
+
+            return entity;
+        }
+
         public async Task<TEntity> CreateAsync(TEntity entity)
         {
             if (entity == null)

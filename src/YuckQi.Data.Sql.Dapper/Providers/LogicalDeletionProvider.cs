@@ -29,6 +29,19 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
+        public TEntity Delete(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.DeletionMomentUtc != null)
+                return entity;
+
+            entity.DeletionMomentUtc = DateTime.UtcNow;
+
+            return _reviser.Revise(entity);
+        }
+
         public Task<TEntity> DeleteAsync(TEntity entity)
         {
             if (entity == null)
@@ -40,6 +53,19 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             entity.DeletionMomentUtc = DateTime.UtcNow;
 
             return _reviser.ReviseAsync(entity);
+        }
+
+        public TEntity Restore(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.DeletionMomentUtc == null)
+                return entity;
+
+            entity.DeletionMomentUtc = null;
+
+            return _reviser.Revise(entity);
         }
 
         public Task<TEntity> RestoreAsync(TEntity entity)

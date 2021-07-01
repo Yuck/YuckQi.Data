@@ -29,6 +29,19 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
+        public TEntity Activate(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.ActivationMomentUtc != null)
+                return entity;
+
+            entity.ActivationMomentUtc = DateTime.UtcNow;
+
+            return _reviser.Revise(entity);
+        }
+
         public Task<TEntity> ActivateAsync(TEntity entity)
         {
             if (entity == null)
@@ -40,6 +53,19 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             entity.ActivationMomentUtc = DateTime.UtcNow;
 
             return _reviser.ReviseAsync(entity);
+        }
+
+        public TEntity Deactivate(TEntity entity)
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+
+            if (entity.ActivationMomentUtc == null)
+                return entity;
+
+            entity.ActivationMomentUtc = null;
+
+            return _reviser.Revise(entity);
         }
 
         public Task<TEntity> DeactivateAsync(TEntity entity)

@@ -39,6 +39,23 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
+        public IPage<TEntity> Search(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
+        {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+            if (page == null)
+                throw new ArgumentNullException(nameof(page));
+            if (sort == null)
+                throw new ArgumentNullException(nameof(sort));
+
+            var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
+            var records = Context.Db.Query<TRecord>(sql, parameters.ToDynamicParameters(), Context.Transaction);
+            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var total = Count(parameters);
+
+            return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
+        }
+
         public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
         {
             if (parameters == null)
@@ -56,12 +73,24 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
         }
 
+        public IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort) => Search(parameters?.ToParameterCollection<TDataParameter>(), page, sort);
         public Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort) => SearchAsync(parameters?.ToParameterCollection<TDataParameter>(), page, sort);
 
         #endregion
 
 
         #region Supporting Methods
+
+        private Int32 Count(IReadOnlyCollection<TDataParameter> parameters)
+        {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
+            var sql = _sqlGenerator.GenerateCountQuery(parameters);
+            var total = Context.Db.ExecuteScalar<Int32>(sql, parameters.ToDynamicParameters(), Context.Transaction);
+
+            return total;
+        }
 
         private Task<Int32> CountAsync(IReadOnlyCollection<TDataParameter> parameters)
         {

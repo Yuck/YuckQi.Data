@@ -11,7 +11,10 @@ namespace YuckQi.Data.Providers.Abstract
 {
     public interface ISearchProvider<TEntity, TKey, in TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TDataParameter : IDataParameter
     {
+        IPage<TEntity> Search(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
         Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
+
+        IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
         Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
     }
 }

@@ -35,9 +35,29 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
+        public TEntity Get(TKey key)
+        {
+            var record = Context.Db.Get<TRecord>(key, Context.Transaction);
+            var entity = record.Adapt<TEntity>();
+
+            return entity;
+        }
+
         public async Task<TEntity> GetAsync(TKey key)
         {
             var record = await Context.Db.GetAsync<TRecord>(key, Context.Transaction);
+            var entity = record.Adapt<TEntity>();
+
+            return entity;
+        }
+
+        public TEntity Get(IReadOnlyCollection<TDataParameter> parameters)
+        {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
+            var sql = _sqlGenerator.GenerateGetQuery(parameters);
+            var record = Context.Db.QuerySingleOrDefault<TRecord>(sql, parameters.ToDynamicParameters(), Context.Transaction);
             var entity = record.Adapt<TEntity>();
 
             return entity;
@@ -55,12 +75,28 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return entity;
         }
 
+        public TEntity Get(Object parameters)
+        {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+
+            return Get(parameters.ToParameterCollection<TDataParameter>());
+        }
+
         public Task<TEntity> GetAsync(Object parameters)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
             return GetAsync(parameters.ToParameterCollection<TDataParameter>());
+        }
+
+        public IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<TDataParameter> parameters = null)
+        {
+            var records = Context.Db.GetList<TRecord>(parameters?.ToDynamicParameters(), Context.Transaction);
+            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+
+            return entities;
         }
 
         public async Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<TDataParameter> parameters = null)
@@ -71,6 +107,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return entities;
         }
 
+        public IReadOnlyCollection<TEntity> GetList(Object parameters = null) => GetList(parameters?.ToParameterCollection<TDataParameter>());
         public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters = null) => GetListAsync(parameters?.ToParameterCollection<TDataParameter>());
 
         #endregion

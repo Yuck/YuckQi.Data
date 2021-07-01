@@ -8,10 +8,19 @@ namespace YuckQi.Data.Providers.Abstract
 {
     public interface IRetrievalProvider<TEntity, in TKey, in TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TDataParameter : IDataParameter, new()
     {
+        TEntity Get(TKey key);
         Task<TEntity> GetAsync(TKey key);
+
+        TEntity Get(IReadOnlyCollection<TDataParameter> parameters);
         Task<TEntity> GetAsync(IReadOnlyCollection<TDataParameter> parameters);
+
+        TEntity Get(Object parameters);
         Task<TEntity> GetAsync(Object parameters);
+
+        IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<TDataParameter> parameters = null);
         Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<TDataParameter> parameters = null);
+
+        IReadOnlyCollection<TEntity> GetList(Object parameters = null);
         Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters = null);
     }
 }
