@@ -103,6 +103,22 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return GetAsync(parameters.ToParameterCollection<TDataParameter>(), transaction);
         }
 
+        public IReadOnlyCollection<TEntity> GetList(IDbTransaction transaction)
+        {
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+
+            return DoGetList(null, transaction);
+        }
+
+        public Task<IReadOnlyCollection<TEntity>> GetListAsync(IDbTransaction transaction)
+        {
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+
+            return DoGetListAsync(null, transaction);
+        }
+
         public IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
         {
             if (parameters == null)
@@ -110,16 +126,37 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (transaction == null)
                 throw new ArgumentNullException(nameof(transaction));
 
+            return DoGetList(null, transaction);
+        }
+
+        public Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
+        {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+
+            return DoGetListAsync(null, transaction);
+        }
+
+        public IReadOnlyCollection<TEntity> GetList(Object parameters, IDbTransaction transaction) => GetList(parameters?.ToParameterCollection<TDataParameter>(), transaction);
+        public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters, IDbTransaction transaction) => GetListAsync(parameters?.ToParameterCollection<TDataParameter>(), transaction);
+
+        #endregion
+
+
+        #region Supporting Methods
+
+        private static IReadOnlyCollection<TEntity> DoGetList(IEnumerable<TDataParameter> parameters, IDbTransaction transaction)
+        {
             var records = transaction.Connection.GetList<TRecord>(parameters?.ToDynamicParameters(), transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
             return entities;
         }
 
-        public async Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
+        public async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
         {
-            if (parameters == null)
-                throw new ArgumentNullException(nameof(parameters));
             if (transaction == null)
                 throw new ArgumentNullException(nameof(transaction));
 
@@ -128,9 +165,6 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
             return entities;
         }
-
-        public IReadOnlyCollection<TEntity> GetList(Object parameters, IDbTransaction transaction) => GetList(parameters?.ToParameterCollection<TDataParameter>(), transaction);
-        public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters, IDbTransaction transaction) => GetListAsync(parameters?.ToParameterCollection<TDataParameter>(), transaction);
 
         #endregion
     }

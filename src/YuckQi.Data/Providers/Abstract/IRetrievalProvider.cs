@@ -17,6 +17,9 @@ namespace YuckQi.Data.Providers.Abstract
         TEntity Get(Object parameters, IDbTransaction transaction);
         Task<TEntity> GetAsync(Object parameters, IDbTransaction transaction);
 
+        IReadOnlyCollection<TEntity> GetList(IDbTransaction transaction);
+        Task<IReadOnlyCollection<TEntity>> GetListAsync(IDbTransaction transaction);
+
         IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction);
         Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction);
 
