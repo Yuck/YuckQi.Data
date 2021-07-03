@@ -4,17 +4,15 @@ using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using Mapster;
-using YuckQi.Data.Abstract;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
-using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class RetrievalProvider<TEntity, TKey, TRecord, TDataParameter> : DataProviderBase, IRetrievalProvider<TEntity, TKey, TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TDataParameter : IDataParameter, new()
+    public class RetrievalProvider<TEntity, TKey, TRecord, TDataParameter> : IRetrievalProvider<TEntity, TKey, TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TDataParameter : IDataParameter, new()
     {
         #region Private Members
 
@@ -25,7 +23,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Constructors
 
-        public RetrievalProvider(IUnitOfWork context, ISqlGenerator<TRecord, TDataParameter> sqlGenerator) : base(context)
+        public RetrievalProvider(ISqlGenerator<TRecord, TDataParameter> sqlGenerator)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         }
@@ -35,80 +33,104 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
-        public TEntity Get(TKey key)
+        public TEntity Get(TKey key, IDbTransaction transaction)
         {
-            var record = Context.Db.Get<TRecord>(key, Context.Transaction);
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+
+            var record = transaction.Connection.Get<TRecord>(key, transaction);
             var entity = record.Adapt<TEntity>();
 
             return entity;
         }
 
-        public async Task<TEntity> GetAsync(TKey key)
+        public async Task<TEntity> GetAsync(TKey key, IDbTransaction transaction)
         {
-            var record = await Context.Db.GetAsync<TRecord>(key, Context.Transaction);
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+
+            var record = await transaction.Connection.GetAsync<TRecord>(key, transaction);
             var entity = record.Adapt<TEntity>();
 
             return entity;
         }
 
-        public TEntity Get(IReadOnlyCollection<TDataParameter> parameters)
+        public TEntity Get(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
 
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
-            var record = Context.Db.QuerySingleOrDefault<TRecord>(sql, parameters.ToDynamicParameters(), Context.Transaction);
+            var record = transaction.Connection.QuerySingleOrDefault<TRecord>(sql, parameters.ToDynamicParameters(), transaction);
             var entity = record.Adapt<TEntity>();
 
             return entity;
         }
 
-        public async Task<TEntity> GetAsync(IReadOnlyCollection<TDataParameter> parameters)
+        public async Task<TEntity> GetAsync(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
 
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
-            var record = await Context.Db.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(), Context.Transaction);
+            var record = await transaction.Connection.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(), transaction);
             var entity = record.Adapt<TEntity>();
 
             return entity;
         }
 
-        public TEntity Get(Object parameters)
+        public TEntity Get(Object parameters, IDbTransaction transaction)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
 
-            return Get(parameters.ToParameterCollection<TDataParameter>());
+            return Get(parameters.ToParameterCollection<TDataParameter>(), transaction);
         }
 
-        public Task<TEntity> GetAsync(Object parameters)
+        public Task<TEntity> GetAsync(Object parameters, IDbTransaction transaction)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
 
-            return GetAsync(parameters.ToParameterCollection<TDataParameter>());
+            return GetAsync(parameters.ToParameterCollection<TDataParameter>(), transaction);
         }
 
-        public IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<TDataParameter> parameters = null)
+        public IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
         {
-            var records = Context.Db.GetList<TRecord>(parameters?.ToDynamicParameters(), Context.Transaction);
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+
+            var records = transaction.Connection.GetList<TRecord>(parameters?.ToDynamicParameters(), transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
             return entities;
         }
 
-        public async Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<TDataParameter> parameters = null)
+        public async Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
         {
-            var records = await Context.Db.GetListAsync<TRecord>(parameters?.ToDynamicParameters(), Context.Transaction);
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+
+            var records = await transaction.Connection.GetListAsync<TRecord>(parameters?.ToDynamicParameters(), transaction);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
             return entities;
         }
 
-        public IReadOnlyCollection<TEntity> GetList(Object parameters = null) => GetList(parameters?.ToParameterCollection<TDataParameter>());
-        public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters = null) => GetListAsync(parameters?.ToParameterCollection<TDataParameter>());
+        public IReadOnlyCollection<TEntity> GetList(Object parameters, IDbTransaction transaction) => GetList(parameters?.ToParameterCollection<TDataParameter>(), transaction);
+        public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters, IDbTransaction transaction) => GetListAsync(parameters?.ToParameterCollection<TDataParameter>(), transaction);
 
         #endregion
     }

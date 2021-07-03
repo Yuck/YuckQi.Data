@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Data;
+using YuckQi.Data.Abstract;
 
-namespace YuckQi.Data.Abstract
+namespace YuckQi.Data
 {
-    public abstract class UnitOfWorkBase : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         #region Private Members
 
@@ -23,7 +24,7 @@ namespace YuckQi.Data.Abstract
 
         #region Constructors
 
-        public UnitOfWorkBase(IDbConnection connection, IsolationLevel isolation = IsolationLevel.ReadCommitted)
+        public UnitOfWork(IDbConnection connection, IsolationLevel isolation = IsolationLevel.ReadCommitted)
         {
             _transaction = new Lazy<IDbTransaction>(() =>
             {

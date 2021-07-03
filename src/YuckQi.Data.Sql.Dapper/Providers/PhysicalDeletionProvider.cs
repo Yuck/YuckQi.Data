@@ -1,43 +1,39 @@
 ﻿using System;
+using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using Mapster;
-using YuckQi.Data.Abstract;
 using YuckQi.Data.Exceptions;
 using YuckQi.Data.Providers.Abstract;
-using YuckQi.Data.Sql.Dapper.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class PhysicalDeletionProvider<TEntity, TKey, TRecord> : DataProviderBase, IPhysicalDeletionProvider<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
+    public class PhysicalDeletionProvider<TEntity, TKey, TRecord> : IPhysicalDeletionProvider<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
     {
-        #region Constructors
-
-        public PhysicalDeletionProvider(IUnitOfWork context) : base(context) { }
-
-        #endregion
-
-
         #region Public Methods
 
-        public TEntity Delete(TEntity entity)
+        public TEntity Delete(TEntity entity, IDbTransaction transaction)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
 
-            if (Context.Db.Delete(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
+            if (transaction.Connection.Delete(entity.Adapt<TRecord>(), transaction) <= 0)
                 throw new RecordDeleteException<TRecord, TKey>(entity.Key);
 
             return entity;
         }
 
-        public async Task<TEntity> DeleteAsync(TEntity entity)
+        public async Task<TEntity> DeleteAsync(TEntity entity, IDbTransaction transaction)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
 
-            if (await Context.Db.DeleteAsync(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
+            if (await transaction.Connection.DeleteAsync(entity.Adapt<TRecord>(), transaction) <= 0)
                 throw new RecordDeleteException<TRecord, TKey>(entity.Key);
 
             return entity;
