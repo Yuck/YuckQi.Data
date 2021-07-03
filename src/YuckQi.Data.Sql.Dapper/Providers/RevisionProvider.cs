@@ -32,8 +32,6 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (Context.Db.Update(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
                 throw new RecordUpdateException<TRecord, TKey>(entity.Key);
 
-            Context.SaveChanges();
-
             return entity;
         }
 
@@ -46,8 +44,6 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
             if (await Context.Db.UpdateAsync(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
                 throw new RecordUpdateException<TRecord, TKey>(entity.Key);
-
-            Context.SaveChanges();
 
             return entity;
         }

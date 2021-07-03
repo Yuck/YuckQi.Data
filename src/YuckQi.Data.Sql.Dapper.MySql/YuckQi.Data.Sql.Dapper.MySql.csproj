@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>0.7.0</Version>
+    <Version>0.8.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>An implementation of YuckQi.Data using Dapper for MySQL.</Description>
   </PropertyGroup>

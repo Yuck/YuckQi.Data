@@ -29,8 +29,6 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (Context.Db.Delete(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
                 throw new RecordDeleteException<TRecord, TKey>(entity.Key);
 
-            Context.SaveChanges();
-
             return entity;
         }
 
@@ -41,8 +39,6 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
             if (await Context.Db.DeleteAsync(entity.Adapt<TRecord>(), Context.Transaction) <= 0)
                 throw new RecordDeleteException<TRecord, TKey>(entity.Key);
-
-            Context.SaveChanges();
 
             return entity;
         }
