@@ -23,8 +23,11 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
             entity.CreationMomentUtc = DateTime.UtcNow;
 
-            if (! (transaction.Connection.Insert(entity.Adapt<TRecord>(), transaction) > 0))
-                throw new RecordInsertException<TKey>();
+            var key = transaction.Connection.Insert<TKey?, TRecord>(entity.Adapt<TRecord>(), transaction);
+            if (key == null)
+                throw new RecordInsertException<TRecord>();
+
+            entity.Key = key.Value;
 
             return entity;
         }
@@ -38,8 +41,11 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
             entity.CreationMomentUtc = DateTime.UtcNow;
 
-            if (! (await transaction.Connection.InsertAsync(entity.Adapt<TRecord>(), transaction) > 0))
-                throw new RecordInsertException<TKey>();
+            var key = await transaction.Connection.InsertAsync<TKey?, TRecord>(entity.Adapt<TRecord>(), transaction);
+            if (key == null)
+                throw new RecordInsertException<TRecord>();
+
+            entity.Key = key.Value;
 
             return entity;
         }
