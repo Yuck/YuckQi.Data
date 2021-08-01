@@ -1,18 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
+    <Product>YuckQi.Data</Product>
     <Version>1.0.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Description>An implementation of YuckQi.Data using Dapper.</Description>
-    <Product>YuckQi.Data</Product>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\YuckQi.Data\YuckQi.Data.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\LICENSE">
@@ -22,8 +17,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper.SimpleCRUD" Version="2.3.0" />
     <PackageReference Include="Mapster" Version="7.2.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.13.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\YuckQi.Data\YuckQi.Data.csproj" />
   </ItemGroup>
 
 </Project>

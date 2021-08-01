@@ -19,9 +19,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.Sql.Dapper.MySq
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.Sql.Dapper", "src\YuckQi.Data.Sql.Dapper\YuckQi.Data.Sql.Dapper.csproj", "{9CBDA74A-2A9C-4E43-B432-464DE31E8985}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuckQi.Data.Sql.Dapper.SqlServer.UnitTests", "test\YuckQi.Data.Sql.Dapper.SqlServer.UnitTests\YuckQi.Data.Sql.Dapper.SqlServer.UnitTests.csproj", "{3488B274-C1C9-4BC5-8A99-05FAE0496A17}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.Sql.Dapper.SqlServer.UnitTests", "test\YuckQi.Data.Sql.Dapper.SqlServer.UnitTests\YuckQi.Data.Sql.Dapper.SqlServer.UnitTests.csproj", "{3488B274-C1C9-4BC5-8A99-05FAE0496A17}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuckQi.Data.Sql.Dapper.MySql.UnitTests", "test\YuckQi.Data.Sql.Dapper.MySql.UnitTests\YuckQi.Data.Sql.Dapper.MySql.UnitTests.csproj", "{645C986D-A7D3-4CE2-9B04-840A6C39BCF5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.Sql.Dapper.MySql.UnitTests", "test\YuckQi.Data.Sql.Dapper.MySql.UnitTests\YuckQi.Data.Sql.Dapper.MySql.UnitTests.csproj", "{645C986D-A7D3-4CE2-9B04-840A6C39BCF5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuckQi.Data.DocumentDb.MongoDb", "src\YuckQi.Data.DocumentDb.MongoDb\YuckQi.Data.DocumentDb.MongoDb.csproj", "{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -61,6 +63,10 @@ Global
 		{645C986D-A7D3-4CE2-9B04-840A6C39BCF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{645C986D-A7D3-4CE2-9B04-840A6C39BCF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{645C986D-A7D3-4CE2-9B04-840A6C39BCF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
