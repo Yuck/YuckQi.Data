@@ -10,20 +10,20 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class CreationProvider<TEntity, TKey, TRecord> : ICreationProvider<TEntity, TKey> where TEntity : IEntity<TKey>, ICreated where TKey : struct
+    public class CreationProvider<TEntity, TKey, TRecord, TScope> : ICreationProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IDbTransaction
     {
         #region Public Methods
 
-        public TEntity Create(TEntity entity, IDbTransaction transaction)
+        public TEntity Create(TEntity entity, TScope scope)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
 
             entity.CreationMomentUtc = DateTime.UtcNow;
 
-            var key = transaction.Connection.Insert<TKey?, TRecord>(entity.Adapt<TRecord>(), transaction);
+            var key = scope.Connection.Insert<TKey?, TRecord>(entity.Adapt<TRecord>(), scope);
             if (key == null)
                 throw new RecordInsertException<TRecord>();
 
@@ -32,16 +32,16 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return entity;
         }
 
-        public async Task<TEntity> CreateAsync(TEntity entity, IDbTransaction transaction)
+        public async Task<TEntity> CreateAsync(TEntity entity, TScope scope)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
 
             entity.CreationMomentUtc = DateTime.UtcNow;
 
-            var key = await transaction.Connection.InsertAsync<TKey?, TRecord>(entity.Adapt<TRecord>(), transaction);
+            var key = await scope.Connection.InsertAsync<TKey?, TRecord>(entity.Adapt<TRecord>(), scope);
             if (key == null)
                 throw new RecordInsertException<TRecord>();
 

@@ -16,7 +16,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class SearchProvider<TEntity, TKey, TRecord, TDataParameter> : ISearchProvider<TEntity, TKey, TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TDataParameter : IDataParameter, new()
+    public class SearchProvider<TEntity, TKey, TRecord, TScope, TDataParameter> : ISearchProvider<TEntity, TKey, TScope, TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction where TDataParameter : IDataParameter, new()
     {
         #region Private Members
 
@@ -37,7 +37,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
-        public IPage<TEntity> Search(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, IDbTransaction transaction)
+        public IPage<TEntity> Search(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -45,18 +45,18 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(page));
             if (sort == null)
                 throw new ArgumentNullException(nameof(sort));
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
 
             var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
-            var records = transaction.Connection.Query<TRecord>(sql, parameters.ToDynamicParameters(), transaction);
+            var records = scope.Connection.Query<TRecord>(sql, parameters.ToDynamicParameters(), scope);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
-            var total = Count(parameters, transaction);
+            var total = Count(parameters, scope);
 
             return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
         }
 
-        public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, IDbTransaction transaction)
+        public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -64,37 +64,37 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(page));
             if (sort == null)
                 throw new ArgumentNullException(nameof(sort));
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
 
             var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
-            var records = await transaction.Connection.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(), transaction);
+            var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(), scope);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
-            var total = await CountAsync(parameters, transaction);
+            var total = await CountAsync(parameters, scope);
 
             return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
         }
 
-        public IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, IDbTransaction transaction) => Search(parameters?.ToParameterCollection<TDataParameter>(), page, sort, transaction);
-        public Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, IDbTransaction transaction) => SearchAsync(parameters?.ToParameterCollection<TDataParameter>(), page, sort, transaction);
+        public IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => Search(parameters?.ToParameterCollection<TDataParameter>(), page, sort, scope);
+        public Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => SearchAsync(parameters?.ToParameterCollection<TDataParameter>(), page, sort, scope);
 
         #endregion
 
 
         #region Supporting Methods
 
-        private Int32 Count(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
+        private Int32 Count(IReadOnlyCollection<TDataParameter> parameters, TScope scope)
         {
             var sql = _sqlGenerator.GenerateCountQuery(parameters);
-            var total = transaction.Connection.ExecuteScalar<Int32>(sql, parameters.ToDynamicParameters(), transaction);
+            var total = scope.Connection.ExecuteScalar<Int32>(sql, parameters.ToDynamicParameters(), scope);
 
             return total;
         }
 
-        private Task<Int32> CountAsync(IReadOnlyCollection<TDataParameter> parameters, IDbTransaction transaction)
+        private Task<Int32> CountAsync(IReadOnlyCollection<TDataParameter> parameters, TScope scope)
         {
             var sql = _sqlGenerator.GenerateCountQuery(parameters);
-            var total = transaction.Connection.ExecuteScalarAsync<Int32>(sql, parameters.ToDynamicParameters(), transaction);
+            var total = scope.Connection.ExecuteScalarAsync<Int32>(sql, parameters.ToDynamicParameters(), scope);
 
             return total;
         }

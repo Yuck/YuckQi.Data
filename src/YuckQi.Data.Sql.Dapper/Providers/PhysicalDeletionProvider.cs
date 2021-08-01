@@ -9,31 +9,31 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class PhysicalDeletionProvider<TEntity, TKey, TRecord> : IPhysicalDeletionProvider<TEntity, TKey> where TEntity : IEntity<TKey> where TKey : struct
+    public class PhysicalDeletionProvider<TEntity, TKey, TRecord, TScope> : IPhysicalDeletionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
     {
         #region Public Methods
 
-        public TEntity Delete(TEntity entity, IDbTransaction transaction)
+        public TEntity Delete(TEntity entity, TScope scope)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
 
-            if (transaction.Connection.Delete(entity.Adapt<TRecord>(), transaction) <= 0)
+            if (scope.Connection.Delete(entity.Adapt<TRecord>(), scope) <= 0)
                 throw new RecordDeleteException<TRecord, TKey>(entity.Key);
 
             return entity;
         }
 
-        public async Task<TEntity> DeleteAsync(TEntity entity, IDbTransaction transaction)
+        public async Task<TEntity> DeleteAsync(TEntity entity, TScope scope)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
 
-            if (await transaction.Connection.DeleteAsync(entity.Adapt<TRecord>(), transaction) <= 0)
+            if (await scope.Connection.DeleteAsync(entity.Adapt<TRecord>(), scope) <= 0)
                 throw new RecordDeleteException<TRecord, TKey>(entity.Key);
 
             return entity;

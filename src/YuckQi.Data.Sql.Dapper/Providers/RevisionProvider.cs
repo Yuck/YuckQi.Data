@@ -10,35 +10,35 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class RevisionProvider<TEntity, TKey, TRecord> : IRevisionProvider<TEntity, TKey> where TEntity : IEntity<TKey>, IRevised where TKey : struct
+    public class RevisionProvider<TEntity, TKey, TRecord, TScope> : IRevisionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IDbTransaction
     {
         #region Public Methods
 
-        public TEntity Revise(TEntity entity, IDbTransaction transaction)
+        public TEntity Revise(TEntity entity, TScope scope)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
 
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
-            if (transaction.Connection.Update(entity.Adapt<TRecord>(), transaction) <= 0)
+            if (scope.Connection.Update(entity.Adapt<TRecord>(), scope) <= 0)
                 throw new RecordUpdateException<TRecord, TKey>(entity.Key);
 
             return entity;
         }
 
-        public async Task<TEntity> ReviseAsync(TEntity entity, IDbTransaction transaction)
+        public async Task<TEntity> ReviseAsync(TEntity entity, TScope scope)
         {
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
 
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
-            if (await transaction.Connection.UpdateAsync(entity.Adapt<TRecord>(), transaction) <= 0)
+            if (await scope.Connection.UpdateAsync(entity.Adapt<TRecord>(), scope) <= 0)
                 throw new RecordUpdateException<TRecord, TKey>(entity.Key);
 
             return entity;
