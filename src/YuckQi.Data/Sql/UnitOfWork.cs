@@ -2,12 +2,13 @@
 using System.Data;
 using YuckQi.Data.Abstract;
 
-namespace YuckQi.Data
+namespace YuckQi.Data.Sql
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork<IDbTransaction>
     {
         #region Private Members
 
+        private IDbConnection _connection;
         private readonly Object _lock = new Object();
         private Lazy<IDbTransaction> _transaction;
 
@@ -16,8 +17,7 @@ namespace YuckQi.Data
 
         #region Properties
 
-        public IDbConnection Db { get; private set; }
-        public IDbTransaction Transaction => _transaction.Value;
+        public IDbTransaction Scope => _transaction.Value;
 
         #endregion
 
@@ -26,18 +26,17 @@ namespace YuckQi.Data
 
         public UnitOfWork(IDbConnection connection, IsolationLevel isolation = IsolationLevel.ReadCommitted)
         {
+            _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _transaction = new Lazy<IDbTransaction>(() =>
             {
                 lock (_lock)
                 {
-                    if (Db.State == ConnectionState.Closed)
-                        Db.Open();
+                    if (_connection.State == ConnectionState.Closed)
+                        _connection.Open();
 
-                    return Db.BeginTransaction(isolation);
+                    return _connection.BeginTransaction(isolation);
                 }
             });
-
-            Db = connection ?? throw new ArgumentNullException(nameof(connection));
         }
 
         #endregion
@@ -49,19 +48,19 @@ namespace YuckQi.Data
         {
             if (_transaction != null)
             {
-                Transaction?.Rollback();
-                Transaction?.Dispose();
+                Scope?.Rollback();
+                Scope?.Dispose();
 
                 _transaction = null;
             }
 
-            if (Db == null)
+            if (_connection == null)
                 return;
 
-            Db?.Close();
-            Db?.Dispose();
+            _connection?.Close();
+            _connection?.Dispose();
 
-            Db = null;
+            _connection = null;
         }
 
         public void SaveChanges()
@@ -71,8 +70,8 @@ namespace YuckQi.Data
                 if (_transaction == null)
                     throw new InvalidOperationException();
 
-                Transaction.Commit();
-                Transaction.Dispose();
+                Scope.Commit();
+                Scope.Dispose();
 
                 _transaction = null;
             }

@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Data;
 
 namespace YuckQi.Data.Abstract
 {
-    public interface IUnitOfWork : IDisposable
+    public interface IUnitOfWork<out TScope> : IDisposable
     {
-        IDbConnection Db { get; }
-        IDbTransaction Transaction { get; }
+        TScope Scope { get; }
 
         void SaveChanges();
     }
