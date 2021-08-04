@@ -8,7 +8,9 @@ namespace YuckQi.Data.DocumentDb.MongoDb
     {
         #region Private Members
 
+        private readonly IMongoClient _client;
         private readonly Object _lock = new Object();
+        private readonly ClientSessionOptions _options;
         private Lazy<IClientSessionHandle> _session;
 
         #endregion
@@ -25,10 +27,9 @@ namespace YuckQi.Data.DocumentDb.MongoDb
 
         public UnitOfWork(IMongoClient client, ClientSessionOptions options = null)
         {
-            if (client == null)
-                throw new ArgumentNullException(nameof(client));
-
-            _session = new Lazy<IClientSessionHandle>(() => client.StartSession(options));
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+            _options = options;
+            _session = new Lazy<IClientSessionHandle>(() => _client.StartSession(_options));
         }
 
         #endregion
@@ -57,7 +58,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb
                 Scope.CommitTransaction();
                 Scope.Dispose();
 
-                _session = null;
+                _session = new Lazy<IClientSessionHandle>(() => _client.StartSession(_options));
             }
         }
 

@@ -4,39 +4,32 @@ using YuckQi.Data.Abstract;
 
 namespace YuckQi.Data.Sql
 {
-    public class UnitOfWork : IUnitOfWork<IDbTransaction>
+    public class UnitOfWork<TScope, TDbConnection> : IUnitOfWork<TScope> where TScope : class, IDbTransaction where TDbConnection : class, IDbConnection
     {
         #region Private Members
 
-        private IDbConnection _connection;
+        private TDbConnection _connection;
+        private readonly IsolationLevel _isolation;
         private readonly Object _lock = new Object();
-        private Lazy<IDbTransaction> _transaction;
+        private Lazy<TScope> _transaction;
 
         #endregion
 
 
         #region Properties
 
-        public IDbTransaction Scope => _transaction.Value;
+        public TScope Scope => _transaction.Value;
 
         #endregion
 
 
         #region Constructors
 
-        public UnitOfWork(IDbConnection connection, IsolationLevel isolation = IsolationLevel.ReadCommitted)
+        public UnitOfWork(TDbConnection connection, IsolationLevel isolation = IsolationLevel.ReadCommitted)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-            _transaction = new Lazy<IDbTransaction>(() =>
-            {
-                lock (_lock)
-                {
-                    if (_connection.State == ConnectionState.Closed)
-                        _connection.Open();
-
-                    return _connection.BeginTransaction(isolation);
-                }
-            });
+            _isolation = isolation;
+            _transaction = new Lazy<TScope>(StartTransaction);
         }
 
         #endregion
@@ -73,7 +66,23 @@ namespace YuckQi.Data.Sql
                 Scope.Commit();
                 Scope.Dispose();
 
-                _transaction = null;
+                _transaction = new Lazy<TScope>(StartTransaction);
+            }
+        }
+
+        #endregion
+
+
+        #region Supporting Methods
+
+        private TScope StartTransaction()
+        {
+            lock (_lock)
+            {
+                if (_connection.State == ConnectionState.Closed)
+                    _connection.Open();
+
+                return _connection.BeginTransaction(_isolation) as TScope;
             }
         }
 
