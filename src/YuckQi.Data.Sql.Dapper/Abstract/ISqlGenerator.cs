@@ -10,7 +10,9 @@ namespace YuckQi.Data.Sql.Dapper.Abstract
     public interface ISqlGenerator<TRecord, in TDataParameter> where TDataParameter : IDataParameter
     {
         String GenerateCountQuery(IReadOnlyCollection<TDataParameter> parameters);
+
         String GenerateGetQuery(IReadOnlyCollection<TDataParameter> parameters);
+
         String GenerateSearchQuery(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
     }
 }

@@ -139,6 +139,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
         }
 
         public IReadOnlyCollection<TEntity> GetList(Object parameters, TScope scope) => GetList(parameters?.ToParameterCollection<TDataParameter>(), scope);
+
         public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters, TScope scope) => GetListAsync(parameters?.ToParameterCollection<TDataParameter>(), scope);
 
         #endregion

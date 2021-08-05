@@ -7,6 +7,7 @@ namespace YuckQi.Data.Providers.Abstract
     public interface ICreationProvider<TEntity, TKey, in TScope> where TEntity : IEntity<TKey>, ICreated where TKey : struct
     {
         TEntity Create(TEntity entity, TScope scope);
+
         Task<TEntity> CreateAsync(TEntity entity, TScope scope);
     }
 }

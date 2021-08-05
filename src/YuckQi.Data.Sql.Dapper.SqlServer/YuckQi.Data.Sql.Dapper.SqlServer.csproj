@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\YuckQi.Data.Sql.Dapper\YuckQi.Data.Sql.Dapper.csproj" />
-    <ProjectReference Include="..\YuckQi.Data\YuckQi.Data.csproj" />
   </ItemGroup>
 
   <ItemGroup>

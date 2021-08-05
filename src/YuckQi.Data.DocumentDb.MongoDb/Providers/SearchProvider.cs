@@ -72,6 +72,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
         }
 
         public IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => Search(parameters?.ToParameterCollection<TDataParameter>(), page, sort, scope);
+
         public Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => SearchAsync(parameters?.ToParameterCollection<TDataParameter>(), page, sort, scope);
 
         #endregion

@@ -7,9 +7,11 @@ namespace YuckQi.Data.Providers.Abstract
     public interface ILogicalDeletionProvider<TEntity, in TKey, in TScope> where TEntity : IEntity<TKey>, IDeleted, IRevised where TKey : struct
     {
         TEntity Delete(TEntity entity, TScope scope);
+
         Task<TEntity> DeleteAsync(TEntity entity, TScope scope);
 
         TEntity Restore(TEntity entity, TScope scope);
+
         Task<TEntity> RestoreAsync(TEntity entity, TScope scope);
     }
 }
