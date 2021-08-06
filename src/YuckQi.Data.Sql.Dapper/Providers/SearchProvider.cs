@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Mapster;
 using YuckQi.Data.Extensions;
+using YuckQi.Data.Filtering;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Data.Sorting;
 using YuckQi.Data.Sql.Dapper.Abstract;
@@ -16,18 +17,18 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class SearchProvider<TEntity, TKey, TRecord, TScope, TDataParameter> : ISearchProvider<TEntity, TKey, TScope, TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction where TDataParameter : IDataParameter, new()
+    public class SearchProvider<TEntity, TKey, TRecord, TScope> : ISearchProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
     {
         #region Private Members
 
-        private readonly ISqlGenerator<TRecord, TDataParameter> _sqlGenerator;
+        private readonly ISqlGenerator<TRecord> _sqlGenerator;
 
         #endregion
 
 
         #region Constructors
 
-        public SearchProvider(ISqlGenerator<TRecord, TDataParameter> sqlGenerator)
+        public SearchProvider(ISqlGenerator<TRecord> sqlGenerator)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         }
@@ -37,7 +38,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Public Methods
 
-        public IPage<TEntity> Search(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+        public IPage<TEntity> Search(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -56,7 +57,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
         }
 
-        public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+        public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -75,16 +76,16 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
         }
 
-        public IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => Search(parameters?.ToParameterCollection<TDataParameter>(), page, sort, scope);
+        public IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => Search(parameters?.ToFilterCollection(), page, sort, scope);
 
-        public Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => SearchAsync(parameters?.ToParameterCollection<TDataParameter>(), page, sort, scope);
+        public Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => SearchAsync(parameters?.ToFilterCollection(), page, sort, scope);
 
         #endregion
 
 
         #region Supporting Methods
 
-        private Int32 Count(IReadOnlyCollection<TDataParameter> parameters, TScope scope)
+        private Int32 Count(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             var sql = _sqlGenerator.GenerateCountQuery(parameters);
             var total = scope.Connection.ExecuteScalar<Int32>(sql, parameters.ToDynamicParameters(), scope);
@@ -92,7 +93,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return total;
         }
 
-        private Task<Int32> CountAsync(IReadOnlyCollection<TDataParameter> parameters, TScope scope)
+        private Task<Int32> CountAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             var sql = _sqlGenerator.GenerateCountQuery(parameters);
             var total = scope.Connection.ExecuteScalarAsync<Int32>(sql, parameters.ToDynamicParameters(), scope);

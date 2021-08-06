@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Mapster;
 using YuckQi.Data.Extensions;
+using YuckQi.Data.Filtering;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
@@ -12,18 +13,18 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class RetrievalProvider<TEntity, TKey, TRecord, TScope, TDataParameter> : IRetrievalProvider<TEntity, TKey, TScope, TDataParameter> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction where TDataParameter : IDataParameter, new()
+    public class RetrievalProvider<TEntity, TKey, TRecord, TScope> : IRetrievalProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
     {
         #region Private Members
 
-        private readonly ISqlGenerator<TRecord, TDataParameter> _sqlGenerator;
+        private readonly ISqlGenerator<TRecord> _sqlGenerator;
 
         #endregion
 
 
         #region Constructors
 
-        public RetrievalProvider(ISqlGenerator<TRecord, TDataParameter> sqlGenerator)
+        public RetrievalProvider(ISqlGenerator<TRecord> sqlGenerator)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         }
@@ -55,7 +56,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return entity;
         }
 
-        public TEntity Get(IReadOnlyCollection<TDataParameter> parameters, TScope scope)
+        public TEntity Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -69,7 +70,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return entity;
         }
 
-        public async Task<TEntity> GetAsync(IReadOnlyCollection<TDataParameter> parameters, TScope scope)
+        public async Task<TEntity> GetAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -90,7 +91,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            return Get(parameters.ToParameterCollection<TDataParameter>(), scope);
+            return Get(parameters.ToFilterCollection(), scope);
         }
 
         public Task<TEntity> GetAsync(Object parameters, TScope scope)
@@ -100,7 +101,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            return GetAsync(parameters.ToParameterCollection<TDataParameter>(), scope);
+            return GetAsync(parameters.ToFilterCollection(), scope);
         }
 
         public IReadOnlyCollection<TEntity> GetList(TScope scope)
@@ -119,7 +120,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return DoGetListAsync(null, scope);
         }
 
-        public IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<TDataParameter> parameters, TScope scope)
+        public IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -129,7 +130,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return DoGetList(null, scope);
         }
 
-        public Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<TDataParameter> parameters, TScope scope)
+        public Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -139,16 +140,16 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return DoGetListAsync(null, scope);
         }
 
-        public IReadOnlyCollection<TEntity> GetList(Object parameters, TScope scope) => GetList(parameters?.ToParameterCollection<TDataParameter>(), scope);
+        public IReadOnlyCollection<TEntity> GetList(Object parameters, TScope scope) => GetList(parameters?.ToFilterCollection(), scope);
 
-        public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters, TScope scope) => GetListAsync(parameters?.ToParameterCollection<TDataParameter>(), scope);
+        public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters, TScope scope) => GetListAsync(parameters?.ToFilterCollection(), scope);
 
         #endregion
 
 
         #region Supporting Methods
 
-        private static IReadOnlyCollection<TEntity> DoGetList(IEnumerable<TDataParameter> parameters, TScope scope)
+        private static IReadOnlyCollection<TEntity> DoGetList(IEnumerable<FilterCriteria> parameters, TScope scope)
         {
             var records = scope.Connection.GetList<TRecord>(parameters?.ToDynamicParameters(), scope);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
@@ -156,7 +157,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             return entities;
         }
 
-        private static async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IEnumerable<TDataParameter> parameters, TScope scope)
+        private static async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IEnumerable<FilterCriteria> parameters, TScope scope)
         {
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));

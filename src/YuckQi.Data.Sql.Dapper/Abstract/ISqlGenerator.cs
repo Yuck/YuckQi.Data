@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
+using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
 using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Abstract
 {
-    public interface ISqlGenerator<TRecord, in TDataParameter> where TDataParameter : IDataParameter
+    public interface ISqlGenerator<TRecord>
     {
-        String GenerateCountQuery(IReadOnlyCollection<TDataParameter> parameters);
+        String GenerateCountQuery(IReadOnlyCollection<FilterCriteria> parameters);
 
-        String GenerateGetQuery(IReadOnlyCollection<TDataParameter> parameters);
+        String GenerateGetQuery(IReadOnlyCollection<FilterCriteria> parameters);
 
-        String GenerateSearchQuery(IReadOnlyCollection<TDataParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
+        String GenerateSearchQuery(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort);
     }
 }

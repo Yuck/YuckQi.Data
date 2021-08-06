@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>1.1.1</Version>
+    <Version>1.2.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>A .NET library of fine-grained data providers which can be used to compose data repositories and/or domain services.</Description>
   </PropertyGroup>

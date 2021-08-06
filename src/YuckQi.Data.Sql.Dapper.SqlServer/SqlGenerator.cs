@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Dapper;
-using Microsoft.Data.SqlClient;
+using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
 using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
-using SortOrder = YuckQi.Data.Sorting.SortOrder;
 
 namespace YuckQi.Data.Sql.Dapper.SqlServer
 {
-    public class SqlGenerator<TRecord> : ISqlGenerator<TRecord, SqlParameter>
+    public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
     {
         #region Private Members
 
@@ -32,7 +31,7 @@ namespace YuckQi.Data.Sql.Dapper.SqlServer
 
         #region Public Methods
 
-        public String GenerateCountQuery(IReadOnlyCollection<SqlParameter> parameters)
+        public String GenerateCountQuery(IReadOnlyCollection<FilterCriteria> parameters)
         {
             var select = "select count(*)";
             var from = BuildFromSql();
@@ -42,7 +41,7 @@ namespace YuckQi.Data.Sql.Dapper.SqlServer
             return sql;
         }
 
-        public String GenerateGetQuery(IReadOnlyCollection<SqlParameter> parameters)
+        public String GenerateGetQuery(IReadOnlyCollection<FilterCriteria> parameters)
         {
             var columns = BuildColumnsSql();
 
@@ -54,7 +53,7 @@ namespace YuckQi.Data.Sql.Dapper.SqlServer
             return sql;
         }
 
-        public String GenerateSearchQuery(IReadOnlyCollection<SqlParameter> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
+        public String GenerateSearchQuery(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort)
         {
             var columns = BuildColumnsSql();
             var sorting = String.Join(", ", sort.Select(t => $"[{t.Expression}]{(t.Order == SortOrder.Descending ? " desc" : String.Empty)}"));
@@ -93,14 +92,14 @@ namespace YuckQi.Data.Sql.Dapper.SqlServer
 
         private static String BuildFromSql() => $"from [{SchemaName}].[{TableName}]";
 
-        private static String BuildWhereSql(IEnumerable<SqlParameter> parameters)
+        private static String BuildWhereSql(IEnumerable<FilterCriteria> parameters)
         {
             var filter = String.Join(" and ", parameters.Select(t =>
             {
-                var column = $"[{t.ParameterName}]";
+                var column = $"[{t.FieldName}]";
                 var value = t.Value;
                 var comparison = value != null ? "=" : "is";
-                var parameter = value != null ? $"@{t.ParameterName}" : "null";
+                var parameter = value != null ? $"@{t.FieldName}" : "null";
 
                 return $"({column} {comparison} {parameter})";
             }));

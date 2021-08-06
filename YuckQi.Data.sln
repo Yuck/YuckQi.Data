@@ -23,7 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.Sql.Dapper.SqlS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.Sql.Dapper.MySql.UnitTests", "test\YuckQi.Data.Sql.Dapper.MySql.UnitTests\YuckQi.Data.Sql.Dapper.MySql.UnitTests.csproj", "{645C986D-A7D3-4CE2-9B04-840A6C39BCF5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuckQi.Data.DocumentDb.MongoDb", "src\YuckQi.Data.DocumentDb.MongoDb\YuckQi.Data.DocumentDb.MongoDb.csproj", "{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.DocumentDb.MongoDb", "src\YuckQi.Data.DocumentDb.MongoDb\YuckQi.Data.DocumentDb.MongoDb.csproj", "{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuckQi.Data.DocumentDb.MongoDb.UnitTests", "test\YuckQi.Data.DocumentDb.MongoDb.UnitTests\YuckQi.Data.DocumentDb.MongoDb.UnitTests.csproj", "{E92FFBC0-0C5A-45E5-9263-0E97F6C14C49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuckQi.Data.Sql.Dapper.UnitTests", "test\YuckQi.Data.Sql.Dapper.UnitTests\YuckQi.Data.Sql.Dapper.UnitTests.csproj", "{3EC10825-8CE1-4394-A931-B5625B5DAA75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -67,6 +71,14 @@ Global
 		{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4D939ED3-8047-46DC-AC33-AA0B2BF2E33F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E92FFBC0-0C5A-45E5-9263-0E97F6C14C49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E92FFBC0-0C5A-45E5-9263-0E97F6C14C49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E92FFBC0-0C5A-45E5-9263-0E97F6C14C49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E92FFBC0-0C5A-45E5-9263-0E97F6C14C49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3EC10825-8CE1-4394-A931-B5625B5DAA75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EC10825-8CE1-4394-A931-B5625B5DAA75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EC10825-8CE1-4394-A931-B5625B5DAA75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EC10825-8CE1-4394-A931-B5625B5DAA75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +88,8 @@ Global
 		{2CE9C444-1D4F-466B-B0C3-30197E1F5377} = {413F7FD5-52A6-413D-BCE9-D1C1A4676E8D}
 		{3488B274-C1C9-4BC5-8A99-05FAE0496A17} = {413F7FD5-52A6-413D-BCE9-D1C1A4676E8D}
 		{645C986D-A7D3-4CE2-9B04-840A6C39BCF5} = {413F7FD5-52A6-413D-BCE9-D1C1A4676E8D}
+		{E92FFBC0-0C5A-45E5-9263-0E97F6C14C49} = {413F7FD5-52A6-413D-BCE9-D1C1A4676E8D}
+		{3EC10825-8CE1-4394-A931-B5625B5DAA75} = {413F7FD5-52A6-413D-BCE9-D1C1A4676E8D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C652094-AB49-4717-B588-36FD50857718}
