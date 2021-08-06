@@ -8,6 +8,8 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>An implementation of YuckQi.Data for MSSQL databases using Dapper and SimpleCRUD.</Description>
     <Product>YuckQi.Data</Product>
+    <RepositoryUrl>https://github.com/Yuck/YuckQi.Data</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>

@@ -8,6 +8,8 @@
     <Version>1.2.1</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>An implementation of YuckQi.Data for MongoDB databases.</Description>
+    <RepositoryUrl>https://github.com/Yuck/YuckQi.Data</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
