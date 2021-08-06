@@ -124,7 +124,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            return DoGetList(null, scope);
+            return DoGetList(parameters, scope);
         }
 
         public Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
@@ -134,7 +134,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            return DoGetListAsync(null, scope);
+            return DoGetListAsync(parameters, scope);
         }
 
         public IReadOnlyCollection<TEntity> GetList(Object parameters, TScope scope) => GetList(parameters?.ToFilterCollection(), scope);
