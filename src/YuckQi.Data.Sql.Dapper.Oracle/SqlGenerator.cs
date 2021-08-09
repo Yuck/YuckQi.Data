@@ -98,7 +98,7 @@ namespace YuckQi.Data.Sql.Dapper.Oracle
                 var column = $"\"{t.FieldName}\"";
                 var value = t.Value;
                 var comparison = value != null ? "=" : "is";
-                var parameter = value != null ? $"@{t.FieldName}" : "null";
+                var parameter = value != null ? $":{t.FieldName}" : "null";
 
                 return $"({column} {comparison} {parameter})";
             }));

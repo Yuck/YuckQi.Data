@@ -21,7 +21,7 @@ namespace YuckQi.Data.Sql.Dapper.Oracle.UnitTests
             var parameters = new[] { new FilterCriteria("Id", 1) };
             var sql = generator.GenerateCountQuery(parameters).Replace(Environment.NewLine, " ");
 
-            Assert.AreEqual("select count(*) from \"SurLaTable\" where (\"Id\" = @Id);", sql);
+            Assert.AreEqual("select count(*) from \"SurLaTable\" where (\"Id\" = :Id);", sql);
         }
 
         [Test]
@@ -31,7 +31,7 @@ namespace YuckQi.Data.Sql.Dapper.Oracle.UnitTests
             var parameters = new[] { new FilterCriteria("Id", 1) };
             var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Id\" = @Id);", sql);
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Id\" = :Id);", sql);
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace YuckQi.Data.Sql.Dapper.Oracle.UnitTests
             var sort = new List<SortCriteria> { new("Name", SortOrder.Descending) }.OrderBy(t => t);
             var sql = generator.GenerateSearchQuery(parameters, page, sort).Replace(Environment.NewLine, " ");
 
-            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" = @Name) order by \"Name\" desc offset 50 rows fetch first 50 rows only;", sql);
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" = :Name) order by \"Name\" desc offset 50 rows fetch first 50 rows only;", sql);
         }
     }
 
