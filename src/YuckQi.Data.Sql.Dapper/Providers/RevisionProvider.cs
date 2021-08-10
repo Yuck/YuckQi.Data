@@ -21,7 +21,8 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            entity.RevisionMomentUtc = DateTime.UtcNow;
+            if (entity.RevisionMomentUtc == DateTime.MinValue)
+                entity.RevisionMomentUtc = DateTime.UtcNow;
 
             if (scope.Connection.Update(entity.Adapt<TRecord>(), scope) <= 0)
                 throw new RecordUpdateException<TRecord, TKey>(entity.Key);
@@ -36,7 +37,8 @@ namespace YuckQi.Data.Sql.Dapper.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            entity.RevisionMomentUtc = DateTime.UtcNow;
+            if (entity.RevisionMomentUtc == DateTime.MinValue)
+                entity.RevisionMomentUtc = DateTime.UtcNow;
 
             if (await scope.Connection.UpdateAsync(entity.Adapt<TRecord>(), scope) <= 0)
                 throw new RecordUpdateException<TRecord, TKey>(entity.Key);

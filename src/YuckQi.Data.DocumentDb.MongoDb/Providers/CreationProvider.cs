@@ -21,7 +21,35 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            entity.CreationMomentUtc = DateTime.UtcNow;
+            if (entity.CreationMomentUtc == DateTime.MinValue)
+                entity.CreationMomentUtc = DateTime.UtcNow;
+
+            var database = scope.Client.GetDatabase(DatabaseName);
+            var collection = database.GetCollection<TRecord>(CollectionName);
+            var record = entity.Adapt<TRecord>();
+
+            collection.InsertOne(scope, record);
+
+            var key = GetKey(record);
+            if (key == null)
+                throw new RecordInsertException<TRecord>();
+
+            entity.Key = key.Value;
+
+            return entity;
+        }
+
+        public TEntity Create<TRevised>(TRevised entity, TScope scope) where TRevised : TEntity, IRevised
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
+
+            if (entity.CreationMomentUtc == DateTime.MinValue)
+                entity.CreationMomentUtc = DateTime.UtcNow;
+            if (entity.RevisionMomentUtc == DateTime.MinValue)
+                entity.RevisionMomentUtc = entity.CreationMomentUtc;
 
             var database = scope.Client.GetDatabase(DatabaseName);
             var collection = database.GetCollection<TRecord>(CollectionName);
@@ -45,7 +73,35 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            entity.CreationMomentUtc = DateTime.UtcNow;
+            if (entity.CreationMomentUtc == DateTime.MinValue)
+                entity.CreationMomentUtc = DateTime.UtcNow;
+
+            var database = scope.Client.GetDatabase(DatabaseName);
+            var collection = database.GetCollection<TRecord>(CollectionName);
+            var record = entity.Adapt<TRecord>();
+
+            await collection.InsertOneAsync(scope, record);
+
+            var key = GetKey(record);
+            if (key == null)
+                throw new RecordInsertException<TRecord>();
+
+            entity.Key = key.Value;
+
+            return entity;
+        }
+
+        public async Task<TEntity> CreateAsync<TRevised>(TRevised entity, TScope scope) where TRevised : TEntity, IRevised
+        {
+            if (entity == null)
+                throw new ArgumentNullException(nameof(entity));
+            if (scope == null)
+                throw new ArgumentNullException(nameof(scope));
+
+            if (entity.CreationMomentUtc == DateTime.MinValue)
+                entity.CreationMomentUtc = DateTime.UtcNow;
+            if (entity.RevisionMomentUtc == DateTime.MinValue)
+                entity.RevisionMomentUtc = entity.CreationMomentUtc;
 
             var database = scope.Client.GetDatabase(DatabaseName);
             var collection = database.GetCollection<TRecord>(CollectionName);

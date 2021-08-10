@@ -21,7 +21,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            entity.RevisionMomentUtc = DateTime.UtcNow;
+            if (entity.RevisionMomentUtc == DateTime.MinValue)
+                entity.RevisionMomentUtc = DateTime.UtcNow;
 
             var database = scope.Client.GetDatabase(DatabaseName);
             var collection = database.GetCollection<TRecord>(CollectionName);
@@ -51,7 +52,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            entity.RevisionMomentUtc = DateTime.UtcNow;
+            if (entity.RevisionMomentUtc == DateTime.MinValue)
+                entity.RevisionMomentUtc = DateTime.UtcNow;
 
             var database = scope.Client.GetDatabase(DatabaseName);
             var collection = database.GetCollection<TRecord>(CollectionName);
