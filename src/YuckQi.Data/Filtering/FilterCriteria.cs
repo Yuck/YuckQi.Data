@@ -10,7 +10,7 @@ namespace YuckQi.Data.Filtering
 
         public FilterCriteria(String fieldName, Object value) : this(fieldName, FilterOperation.Equal, value) { }
 
-        public FilterCriteria(String fieldName, FilterOperation operation = FilterOperation.Equal, Object value = null)
+        public FilterCriteria(String fieldName, FilterOperation operation, Object value)
         {
             FieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
             Operation = operation;
