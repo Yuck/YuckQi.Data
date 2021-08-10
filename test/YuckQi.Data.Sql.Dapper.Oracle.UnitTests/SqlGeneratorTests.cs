@@ -45,6 +45,86 @@ namespace YuckQi.Data.Sql.Dapper.Oracle.UnitTests
 
             Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" = :Name) order by \"Name\" desc offset 50 rows fetch first 50 rows only;", sql);
         }
+
+        [Test]
+        public void GenerateGetQuery_WithEqualOperation_IsValid()
+        {
+            var generator = new SqlGenerator<SurLaTableRecord>();
+            var parameters = new[] { new FilterCriteria("Name", "Some Guy") };
+            var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" = :Name);", sql);
+        }
+
+        [Test]
+        public void GenerateGetQuery_WithEqualOperation_AndNullValue_IsValid()
+        {
+            var generator = new SqlGenerator<SurLaTableRecord>();
+            var parameters = new[] { new FilterCriteria("Name", null) };
+            var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" is null);", sql);
+        }
+
+        [Test]
+        public void GenerateGetQuery_WithNotEqualOperation_IsValid()
+        {
+            var generator = new SqlGenerator<SurLaTableRecord>();
+            var parameters = new[] { new FilterCriteria("Name", FilterOperation.NotEqual, "Some Guy") };
+            var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" != :Name);", sql);
+        }
+
+        [Test]
+        public void GenerateGetQuery_WithNotEqualOperation_AndNullValue_IsValid()
+        {
+            var generator = new SqlGenerator<SurLaTableRecord>();
+            var parameters = new[] { new FilterCriteria("Name", FilterOperation.NotEqual, null) };
+            var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" is not null);", sql);
+        }
+
+        [Test]
+        public void GenerateGetQuery_WithGreaterThanOperation_IsValid()
+        {
+            var generator = new SqlGenerator<SurLaTableRecord>();
+            var parameters = new[] { new FilterCriteria("Name", FilterOperation.GreaterThan, 1234) };
+            var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" > :Name);", sql);
+        }
+
+        [Test]
+        public void GenerateGetQuery_WithGreaterThanOrEqualOperation_IsValid()
+        {
+            var generator = new SqlGenerator<SurLaTableRecord>();
+            var parameters = new[] { new FilterCriteria("Name", FilterOperation.GreaterThanOrEqual, 1234) };
+            var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" >= :Name);", sql);
+        }
+
+        [Test]
+        public void GenerateGetQuery_WithLessThanOperation_IsValid()
+        {
+            var generator = new SqlGenerator<SurLaTableRecord>();
+            var parameters = new[] { new FilterCriteria("Name", FilterOperation.LessThan, 1234) };
+            var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" < :Name);", sql);
+        }
+
+        [Test]
+        public void GenerateGetQuery_WithLessThanOrEqualOperation_IsValid()
+        {
+            var generator = new SqlGenerator<SurLaTableRecord>();
+            var parameters = new[] { new FilterCriteria("Name", FilterOperation.LessThanOrEqual, 1234) };
+            var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+            Assert.AreEqual("select \"Id\", \"Name\" from \"SurLaTable\" where (\"Name\" <= :Name);", sql);
+        }
     }
 
     [Table("SurLaTable")]

@@ -89,6 +89,27 @@ namespace YuckQi.Data.Sql.Dapper.Oracle
             return columns;
         }
 
+        private static String BuildComparison(Object value, FilterOperation operation)
+        {
+            switch (operation)
+            {
+                case FilterOperation.Equal:
+                    return value != null ? "=" : "is";
+                case FilterOperation.GreaterThan:
+                    return ">";
+                case FilterOperation.GreaterThanOrEqual:
+                    return ">=";
+                case FilterOperation.LessThan:
+                    return "<";
+                case FilterOperation.LessThanOrEqual:
+                    return "<=";
+                case FilterOperation.NotEqual:
+                    return value != null ? "!=" : "is not";
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(operation), operation, null);
+            }
+        }
+
         private static String BuildFromSql() => String.IsNullOrWhiteSpace(SchemaName) ? $"from \"{TableName}\"" : $"from \"{SchemaName}\".\"{TableName}\"";
 
         private static String BuildWhereSql(IEnumerable<FilterCriteria> parameters)
@@ -97,7 +118,7 @@ namespace YuckQi.Data.Sql.Dapper.Oracle
             {
                 var column = $"\"{t.FieldName}\"";
                 var value = t.Value;
-                var comparison = value != null ? "=" : "is";
+                var comparison = BuildComparison(value, t.Operation);
                 var parameter = value != null ? $":{t.FieldName}" : "null";
 
                 return $"({column} {comparison} {parameter})";

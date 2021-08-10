@@ -37,8 +37,7 @@ namespace YuckQi.Data.Sql.Dapper.UnitTests.ExtensionTests
         [Test]
         public void FilterCriteria_EmptyList_IsValid()
         {
-            var criteria = new List<FilterCriteria>();
-            var parameters = criteria.ToDynamicParameters();
+            var parameters = new List<FilterCriteria>().ToDynamicParameters();
 
             Assert.AreEqual(0, parameters.ParameterNames.Count());
         }
@@ -54,14 +53,6 @@ namespace YuckQi.Data.Sql.Dapper.UnitTests.ExtensionTests
             Assert.AreEqual("a test", parameters.Get<Object>("thing"));
             Assert.AreEqual("other", parameters.ParameterNames.Last());
             Assert.AreEqual(1234.56M, parameters.Get<Object>("other"));
-        }
-
-        [Test]
-        public void FilterCriteria_UnsupportedOperation_IsNotValid()
-        {
-            var criteria = new[] { new FilterCriteria("damage", FilterOperation.GreaterThan, 9999) };
-
-            Assert.Throws<NotSupportedException>(() => criteria.ToDynamicParameters());
         }
     }
 }

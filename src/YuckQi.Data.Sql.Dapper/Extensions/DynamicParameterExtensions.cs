@@ -33,9 +33,6 @@ namespace YuckQi.Data.Sql.Dapper.Extensions
 
             foreach (var parameter in parameters)
             {
-                if (parameter.Operation != FilterOperation.Equal)
-                    throw new NotSupportedException($"{nameof(DynamicParameters)} only supports {nameof(FilterOperation)} '{nameof(FilterOperation.Equal)}', but '{parameter.Operation}' was specified.");
-
                 var name = parameter.FieldName;
                 var value = parameter.Value;
                 var type = value?.GetType();

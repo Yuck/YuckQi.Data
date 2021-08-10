@@ -149,20 +149,22 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Supporting Methods
 
-        private static IReadOnlyCollection<TEntity> DoGetList(IEnumerable<FilterCriteria> parameters, TScope scope)
+        private IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
-            var records = scope.Connection.GetList<TRecord>(parameters?.ToDynamicParameters(), scope);
+            var sql = _sqlGenerator.GenerateGetQuery(parameters);
+            var records = scope.Connection.Query<TRecord>(sql, parameters?.ToDynamicParameters(), scope);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
             return entities;
         }
 
-        private static async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IEnumerable<FilterCriteria> parameters, TScope scope)
+        private async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            var records = await scope.Connection.GetListAsync<TRecord>(parameters?.ToDynamicParameters(), scope);
+            var sql = _sqlGenerator.GenerateGetQuery(parameters);
+            var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters?.ToDynamicParameters(), scope);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
             return entities;
