@@ -9,18 +9,18 @@ using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Data.Sorting;
-using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects;
 using YuckQi.Domain.ValueObjects.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Providers
+namespace YuckQi.Data.Sql.Dapper.Abstract
 {
-    public class SearchProvider<TEntity, TKey, TRecord, TScope> : ISearchProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+    public abstract class SearchProviderBase<TEntity, TKey, TScope, TRecord> : ISearchProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
     {
         #region Private Members
 
+        private readonly IReadOnlyDictionary<Type, DbType> _dbTypeMap;
         private readonly ISqlGenerator<TRecord> _sqlGenerator;
 
         #endregion
@@ -28,9 +28,10 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Constructors
 
-        public SearchProvider(ISqlGenerator<TRecord> sqlGenerator)
+        public SearchProviderBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
+            _dbTypeMap = dbTypeMap;
         }
 
         #endregion
@@ -50,7 +51,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(scope));
 
             var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
-            var records = scope.Connection.Query<TRecord>(sql, parameters.ToDynamicParameters(), scope);
+            var records = scope.Connection.Query<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
             var total = Count(parameters, scope);
 
@@ -69,7 +70,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(scope));
 
             var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
-            var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(), scope);
+            var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
             var total = await CountAsync(parameters, scope);
 
@@ -88,7 +89,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
         private Int32 Count(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             var sql = _sqlGenerator.GenerateCountQuery(parameters);
-            var total = scope.Connection.ExecuteScalar<Int32>(sql, parameters.ToDynamicParameters(), scope);
+            var total = scope.Connection.ExecuteScalar<Int32>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
 
             return total;
         }
@@ -96,7 +97,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
         private Task<Int32> CountAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             var sql = _sqlGenerator.GenerateCountQuery(parameters);
-            var total = scope.Connection.ExecuteScalarAsync<Int32>(sql, parameters.ToDynamicParameters(), scope);
+            var total = scope.Connection.ExecuteScalarAsync<Int32>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
 
             return total;
         }

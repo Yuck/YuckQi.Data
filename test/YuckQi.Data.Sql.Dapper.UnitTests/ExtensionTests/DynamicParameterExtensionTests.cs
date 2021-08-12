@@ -16,7 +16,7 @@ namespace YuckQi.Data.Sql.Dapper.UnitTests.ExtensionTests
         public void FilterCriteria_SingleValue_IsValid()
         {
             var criteria = new[] { new FilterCriteria("thing", "a test") };
-            var parameters = criteria.ToDynamicParameters();
+            var parameters = criteria.ToDynamicParameters(null);
 
             Assert.AreEqual(1, parameters.ParameterNames.Count());
             Assert.AreEqual("thing", parameters.ParameterNames.First());
@@ -27,7 +27,7 @@ namespace YuckQi.Data.Sql.Dapper.UnitTests.ExtensionTests
         public void FilterCriteria_SingleNullValue_IsValid()
         {
             var criteria = new[] { new FilterCriteria("thing", null) };
-            var parameters = criteria.ToDynamicParameters();
+            var parameters = criteria.ToDynamicParameters(null);
 
             Assert.AreEqual(1, parameters.ParameterNames.Count());
             Assert.AreEqual("thing", parameters.ParameterNames.First());
@@ -37,7 +37,7 @@ namespace YuckQi.Data.Sql.Dapper.UnitTests.ExtensionTests
         [Test]
         public void FilterCriteria_EmptyList_IsValid()
         {
-            var parameters = new List<FilterCriteria>().ToDynamicParameters();
+            var parameters = new List<FilterCriteria>().ToDynamicParameters(null);
 
             Assert.AreEqual(0, parameters.ParameterNames.Count());
         }
@@ -46,7 +46,7 @@ namespace YuckQi.Data.Sql.Dapper.UnitTests.ExtensionTests
         public void FilterCriteria_MultipleValues_IsValid()
         {
             var criteria = new[] { new FilterCriteria("thing", "a test"), new FilterCriteria("other", 1234.56M) };
-            var parameters = criteria.ToDynamicParameters();
+            var parameters = criteria.ToDynamicParameters(null);
 
             Assert.AreEqual(2, parameters.ParameterNames.Count());
             Assert.AreEqual("thing", parameters.ParameterNames.First());

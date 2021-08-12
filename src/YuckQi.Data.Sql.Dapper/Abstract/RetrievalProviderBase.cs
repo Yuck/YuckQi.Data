@@ -7,16 +7,16 @@ using Mapster;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Providers.Abstract;
-using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Providers
+namespace YuckQi.Data.Sql.Dapper.Abstract
 {
-    public class RetrievalProvider<TEntity, TKey, TRecord, TScope> : IRetrievalProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+    public abstract class RetrievalProviderBase<TEntity, TKey, TScope, TRecord> : IRetrievalProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
     {
         #region Private Members
 
+        private readonly IReadOnlyDictionary<Type, DbType> _dbTypeMap;
         private readonly ISqlGenerator<TRecord> _sqlGenerator;
 
         #endregion
@@ -24,9 +24,10 @@ namespace YuckQi.Data.Sql.Dapper.Providers
 
         #region Constructors
 
-        public RetrievalProvider(ISqlGenerator<TRecord> sqlGenerator)
+        protected RetrievalProviderBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
+            _dbTypeMap = dbTypeMap;
         }
 
         #endregion
@@ -64,7 +65,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(scope));
 
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
-            var record = scope.Connection.QuerySingleOrDefault<TRecord>(sql, parameters.ToDynamicParameters(), scope);
+            var record = scope.Connection.QuerySingleOrDefault<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
             var entity = record.Adapt<TEntity>();
 
             return entity;
@@ -78,7 +79,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(scope));
 
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
-            var record = await scope.Connection.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(), scope);
+            var record = await scope.Connection.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
             var entity = record.Adapt<TEntity>();
 
             return entity;
@@ -152,7 +153,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
         private IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
-            var records = scope.Connection.Query<TRecord>(sql, parameters?.ToDynamicParameters(), scope);
+            var records = scope.Connection.Query<TRecord>(sql, parameters?.ToDynamicParameters(_dbTypeMap), scope);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
             return entities;
@@ -164,7 +165,7 @@ namespace YuckQi.Data.Sql.Dapper.Providers
                 throw new ArgumentNullException(nameof(scope));
 
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
-            var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters?.ToDynamicParameters(), scope);
+            var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters?.ToDynamicParameters(_dbTypeMap), scope);
             var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
             return entities;
