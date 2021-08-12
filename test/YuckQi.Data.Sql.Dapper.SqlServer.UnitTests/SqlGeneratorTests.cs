@@ -5,6 +5,8 @@ using Dapper;
 using NUnit.Framework;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
+using YuckQi.Domain.Aspects.Abstract;
+using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects;
 
 namespace YuckQi.Data.Sql.Dapper.SqlServer.UnitTests
@@ -125,6 +127,14 @@ namespace YuckQi.Data.Sql.Dapper.SqlServer.UnitTests
 
             Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] <= @Name);", sql);
         }
+    }
+
+    public class SurLaTable : EntityBase<Int32>, ICreated, IRevised
+    {
+        public String Name { get; set; }
+
+        public DateTime CreationMomentUtc { get; set; }
+        public DateTime RevisionMomentUtc { get; set; }
     }
 
     [Table("SurLaTable")]
