@@ -16,7 +16,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class SearchProvider<TEntity, TKey, TRecord, TScope> : MongoProviderBase<TKey, TRecord>, ISearchProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class SearchProvider<TEntity, TKey, TScope, TRecord> : MongoProviderBase<TKey, TRecord>, ISearchProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
         #region Public Methods
 

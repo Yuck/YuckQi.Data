@@ -10,7 +10,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class RevisionProvider<TEntity, TKey, TRecord, TScope> : IRevisionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IDbTransaction
+    public class RevisionProvider<TEntity, TKey, TScope, TRecord> : IRevisionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IDbTransaction
     {
         #region Public Methods
 

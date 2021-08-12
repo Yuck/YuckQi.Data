@@ -10,7 +10,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class RevisionProvider<TEntity, TKey, TRecord, TScope> : MongoProviderBase<TKey, TRecord>, IRevisionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IClientSessionHandle
+    public class RevisionProvider<TEntity, TKey, TScope, TRecord> : MongoProviderBase<TKey, TRecord>, IRevisionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IClientSessionHandle
     {
         #region Public Methods
 

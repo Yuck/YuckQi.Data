@@ -13,7 +13,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class RetrievalProvider<TEntity, TKey, TRecord, TScope> : MongoProviderBase<TKey, TRecord>, IRetrievalProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class RetrievalProvider<TEntity, TKey, TScope, TRecord> : MongoProviderBase<TKey, TRecord>, IRetrievalProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
         #region Public Methods
 
