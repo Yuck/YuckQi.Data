@@ -8,10 +8,6 @@ namespace YuckQi.Data.Providers.Abstract
     {
         TEntity Create(TEntity entity, TScope scope);
 
-        TEntity Create<TRevised>(TRevised entity, TScope scope) where TRevised : TEntity, IRevised;
-
         Task<TEntity> CreateAsync(TEntity entity, TScope scope);
-
-        Task<TEntity> CreateAsync<TRevised>(TRevised entity, TScope scope) where TRevised : TEntity, IRevised;
     }
 }
