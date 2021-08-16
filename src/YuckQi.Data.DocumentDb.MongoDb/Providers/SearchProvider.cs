@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
-using YuckQi.Data.DocumentDb.MongoDb.Providers.Abstract;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Providers.Abstract;
@@ -16,8 +15,15 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class SearchProvider<TEntity, TKey, TScope, TRecord> : MongoProviderBase<TKey, TRecord>, ISearchProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class SearchProvider<TEntity, TKey, TScope, TRecord> : ISearchProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
+        #region Private Members
+
+        private static readonly Type RecordType = typeof(TRecord);
+
+        #endregion
+
+
         #region Public Methods
 
         public IPage<TEntity> Search(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
@@ -31,8 +37,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
             var records = collection.Find(filter)
                                     .Sort(GetSortDefinition(sort))
@@ -56,8 +62,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
             var records = collection.Find(filter)
                                     .Sort(GetSortDefinition(sort))
@@ -81,8 +87,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 
         private static Int64 Count(IEnumerable<FilterCriteria> parameters, TScope scope)
         {
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
             var total = collection.CountDocuments(filter);
 
@@ -91,8 +97,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 
         private static Task<Int64> CountAsync(IEnumerable<FilterCriteria> parameters, TScope scope)
         {
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
             var total = collection.CountDocumentsAsync(filter);
 

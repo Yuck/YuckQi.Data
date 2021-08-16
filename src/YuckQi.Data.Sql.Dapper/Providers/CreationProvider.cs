@@ -1,60 +1,20 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 using Mapster;
-using YuckQi.Data.Exceptions;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Providers
 {
-    public class CreationProvider<TEntity, TKey, TScope, TRecord> : ICreationProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IDbTransaction
+    public class CreationProvider<TEntity, TKey, TScope, TRecord> : CreationProviderBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IDbTransaction
     {
-        #region Public Methods
+        #region Protected Methods
 
-        public TEntity Create(TEntity entity, TScope scope)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
+        protected override TKey? DoCreate(TEntity entity, TScope scope) => scope.Connection.Insert<TKey?, TRecord>(entity.Adapt<TRecord>(), scope);
 
-            if (entity.CreationMomentUtc == DateTime.MinValue)
-                entity.CreationMomentUtc = DateTime.UtcNow;
-            if (entity is IRevised revised && revised.RevisionMomentUtc == DateTime.MinValue)
-                revised.RevisionMomentUtc = entity.CreationMomentUtc;
-
-            var key = scope.Connection.Insert<TKey?, TRecord>(entity.Adapt<TRecord>(), scope);
-            if (key == null)
-                throw new RecordInsertException<TRecord>();
-
-            entity.Key = key.Value;
-
-            return entity;
-        }
-
-        public async Task<TEntity> CreateAsync(TEntity entity, TScope scope)
-        {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
-            if (entity.CreationMomentUtc == DateTime.MinValue)
-                entity.CreationMomentUtc = DateTime.UtcNow;
-            if (entity is IRevised revised && revised.RevisionMomentUtc == DateTime.MinValue)
-                revised.RevisionMomentUtc = entity.CreationMomentUtc;
-
-            var key = await scope.Connection.InsertAsync<TKey?, TRecord>(entity.Adapt<TRecord>(), scope);
-            if (key == null)
-                throw new RecordInsertException<TRecord>();
-
-            entity.Key = key.Value;
-
-            return entity;
-        }
+        protected override Task<TKey?> DoCreateAsync(TEntity entity, TScope scope) => scope.Connection.InsertAsync<TKey?, TRecord>(entity.Adapt<TRecord>(), scope);
 
         #endregion
     }

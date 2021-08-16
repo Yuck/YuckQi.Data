@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
-using YuckQi.Data.DocumentDb.MongoDb.Providers.Abstract;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Providers.Abstract;
@@ -13,8 +12,15 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class RetrievalProvider<TEntity, TKey, TScope, TRecord> : MongoProviderBase<TKey, TRecord>, IRetrievalProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class RetrievalProvider<TEntity, TKey, TScope, TRecord> : IRetrievalProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
+        #region Private Members
+
+        private static readonly Type RecordType = typeof(TRecord);
+
+        #endregion
+
+
         #region Public Methods
 
         public TEntity Get(TKey key, TScope scope)
@@ -22,9 +28,10 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
-            var filter = Builders<TRecord>.Filter.Eq(KeyFieldDefinition, key);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
+            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
+            var filter = Builders<TRecord>.Filter.Eq(field, key);
             var reader = collection.FindSync(filter);
             var record = GetSingleRecord(reader);
             var entity = record.Adapt<TEntity>();
@@ -37,9 +44,10 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
-            var filter = Builders<TRecord>.Filter.Eq(KeyFieldDefinition, key);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
+            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
+            var filter = Builders<TRecord>.Filter.Eq(field, key);
             var reader = await collection.FindAsync(filter);
             var record = GetSingleRecord(reader);
             var entity = record.Adapt<TEntity>();
@@ -54,8 +62,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
             var reader = collection.FindSync(filter);
             var record = GetSingleRecord(reader);
@@ -71,8 +79,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
             var reader = await collection.FindAsync(filter);
             var record = GetSingleRecord(reader);
@@ -148,8 +156,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 
         private static IReadOnlyCollection<TEntity> DoGetList(IEnumerable<FilterCriteria> parameters, TScope scope)
         {
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
             var reader = collection.FindSync(filter);
             var records = GetRecords(reader);
@@ -160,8 +168,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 
         private static async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IEnumerable<FilterCriteria> parameters, TScope scope)
         {
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
             var reader = await collection.FindAsync(filter);
             var records = GetRecords(reader);
