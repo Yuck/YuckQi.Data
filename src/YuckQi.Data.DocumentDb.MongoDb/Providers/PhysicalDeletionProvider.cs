@@ -2,15 +2,22 @@
 using System.Threading.Tasks;
 using Mapster;
 using MongoDB.Driver;
-using YuckQi.Data.DocumentDb.MongoDb.Providers.Abstract;
+using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Exceptions;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class PhysicalDeletionProvider<TEntity, TKey, TScope, TRecord> : MongoProviderBase<TKey, TRecord>, IPhysicalDeletionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class PhysicalDeletionProvider<TEntity, TKey, TScope, TRecord> : IPhysicalDeletionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
+        #region Private Members
+
+        private static readonly Type RecordType = typeof(TRecord);
+
+        #endregion
+
+
         #region Public Methods
 
         public TEntity Delete(TEntity entity, TScope scope)
@@ -20,11 +27,11 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
-            var field = KeyFieldDefinition;
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var record = entity.Adapt<TRecord>();
-            var key = GetKey(record);
+            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
+            var key = record.GetKey<TRecord, TKey>();
             var filter = Builders<TRecord>.Filter.Eq(field, key);
             var result = collection.DeleteOne(scope, filter);
 
@@ -48,11 +55,11 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            var database = scope.Client.GetDatabase(DatabaseName);
-            var collection = database.GetCollection<TRecord>(CollectionName);
-            var field = KeyFieldDefinition;
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var record = entity.Adapt<TRecord>();
-            var key = GetKey(record);
+            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
+            var key = record.GetKey<TRecord, TKey>();
             var filter = Builders<TRecord>.Filter.Eq(field, key);
             var result = await collection.DeleteOneAsync(scope, filter);
 
