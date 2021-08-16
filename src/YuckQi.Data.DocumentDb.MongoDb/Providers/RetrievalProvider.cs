@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
-using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class RetrievalProvider<TEntity, TKey, TScope, TRecord> : IRetrievalProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class RetrievalProvider<TEntity, TKey, TScope, TRecord> : RetrievalProviderBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 
@@ -23,11 +22,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 
         #region Public Methods
 
-        public TEntity Get(TKey key, TScope scope)
+        protected override TEntity DoGet(TKey key, TScope scope)
         {
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
@@ -39,11 +35,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             return entity;
         }
 
-        public async Task<TEntity> GetAsync(TKey key, TScope scope)
+        protected override async Task<TEntity> DoGetAsync(TKey key, TScope scope)
         {
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
@@ -55,13 +48,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             return entity;
         }
 
-        public TEntity Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+        protected override TEntity DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
-            if (parameters == null)
-                throw new ArgumentNullException(nameof(parameters));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
@@ -72,13 +60,8 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             return entity;
         }
 
-        public async Task<TEntity> GetAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+        protected override async Task<TEntity> DoGetAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
-            if (parameters == null)
-                throw new ArgumentNullException(nameof(parameters));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var filter = parameters.ToFilterDefinition<TRecord>();
@@ -89,94 +72,34 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             return entity;
         }
 
-        public TEntity Get(Object parameters, TScope scope)
+        protected override IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
-            if (parameters == null)
-                throw new ArgumentNullException(nameof(parameters));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
+            var filter = parameters.ToFilterDefinition<TRecord>();
+            var reader = collection.FindSync(filter);
+            var records = GetRecords(reader);
+            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
-            return Get(parameters.ToFilterCollection(), scope);
+            return entities;
         }
 
-        public Task<TEntity> GetAsync(Object parameters, TScope scope)
+        protected override async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
-            if (parameters == null)
-                throw new ArgumentNullException(nameof(parameters));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
+            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
+            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
+            var filter = parameters.ToFilterDefinition<TRecord>();
+            var reader = await collection.FindAsync(filter);
+            var records = GetRecords(reader);
+            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
 
-            return GetAsync(parameters.ToFilterCollection(), scope);
+            return entities;
         }
-
-        public IReadOnlyCollection<TEntity> GetList(TScope scope)
-        {
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
-            return DoGetList(null, scope);
-        }
-
-        public Task<IReadOnlyCollection<TEntity>> GetListAsync(TScope scope)
-        {
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
-            return DoGetListAsync(null, scope);
-        }
-
-        public IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
-        {
-            if (parameters == null)
-                throw new ArgumentNullException(nameof(parameters));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
-            return DoGetList(parameters, scope);
-        }
-
-        public Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
-        {
-            if (parameters == null)
-                throw new ArgumentNullException(nameof(parameters));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
-            return DoGetListAsync(parameters, scope);
-        }
-
-        public IReadOnlyCollection<TEntity> GetList(Object parameters, TScope scope) => GetList(parameters?.ToFilterCollection(), scope);
-
-        public Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters, TScope scope) => GetListAsync(parameters?.ToFilterCollection(), scope);
 
         #endregion
 
 
         #region Supporting Methods
-
-        private static IReadOnlyCollection<TEntity> DoGetList(IEnumerable<FilterCriteria> parameters, TScope scope)
-        {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TRecord>();
-            var reader = collection.FindSync(filter);
-            var records = GetRecords(reader);
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
-
-            return entities;
-        }
-
-        private static async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IEnumerable<FilterCriteria> parameters, TScope scope)
-        {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TRecord>();
-            var reader = await collection.FindAsync(filter);
-            var records = GetRecords(reader);
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
-
-            return entities;
-        }
 
         private static IEnumerable<TRecord> GetRecords(IAsyncCursor<TRecord> reader)
         {

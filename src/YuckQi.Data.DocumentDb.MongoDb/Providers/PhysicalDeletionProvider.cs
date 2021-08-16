@@ -3,13 +3,12 @@ using System.Threading.Tasks;
 using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
-using YuckQi.Data.Exceptions;
 using YuckQi.Data.Providers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class PhysicalDeletionProvider<TEntity, TKey, TScope, TRecord> : IPhysicalDeletionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class PhysicalDeletionProvider<TEntity, TKey, TScope, TRecord> : PhysicalDeletionProviderBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 
@@ -18,15 +17,10 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
         #endregion
 
 
-        #region Public Methods
+        #region Protected Methods
 
-        public TEntity Delete(TEntity entity, TScope scope)
+        protected override Boolean DoDelete(TEntity entity, TScope scope)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var record = entity.Adapt<TRecord>();
@@ -35,26 +29,11 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             var filter = Builders<TRecord>.Filter.Eq(field, key);
             var result = collection.DeleteOne(scope, filter);
 
-            try
-            {
-                if (result.DeletedCount <= 0)
-                    throw new RecordDeleteException<TRecord, TKey>(entity.Key);
-            }
-            catch (Exception exception)
-            {
-                throw new RecordDeleteException<TRecord, TKey>(entity.Key, exception);
-            }
-
-            return entity;
+            return result.DeletedCount > 0;
         }
 
-        public async Task<TEntity> DeleteAsync(TEntity entity, TScope scope)
+        protected override async Task<Boolean> DoDeleteAsync(TEntity entity, TScope scope)
         {
-            if (entity == null)
-                throw new ArgumentNullException(nameof(entity));
-            if (scope == null)
-                throw new ArgumentNullException(nameof(scope));
-
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var record = entity.Adapt<TRecord>();
@@ -63,17 +42,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
             var filter = Builders<TRecord>.Filter.Eq(field, key);
             var result = await collection.DeleteOneAsync(scope, filter);
 
-            try
-            {
-                if (result.DeletedCount <= 0)
-                    throw new RecordDeleteException<TRecord, TKey>(entity.Key);
-            }
-            catch (Exception exception)
-            {
-                throw new RecordDeleteException<TRecord, TKey>(entity.Key, exception);
-            }
-
-            return entity;
+            return result.DeletedCount > 0;
         }
 
         #endregion

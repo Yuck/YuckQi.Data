@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>An implementation of YuckQi.Data for Oracle databases using Dapper and SimpleCRUD.</Description>
     <Authors>Kevin J Lambert</Authors>
-    <Version>1.5.1</Version>
+    <Version>1.5.2</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Product>YuckQi.Data</Product>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>

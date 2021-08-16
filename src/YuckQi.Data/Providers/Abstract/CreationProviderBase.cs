@@ -17,11 +17,6 @@ namespace YuckQi.Data.Providers.Abstract
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
 
-            if (entity.CreationMomentUtc == DateTime.MinValue)
-                entity.CreationMomentUtc = DateTime.UtcNow;
-            if (entity is IRevised revised && revised.RevisionMomentUtc == DateTime.MinValue)
-                revised.RevisionMomentUtc = entity.CreationMomentUtc;
-
             var key = DoCreate(entity, scope);
             if (key == null)
                 throw new RecordInsertException<TRecord>();
@@ -37,11 +32,6 @@ namespace YuckQi.Data.Providers.Abstract
                 throw new ArgumentNullException(nameof(entity));
             if (scope == null)
                 throw new ArgumentNullException(nameof(scope));
-
-            if (entity.CreationMomentUtc == DateTime.MinValue)
-                entity.CreationMomentUtc = DateTime.UtcNow;
-            if (entity is IRevised revised && revised.RevisionMomentUtc == DateTime.MinValue)
-                revised.RevisionMomentUtc = entity.CreationMomentUtc;
 
             var key = await DoCreateAsync(entity, scope);
             if (key == null)
