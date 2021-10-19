@@ -39,7 +39,7 @@ namespace YuckQi.Data.Providers.Abstract
                 entity.RevisionMomentUtc = DateTime.UtcNow;
 
             if (! DoRevise(entity, scope))
-                throw new RecordUpdateException<TRecord, TKey>(entity.Key);
+                throw new RevisionException<TRecord, TKey>(entity.Key);
 
             return entity;
         }
@@ -55,7 +55,7 @@ namespace YuckQi.Data.Providers.Abstract
                 entity.RevisionMomentUtc = DateTime.UtcNow;
 
             if (! await DoReviseAsync(entity, scope))
-                throw new RecordUpdateException<TRecord, TKey>(entity.Key);
+                throw new RevisionException<TRecord, TKey>(entity.Key);
 
             return entity;
         }

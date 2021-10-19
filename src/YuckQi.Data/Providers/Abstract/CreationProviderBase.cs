@@ -42,7 +42,7 @@ namespace YuckQi.Data.Providers.Abstract
 
             var key = DoCreate(entity, scope);
             if (key == null)
-                throw new RecordInsertException<TRecord>();
+                throw new CreationException<TRecord>();
 
             entity.Key = key.Value;
 
@@ -63,7 +63,7 @@ namespace YuckQi.Data.Providers.Abstract
 
             var key = await DoCreateAsync(entity, scope);
             if (key == null)
-                throw new RecordInsertException<TRecord>();
+                throw new CreationException<TRecord>();
 
             entity.Key = key.Value;
 

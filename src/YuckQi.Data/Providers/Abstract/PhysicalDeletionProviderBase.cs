@@ -17,7 +17,7 @@ namespace YuckQi.Data.Providers.Abstract
                 throw new ArgumentNullException(nameof(scope));
 
             if (! DoDelete(entity, scope))
-                throw new RecordDeleteException<TRecord, TKey>(entity.Key);
+                throw new PhysicalDeletionException<TRecord, TKey>(entity.Key);
 
             return entity;
         }
@@ -30,7 +30,7 @@ namespace YuckQi.Data.Providers.Abstract
                 throw new ArgumentNullException(nameof(scope));
 
             if (! await DoDeleteAsync(entity, scope))
-                throw new RecordDeleteException<TRecord, TKey>(entity.Key);
+                throw new PhysicalDeletionException<TRecord, TKey>(entity.Key);
 
             return entity;
         }
