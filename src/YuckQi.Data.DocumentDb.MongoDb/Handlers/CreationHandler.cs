@@ -8,9 +8,9 @@ using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.DocumentDb.MongoDb.Providers
+namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
-    public class CreationProvider<TEntity, TKey, TScope, TRecord> : CreationHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IClientSessionHandle
+    public class CreationHandler<TEntity, TKey, TScope, TRecord> : CreationHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 
@@ -21,7 +21,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 
         #region Constructors
 
-        public CreationProvider(CreationOptions options) : base(options) { }
+        public CreationHandler(CreationOptions options) : base(options) { }
 
         #endregion
 

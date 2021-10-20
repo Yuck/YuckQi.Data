@@ -8,13 +8,13 @@ using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.DocumentDb.MongoDb.Providers
+namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
-    public class RevisionProvider<TEntity, TKey, TScope, TRecord> : RevisionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IClientSessionHandle
+    public class RevisionHandler<TEntity, TKey, TScope, TRecord> : RevisionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IClientSessionHandle
     {
         #region Constructors
 
-        public RevisionProvider(RevisionOptions options) : base(options) { }
+        public RevisionHandler(RevisionOptions options) : base(options) { }
 
         #endregion
 

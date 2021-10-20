@@ -11,9 +11,9 @@ using YuckQi.Data.Sorting;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
 
-namespace YuckQi.Data.DocumentDb.MongoDb.Providers
+namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
-    public class SearchProvider<TEntity, TKey, TScope, TRecord> : SearchHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class SearchHandler<TEntity, TKey, TScope, TRecord> : SearchHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 

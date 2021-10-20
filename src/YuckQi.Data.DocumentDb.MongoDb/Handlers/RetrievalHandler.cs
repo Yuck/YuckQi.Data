@@ -9,9 +9,9 @@ using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.DocumentDb.MongoDb.Providers
+namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
-    public class RetrievalProvider<TEntity, TKey, TScope, TRecord> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class RetrievalHandler<TEntity, TKey, TScope, TRecord> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 
