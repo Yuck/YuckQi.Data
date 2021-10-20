@@ -4,8 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>1.5.3</Version>
-    <Description>A .NET library of fine-grained data providers which can be used to compose data repositories and/or domain services.</Description>
+    <Version>2.0.0</Version>
+    <Description>A .NET library of fine-grained data access handlers which can be used to compose data repositories and/or domain services.</Description>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
