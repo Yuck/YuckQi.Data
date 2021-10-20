@@ -6,12 +6,13 @@ using Dapper;
 using Mapster;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Abstract
+namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
 {
-    public class RetrievalProviderBase<TEntity, TKey, TScope, TRecord> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+    public class RetrievalHandlerBase<TEntity, TKey, TScope, TRecord> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
     {
         #region Private Members
 
@@ -23,7 +24,7 @@ namespace YuckQi.Data.Sql.Dapper.Abstract
 
         #region Constructors
 
-        protected RetrievalProviderBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap)
+        protected RetrievalHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
             _dbTypeMap = dbTypeMap;

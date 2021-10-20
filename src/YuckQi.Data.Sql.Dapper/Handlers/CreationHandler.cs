@@ -7,13 +7,13 @@ using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Providers
+namespace YuckQi.Data.Sql.Dapper.Handlers
 {
-    public class CreationProvider<TEntity, TKey, TScope, TRecord> : CreationHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IDbTransaction
+    public class CreationHandler<TEntity, TKey, TScope, TRecord> : CreationHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IDbTransaction
     {
         #region Constructors
 
-        public CreationProvider(CreationOptions options) : base(options) { }
+        public CreationHandler(CreationOptions options) : base(options) { }
 
         #endregion
 

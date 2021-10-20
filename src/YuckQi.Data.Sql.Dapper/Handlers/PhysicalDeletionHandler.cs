@@ -6,9 +6,9 @@ using Mapster;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Providers
+namespace YuckQi.Data.Sql.Dapper.Handlers
 {
-    public class PhysicalDeletionProvider<TEntity, TKey, TScope, TRecord> : PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+    public class PhysicalDeletionHandler<TEntity, TKey, TScope, TRecord> : PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
     {
         #region Protected Methods
 

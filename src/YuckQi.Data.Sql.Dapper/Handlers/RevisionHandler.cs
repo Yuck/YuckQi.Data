@@ -8,13 +8,13 @@ using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Sql.Dapper.Providers
+namespace YuckQi.Data.Sql.Dapper.Handlers
 {
-    public class RevisionProvider<TEntity, TKey, TScope, TRecord> : RevisionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IDbTransaction
+    public class RevisionHandler<TEntity, TKey, TScope, TRecord> : RevisionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IDbTransaction
     {
         #region Constructors
 
-        public RevisionProvider(RevisionOptions options) : base(options) { }
+        public RevisionHandler(RevisionOptions options) : base(options) { }
 
         #endregion
 
