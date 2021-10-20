@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Dapper;
 using Mapster;
 using YuckQi.Data.Filtering;
-using YuckQi.Data.Providers.Abstract;
+using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Abstract
 {
-    public class RetrievalProviderBase<TEntity, TKey, TScope, TRecord> : RetrievalProviderBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+    public class RetrievalProviderBase<TEntity, TKey, TScope, TRecord> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
     {
         #region Private Members
 

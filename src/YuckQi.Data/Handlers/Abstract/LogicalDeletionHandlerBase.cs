@@ -3,20 +3,20 @@ using System.Threading.Tasks;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public abstract class LogicalDeletionProviderBase<TEntity, TKey, TScope> : ILogicalDeletionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IDeleted, IRevised where TKey : struct
+    public abstract class LogicalDeletionHandlerBase<TEntity, TKey, TScope> : ILogicalDeletionHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IDeleted, IRevised where TKey : struct
     {
         #region Private Members
 
-        private readonly IRevisionProvider<TEntity, TKey, TScope> _reviser;
+        private readonly IRevisionHandler<TEntity, TKey, TScope> _reviser;
 
         #endregion
 
 
         #region Constructors
 
-        protected LogicalDeletionProviderBase(IRevisionProvider<TEntity, TKey, TScope> reviser)
+        protected LogicalDeletionHandlerBase(IRevisionHandler<TEntity, TKey, TScope> reviser)
         {
             _reviser = reviser ?? throw new ArgumentNullException(nameof(reviser));
         }

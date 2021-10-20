@@ -3,14 +3,14 @@ using System.Threading.Tasks;
 using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
-using YuckQi.Data.Providers.Abstract;
-using YuckQi.Data.Providers.Options;
+using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class CreationProvider<TEntity, TKey, TScope, TRecord> : CreationProviderBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IClientSessionHandle
+    public class CreationProvider<TEntity, TKey, TScope, TRecord> : CreationHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 

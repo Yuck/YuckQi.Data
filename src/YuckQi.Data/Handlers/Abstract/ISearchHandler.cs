@@ -7,9 +7,9 @@ using YuckQi.Data.Sorting;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public interface ISearchProvider<TEntity, TKey, in TScope> where TEntity : IEntity<TKey> where TKey : struct
+    public interface ISearchHandler<TEntity, TKey, in TScope> where TEntity : IEntity<TKey> where TKey : struct
     {
         IPage<TEntity> Search(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope);
 

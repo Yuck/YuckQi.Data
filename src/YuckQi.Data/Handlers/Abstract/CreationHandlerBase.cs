@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
-using YuckQi.Data.Providers.Options;
+using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public abstract class CreationProviderBase<TEntity, TKey, TScope, TRecord> : ICreationProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, ICreated where TKey : struct
+    public abstract class CreationHandlerBase<TEntity, TKey, TScope, TRecord> : ICreationHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, ICreated where TKey : struct
     {
         #region Private Members
 
@@ -18,7 +18,7 @@ namespace YuckQi.Data.Providers.Abstract
 
         #region Constructors
 
-        protected CreationProviderBase(CreationOptions options)
+        protected CreationHandlerBase(CreationOptions options)
         {
             _options = options ?? new CreationOptions();
         }

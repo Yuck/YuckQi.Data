@@ -9,9 +9,9 @@ using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects;
 using YuckQi.Domain.ValueObjects.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public abstract class SearchProviderBase<TEntity, TKey, TScope> : ISearchProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
+    public abstract class SearchHandlerBase<TEntity, TKey, TScope> : ISearchHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
     {
         #region Public Methods
 

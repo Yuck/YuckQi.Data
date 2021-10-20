@@ -1,4 +1,4 @@
-﻿namespace YuckQi.Data.Providers.Options
+﻿namespace YuckQi.Data.Handlers.Options
 {
     public class CreationOptions
     {

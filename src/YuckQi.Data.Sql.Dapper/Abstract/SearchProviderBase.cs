@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Mapster;
 using YuckQi.Data.Filtering;
-using YuckQi.Data.Providers.Abstract;
+using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Sorting;
 using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Domain.Entities.Abstract;
@@ -14,7 +14,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Abstract
 {
-    public abstract class SearchProviderBase<TEntity, TKey, TScope, TRecord> : SearchProviderBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+    public abstract class SearchProviderBase<TEntity, TKey, TScope, TRecord> : SearchHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
     {
         #region Private Members
 

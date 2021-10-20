@@ -6,12 +6,12 @@ using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Filtering;
-using YuckQi.Data.Providers.Abstract;
+using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Providers
 {
-    public class RetrievalProvider<TEntity, TKey, TScope, TRecord> : RetrievalProviderBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class RetrievalProvider<TEntity, TKey, TScope, TRecord> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 

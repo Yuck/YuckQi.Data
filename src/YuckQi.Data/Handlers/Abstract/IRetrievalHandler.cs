@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using YuckQi.Data.Filtering;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public interface IRetrievalProvider<TEntity, in TKey, in TScope> where TEntity : IEntity<TKey> where TKey : struct
+    public interface IRetrievalHandler<TEntity, in TKey, in TScope> where TEntity : IEntity<TKey> where TKey : struct
     {
         TEntity Get(TKey key, TScope scope);
 

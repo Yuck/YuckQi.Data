@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
-using YuckQi.Data.Providers.Options;
+using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public abstract class RevisionProviderBase<TEntity, TKey, TScope, TRecord> : IRevisionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct
+    public abstract class RevisionHandlerBase<TEntity, TKey, TScope, TRecord> : IRevisionHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct
     {
         #region Private Members
 
@@ -18,7 +18,7 @@ namespace YuckQi.Data.Providers.Abstract
 
         #region Constructors
 
-        protected RevisionProviderBase(RevisionOptions options)
+        protected RevisionHandlerBase(RevisionOptions options)
         {
             _options = options ?? new RevisionOptions();
         }

@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public abstract class PhysicalDeletionProviderBase<TEntity, TKey, TScope, TRecord> : IPhysicalDeletionProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
+    public abstract class PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TRecord> : IPhysicalDeletionHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
     {
         #region Public Methods
 

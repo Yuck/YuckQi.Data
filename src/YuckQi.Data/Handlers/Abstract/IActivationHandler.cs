@@ -2,9 +2,9 @@
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public interface IActivationProvider<TEntity, in TKey, in TScope> where TEntity : IEntity<TKey>, IActivated, IRevised where TKey : struct
+    public interface IActivationHandler<TEntity, in TKey, in TScope> where TEntity : IEntity<TKey>, IActivated, IRevised where TKey : struct
     {
         TEntity Activate(TEntity entity, TScope scope);
 

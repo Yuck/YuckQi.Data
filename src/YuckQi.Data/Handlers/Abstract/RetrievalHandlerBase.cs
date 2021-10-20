@@ -5,9 +5,9 @@ using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public abstract class RetrievalProviderBase<TEntity, TKey, TScope> : IRetrievalProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
+    public abstract class RetrievalHandlerBase<TEntity, TKey, TScope> : IRetrievalHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
     {
         #region Public Methods
 

@@ -3,20 +3,20 @@ using System.Threading.Tasks;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Providers.Abstract
+namespace YuckQi.Data.Handlers.Abstract
 {
-    public abstract class ActivationProviderBase<TEntity, TKey, TScope> : IActivationProvider<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IActivated, IRevised where TKey : struct
+    public abstract class ActivationHandlerBase<TEntity, TKey, TScope> : IActivationHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IActivated, IRevised where TKey : struct
     {
         #region Private Members
 
-        private readonly IRevisionProvider<TEntity, TKey, TScope> _reviser;
+        private readonly IRevisionHandler<TEntity, TKey, TScope> _reviser;
 
         #endregion
 
 
         #region Constructors
 
-        protected ActivationProviderBase(IRevisionProvider<TEntity, TKey, TScope> reviser)
+        protected ActivationHandlerBase(IRevisionHandler<TEntity, TKey, TScope> reviser)
         {
             _reviser = reviser ?? throw new ArgumentNullException(nameof(reviser));
         }
