@@ -4,6 +4,7 @@ using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract
 {
@@ -16,11 +17,20 @@ namespace YuckQi.Data.Handlers.Abstract
         #endregion
 
 
+        #region Properties
+
+        protected IMapper Mapper { get; }
+
+        #endregion
+
+
         #region Constructors
 
-        protected CreationHandlerBase(CreationOptions options)
+        protected CreationHandlerBase(CreationOptions options, IMapper mapper)
         {
             _options = options ?? new CreationOptions();
+
+            Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         #endregion

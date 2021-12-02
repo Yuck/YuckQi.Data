@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using Mapster;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
 {
@@ -24,7 +24,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
 
         #region Constructors
 
-        protected RetrievalHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap)
+        protected RetrievalHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper mapper) : base(mapper)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
             _dbTypeMap = dbTypeMap;
@@ -38,7 +38,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
         protected override TEntity DoGet(TKey key, TScope scope)
         {
             var record = scope.Connection.Get<TRecord>(key, scope);
-            var entity = record.Adapt<TEntity>();
+            var entity = Mapper.Map<TEntity>(record);
 
             return entity;
         }
@@ -46,7 +46,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
         protected override async Task<TEntity> DoGetAsync(TKey key, TScope scope)
         {
             var record = await scope.Connection.GetAsync<TRecord>(key, scope);
-            var entity = record.Adapt<TEntity>();
+            var entity = Mapper.Map<TEntity>(record);
 
             return entity;
         }
@@ -55,7 +55,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
         {
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
             var record = scope.Connection.QuerySingleOrDefault<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-            var entity = record.Adapt<TEntity>();
+            var entity = Mapper.Map<TEntity>(record);
 
             return entity;
         }
@@ -64,7 +64,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
         {
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
             var record = await scope.Connection.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-            var entity = record.Adapt<TEntity>();
+            var entity = Mapper.Map<TEntity>(record);
 
             return entity;
         }
@@ -73,7 +73,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
         {
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
             var records = scope.Connection.Query<TRecord>(sql, parameters?.ToDynamicParameters(_dbTypeMap), scope);
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
 
             return entities;
         }
@@ -82,7 +82,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
         {
             var sql = _sqlGenerator.GenerateGetQuery(parameters);
             var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters?.ToDynamicParameters(_dbTypeMap), scope);
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
 
             return entities;
         }

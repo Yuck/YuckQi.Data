@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
@@ -21,7 +21,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 
         #region Constructors
 
-        public CreationHandler(CreationOptions options) : base(options) { }
+        public CreationHandler(CreationOptions options, IMapper mapper) : base(options, mapper) { }
 
         #endregion
 
@@ -32,7 +32,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
         {
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var record = entity.Adapt<TRecord>();
+            var record = Mapper.Map<TRecord>(entity);
 
             collection.InsertOne(scope, record);
 
@@ -43,7 +43,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
         {
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var record = entity.Adapt<TRecord>();
+            var record = Mapper.Map<TRecord>(entity);
 
             await collection.InsertOneAsync(scope, record);
 

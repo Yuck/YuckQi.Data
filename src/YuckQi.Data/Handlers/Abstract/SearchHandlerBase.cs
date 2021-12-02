@@ -8,11 +8,29 @@ using YuckQi.Data.Sorting;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects;
 using YuckQi.Domain.ValueObjects.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract
 {
     public abstract class SearchHandlerBase<TEntity, TKey, TScope> : ISearchHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
     {
+        #region Properties
+
+        protected IMapper Mapper { get; }
+
+        #endregion
+
+
+        #region Constructors
+
+        protected SearchHandlerBase(IMapper mapper)
+        {
+            Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        #endregion
+
+
         #region Public Methods
 
         public IPage<TEntity> Search(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)

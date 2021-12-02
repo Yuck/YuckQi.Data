@@ -4,11 +4,29 @@ using System.Threading.Tasks;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract
 {
     public abstract class RetrievalHandlerBase<TEntity, TKey, TScope> : IRetrievalHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
     {
+        #region Properties
+
+        protected IMapper Mapper { get; }
+
+        #endregion
+
+
+        #region Constructors
+
+        protected RetrievalHandlerBase(IMapper mapper)
+        {
+            Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        #endregion
+
+
         #region Public Methods
 
         public TEntity Get(TKey key, TScope scope)

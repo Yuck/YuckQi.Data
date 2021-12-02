@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Filtering;
@@ -10,6 +9,7 @@ using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Sorting;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
@@ -18,6 +18,13 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
         #region Private Members
 
         private static readonly Type RecordType = typeof(TRecord);
+
+        #endregion
+
+
+        #region Constructors
+
+        public SearchHandler(IMapper mapper) : base(mapper) { }
 
         #endregion
 
@@ -54,7 +61,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
                                     .Skip((page.PageNumber - 1) * page.PageSize)
                                     .Limit(page.PageSize)
                                     .ToList();
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
 
             return entities;
         }
@@ -69,7 +76,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
                                           .Skip((page.PageNumber - 1) * page.PageSize)
                                           .Limit(page.PageSize)
                                           .ToListAsync();
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
 
             return entities;
         }

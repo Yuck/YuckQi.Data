@@ -4,7 +4,6 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Mapster;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Sorting;
@@ -12,6 +11,7 @@ using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
 {
@@ -27,7 +27,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
 
         #region Constructors
 
-        protected SearchHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap)
+        protected SearchHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper mapper) : base(mapper)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
             _dbTypeMap = dbTypeMap;
@@ -58,7 +58,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
         {
             var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
             var records = scope.Connection.Query<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
 
             return entities;
         }
@@ -67,7 +67,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
         {
             var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
             var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
 
             return entities;
         }

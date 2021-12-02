@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
@@ -14,7 +14,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
     {
         #region Constructors
 
-        public RevisionHandler(RevisionOptions options) : base(options) { }
+        public RevisionHandler(RevisionOptions options, IMapper mapper) : base(options, mapper) { }
 
         #endregion
 
@@ -33,7 +33,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
-            var record = entity.Adapt<TRecord>();
+            var record = Mapper.Map<TRecord>(entity);
             var key = record.GetKey<TRecord, TKey>();
             var filter = Builders<TRecord>.Filter.Eq(field, key);
             var result = collection.ReplaceOne(scope, filter, record);
@@ -46,7 +46,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
             var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
-            var record = entity.Adapt<TRecord>();
+            var record = Mapper.Map<TRecord>(entity);
             var key = record.GetKey<TRecord, TKey>();
             var filter = Builders<TRecord>.Filter.Eq(field, key);
             var result = await collection.ReplaceOneAsync(scope, filter, record);

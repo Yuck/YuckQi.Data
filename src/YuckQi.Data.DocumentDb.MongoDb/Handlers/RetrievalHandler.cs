@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
@@ -16,6 +16,13 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
         #region Private Members
 
         private static readonly Type RecordType = typeof(TRecord);
+
+        #endregion
+
+
+        #region Constructors
+
+        public RetrievalHandler(IMapper mapper) : base(mapper) { }
 
         #endregion
 
@@ -30,7 +37,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
             var filter = Builders<TRecord>.Filter.Eq(field, key);
             var reader = collection.FindSync(filter);
             var record = GetSingleRecord(reader);
-            var entity = record.Adapt<TEntity>();
+            var entity = Mapper.Map<TEntity>(record);
 
             return entity;
         }
@@ -43,7 +50,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
             var filter = Builders<TRecord>.Filter.Eq(field, key);
             var reader = await collection.FindAsync(filter);
             var record = GetSingleRecord(reader);
-            var entity = record.Adapt<TEntity>();
+            var entity = Mapper.Map<TEntity>(record);
 
             return entity;
         }
@@ -55,7 +62,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
             var filter = parameters.ToFilterDefinition<TRecord>();
             var reader = collection.FindSync(filter);
             var record = GetSingleRecord(reader);
-            var entity = record.Adapt<TEntity>();
+            var entity = Mapper.Map<TEntity>(record);
 
             return entity;
         }
@@ -67,7 +74,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
             var filter = parameters.ToFilterDefinition<TRecord>();
             var reader = await collection.FindAsync(filter);
             var record = GetSingleRecord(reader);
-            var entity = record.Adapt<TEntity>();
+            var entity = Mapper.Map<TEntity>(record);
 
             return entity;
         }
@@ -79,7 +86,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
             var filter = parameters.ToFilterDefinition<TRecord>();
             var reader = collection.FindSync(filter);
             var records = GetRecords(reader);
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
 
             return entities;
         }
@@ -91,7 +98,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
             var filter = parameters.ToFilterDefinition<TRecord>();
             var reader = await collection.FindAsync(filter);
             var records = GetRecords(reader);
-            var entities = records.Adapt<IReadOnlyCollection<TEntity>>();
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
 
             return entities;
         }

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Mapster;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
@@ -17,13 +17,20 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
         #endregion
 
 
+        #region Constructors
+
+        public PhysicalDeletionHandler(IMapper mapper) : base(mapper) { }
+
+        #endregion
+
+
         #region Protected Methods
 
         protected override Boolean DoDelete(TEntity entity, TScope scope)
         {
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var record = entity.Adapt<TRecord>();
+            var record = Mapper.Map<TRecord>(entity);
             var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
             var key = record.GetKey<TRecord, TKey>();
             var filter = Builders<TRecord>.Filter.Eq(field, key);
@@ -36,7 +43,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
         {
             var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
             var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var record = entity.Adapt<TRecord>();
+            var record = Mapper.Map<TRecord>(entity);
             var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
             var key = record.GetKey<TRecord, TKey>();
             var filter = Builders<TRecord>.Filter.Eq(field, key);

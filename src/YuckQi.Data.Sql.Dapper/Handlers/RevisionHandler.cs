@@ -2,11 +2,11 @@
 using System.Data;
 using System.Threading.Tasks;
 using Dapper;
-using Mapster;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers
 {
@@ -14,16 +14,16 @@ namespace YuckQi.Data.Sql.Dapper.Handlers
     {
         #region Constructors
 
-        public RevisionHandler(RevisionOptions options) : base(options) { }
+        public RevisionHandler(RevisionOptions options, IMapper mapper) : base(options, mapper) { }
 
         #endregion
 
 
         #region Protected Methods
 
-        protected override Boolean DoRevise(TEntity entity, TScope scope) => scope.Connection.Update(entity.Adapt<TRecord>(), scope) > 0;
+        protected override Boolean DoRevise(TEntity entity, TScope scope) => scope.Connection.Update(Mapper.Map<TRecord>(entity), scope) > 0;
 
-        protected override async Task<Boolean> DoReviseAsync(TEntity entity, TScope scope) => await scope.Connection.UpdateAsync(entity.Adapt<TRecord>(), scope) > 0;
+        protected override async Task<Boolean> DoReviseAsync(TEntity entity, TScope scope) => await scope.Connection.UpdateAsync(Mapper.Map<TRecord>(entity), scope) > 0;
 
         #endregion
     }

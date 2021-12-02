@@ -2,11 +2,29 @@
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
 using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract
 {
     public abstract class PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TRecord> : IPhysicalDeletionHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
     {
+        #region Properties
+
+        protected IMapper Mapper { get; }
+
+        #endregion
+
+
+        #region Constructors
+
+        protected PhysicalDeletionHandlerBase(IMapper mapper)
+        {
+            Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        }
+
+        #endregion
+
+
         #region Public Methods
 
         public TEntity Delete(TEntity entity, TScope scope)
