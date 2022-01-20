@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>2.1.0</Version>
+    <Version>2.1.1</Version>
     <Description>A .NET library of lightweight data access handlers which can be used to compose repositories and domain services.</Description>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YuckQi.Domain" Version="0.5.0" />
+    <PackageReference Include="YuckQi.Domain" Version="1.1.0" />
     <PackageReference Include="YuckQi.Extensions.Mapping.Abstractions" Version="1.0.0" />
   </ItemGroup>
 
