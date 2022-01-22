@@ -14,7 +14,9 @@ namespace YuckQi.Data.Sql.Dapper.Handlers
     {
         #region Constructors
 
-        public RevisionHandler(RevisionOptions options, IMapper mapper) : base(options, mapper) { }
+        public RevisionHandler(IMapper mapper) : base(mapper) { }
+
+        public RevisionHandler(IMapper mapper, RevisionOptions options) : base(mapper, options) { }
 
         #endregion
 

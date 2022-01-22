@@ -13,7 +13,9 @@ namespace YuckQi.Data.Sql.Dapper.Handlers
     {
         #region Constructors
 
-        public CreationHandler(CreationOptions options, IMapper mapper) : base(options, mapper) { }
+        public CreationHandler(IMapper mapper) : base(mapper) { }
+
+        public CreationHandler(IMapper mapper, CreationOptions options) : base(mapper, options) { }
 
         #endregion
 

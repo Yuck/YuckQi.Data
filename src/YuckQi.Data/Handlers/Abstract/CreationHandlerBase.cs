@@ -26,11 +26,13 @@ namespace YuckQi.Data.Handlers.Abstract
 
         #region Constructors
 
-        protected CreationHandlerBase(CreationOptions options, IMapper mapper)
-        {
-            _options = options ?? new CreationOptions();
+        protected CreationHandlerBase(IMapper mapper) : this(mapper, null) { }
 
+        protected CreationHandlerBase(IMapper mapper, CreationOptions options)
+        {
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+
+            _options = options ?? new CreationOptions();
         }
 
         #endregion

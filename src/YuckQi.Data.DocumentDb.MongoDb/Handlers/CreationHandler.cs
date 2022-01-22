@@ -21,7 +21,9 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 
         #region Constructors
 
-        public CreationHandler(CreationOptions options, IMapper mapper) : base(options, mapper) { }
+        public CreationHandler(IMapper mapper) : base(mapper) { }
+
+        public CreationHandler(IMapper mapper, CreationOptions options) : base(mapper, options) { }
 
         #endregion
 

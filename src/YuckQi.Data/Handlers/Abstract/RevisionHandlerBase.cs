@@ -26,11 +26,13 @@ namespace YuckQi.Data.Handlers.Abstract
 
         #region Constructors
 
-        protected RevisionHandlerBase(RevisionOptions options, IMapper mapper)
-        {
-            _options = options ?? new RevisionOptions();
+        protected RevisionHandlerBase(IMapper mapper) : this(mapper, null) { }
 
+        protected RevisionHandlerBase(IMapper mapper, RevisionOptions options)
+        {
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+
+            _options = options ?? new RevisionOptions();
         }
 
         #endregion
