@@ -24,7 +24,7 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
 
         #region Constructors
 
-        protected RetrievalHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper mapper) : base(mapper)
+        protected RetrievalHandlerBase(IMapper mapper, ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(mapper)
         {
             _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
             _dbTypeMap = dbTypeMap;
