@@ -8,11 +8,11 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
-    public class PhysicalDeletionHandler<TEntity, TKey, TScope, TRecord> : PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class PhysicalDeletionHandler<TEntity, TKey, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TDocument> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 
-        private static readonly Type RecordType = typeof(TRecord);
+        private static readonly Type DocumentType = typeof(TDocument);
 
         #endregion
 
@@ -28,12 +28,12 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 
         protected override Boolean DoDelete(TEntity entity, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var record = Mapper.Map<TRecord>(entity);
-            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
-            var key = record.GetKey<TRecord, TKey>();
-            var filter = Builders<TRecord>.Filter.Eq(field, key);
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var document = Mapper.Map<TDocument>(entity);
+            var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
+            var key = document.GetKey<TDocument, TKey>();
+            var filter = Builders<TDocument>.Filter.Eq(field, key);
             var result = collection.DeleteOne(scope, filter);
 
             return result.DeletedCount > 0;
@@ -41,12 +41,12 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 
         protected override async Task<Boolean> DoDeleteAsync(TEntity entity, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var record = Mapper.Map<TRecord>(entity);
-            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
-            var key = record.GetKey<TRecord, TKey>();
-            var filter = Builders<TRecord>.Filter.Eq(field, key);
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var document = Mapper.Map<TDocument>(entity);
+            var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
+            var key = document.GetKey<TDocument, TKey>();
+            var filter = Builders<TDocument>.Filter.Eq(field, key);
             var result = await collection.DeleteOneAsync(scope, filter);
 
             return result.DeletedCount > 0;

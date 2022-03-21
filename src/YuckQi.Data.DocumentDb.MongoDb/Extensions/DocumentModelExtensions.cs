@@ -32,18 +32,18 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Extensions
 
         public static String GetDatabaseName(this Type type) => type != null ? DatabaseNameByType.GetOrAdd(type, key => GetDatabaseAttribute(key)?.Name) : null;
 
-        public static TKey? GetKey<TRecord, TKey>(this TRecord record) where TKey : struct => record != null ? GetKeyPropertyInfo(typeof(TRecord))?.GetValue(record) as TKey? : null;
+        public static TKey? GetKey<TDocument, TKey>(this TDocument document) where TKey : struct => document != null ? GetKeyPropertyInfo(typeof(TDocument))?.GetValue(document) as TKey? : null;
 
-        public static StringFieldDefinition<TRecord, TKey?> GetKeyFieldDefinition<TRecord, TKey>(this Type type) where TKey : struct
+        public static StringFieldDefinition<TDocument, TKey?> GetKeyFieldDefinition<TDocument, TKey>(this Type type) where TKey : struct
         {
             if (type == null)
                 return null;
             // This isn't great since it should be enforced at compile time
-            if (type != typeof(TRecord))
-                throw new ArgumentException($"Type of '{type.FullName}' must match '{typeof(TRecord)}'.");
+            if (type != typeof(TDocument))
+                throw new ArgumentException($"Type of '{type.FullName}' must match '{typeof(TDocument)}'.");
 
-            var propertyInfo = GetKeyPropertyInfo(typeof(TRecord));
-            var field = new StringFieldDefinition<TRecord, TKey?>(propertyInfo?.Name);
+            var propertyInfo = GetKeyPropertyInfo(typeof(TDocument));
+            var field = new StringFieldDefinition<TDocument, TKey?>(propertyInfo?.Name);
 
             return field;
         }
@@ -53,15 +53,15 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Extensions
 
         #region Supporting Methods
 
-        private static PropertyInfo DoGetKeyPropertyInfo(Type type) => type.GetProperties()
-                                                                           .Select(t => t.GetCustomAttribute<BsonIdAttribute>() != null ? t : null)
-                                                                           .SingleOrDefault(t => t != null) ?? type.GetProperty(DefaultObjectIdPropertyName);
-
         private static CollectionAttribute GetCollectionAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(CollectionAttribute)) as CollectionAttribute;
 
         private static DatabaseAttribute GetDatabaseAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(DatabaseAttribute)) as DatabaseAttribute;
 
-        private static PropertyInfo GetKeyPropertyInfo(Type type) => type != null ? KeyByType.GetOrAdd(type, DoGetKeyPropertyInfo) : null;
+        private static PropertyInfo GetKeyPropertyInfo(Type type) => type != null ? KeyByType.GetOrAdd(type, KeyPropertyInfoValueFactory) : null;
+
+        private static PropertyInfo KeyPropertyInfoValueFactory(Type type) => type.GetProperties()
+                                                                                  .Select(t => t.GetCustomAttribute<BsonIdAttribute>() != null ? t : null)
+                                                                                  .SingleOrDefault(t => t != null) ?? type.GetProperty(DefaultObjectIdPropertyName);
 
         #endregion
     }

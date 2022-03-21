@@ -10,7 +10,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
-    public class RevisionHandler<TEntity, TKey, TScope, TRecord> : RevisionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IClientSessionHandle
+    public class RevisionHandler<TEntity, TKey, TScope, TDocument> : RevisionHandlerBase<TEntity, TKey, TScope, TDocument> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IClientSessionHandle
     {
         #region Constructors
 
@@ -23,7 +23,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 
         #region Private Members
 
-        private static readonly Type RecordType = typeof(TRecord);
+        private static readonly Type DocumentType = typeof(TDocument);
 
         #endregion
 
@@ -32,26 +32,26 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 
         protected override Boolean DoRevise(TEntity entity, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
-            var record = Mapper.Map<TRecord>(entity);
-            var key = record.GetKey<TRecord, TKey>();
-            var filter = Builders<TRecord>.Filter.Eq(field, key);
-            var result = collection.ReplaceOne(scope, filter, record);
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
+            var document = Mapper.Map<TDocument>(entity);
+            var key = document.GetKey<TDocument, TKey>();
+            var filter = Builders<TDocument>.Filter.Eq(field, key);
+            var result = collection.ReplaceOne(scope, filter, document);
 
             return result.ModifiedCount > 0;
         }
 
         protected override async Task<Boolean> DoReviseAsync(TEntity entity, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
-            var record = Mapper.Map<TRecord>(entity);
-            var key = record.GetKey<TRecord, TKey>();
-            var filter = Builders<TRecord>.Filter.Eq(field, key);
-            var result = await collection.ReplaceOneAsync(scope, filter, record);
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
+            var document = Mapper.Map<TDocument>(entity);
+            var key = document.GetKey<TDocument, TKey>();
+            var filter = Builders<TDocument>.Filter.Eq(field, key);
+            var result = await collection.ReplaceOneAsync(scope, filter, document);
 
             return result.ModifiedCount > 0;
         }

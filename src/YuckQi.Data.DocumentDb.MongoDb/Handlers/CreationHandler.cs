@@ -10,11 +10,11 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
-    public class CreationHandler<TEntity, TKey, TScope, TRecord> : CreationHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IClientSessionHandle
+    public class CreationHandler<TEntity, TKey, TScope, TDocument> : CreationHandlerBase<TEntity, TKey, TScope, TDocument> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 
-        private static readonly Type RecordType = typeof(TRecord);
+        private static readonly Type DocumentType = typeof(TDocument);
 
         #endregion
 
@@ -32,24 +32,24 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 
         protected override TKey? DoCreate(TEntity entity, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var record = Mapper.Map<TRecord>(entity);
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var document = Mapper.Map<TDocument>(entity);
 
-            collection.InsertOne(scope, record);
+            collection.InsertOne(scope, document);
 
-            return record.GetKey<TRecord, TKey>();
+            return document.GetKey<TDocument, TKey>();
         }
 
         protected override async Task<TKey?> DoCreateAsync(TEntity entity, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var record = Mapper.Map<TRecord>(entity);
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var document = Mapper.Map<TDocument>(entity);
 
-            await collection.InsertOneAsync(scope, record);
+            await collection.InsertOneAsync(scope, document);
 
-            return record.GetKey<TRecord, TKey>();
+            return document.GetKey<TDocument, TKey>();
         }
 
         #endregion

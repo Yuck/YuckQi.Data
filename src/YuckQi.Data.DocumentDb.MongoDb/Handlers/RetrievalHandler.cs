@@ -11,11 +11,11 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 {
-    public class RetrievalHandler<TEntity, TKey, TScope, TRecord> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public class RetrievalHandler<TEntity, TKey, TScope, TDocument> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
     {
         #region Private Members
 
-        private static readonly Type RecordType = typeof(TRecord);
+        private static readonly Type DocumentType = typeof(TDocument);
 
         #endregion
 
@@ -31,74 +31,74 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 
         protected override TEntity DoGet(TKey key, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
-            var filter = Builders<TRecord>.Filter.Eq(field, key);
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
+            var filter = Builders<TDocument>.Filter.Eq(field, key);
             var reader = collection.FindSync(filter);
-            var record = GetSingleRecord(reader);
-            var entity = Mapper.Map<TEntity>(record);
+            var document = GetDocument(reader);
+            var entity = Mapper.Map<TEntity>(document);
 
             return entity;
         }
 
         protected override async Task<TEntity> DoGetAsync(TKey key, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var field = RecordType.GetKeyFieldDefinition<TRecord, TKey>();
-            var filter = Builders<TRecord>.Filter.Eq(field, key);
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
+            var filter = Builders<TDocument>.Filter.Eq(field, key);
             var reader = await collection.FindAsync(filter);
-            var record = GetSingleRecord(reader);
-            var entity = Mapper.Map<TEntity>(record);
+            var document = GetDocument(reader);
+            var entity = Mapper.Map<TEntity>(document);
 
             return entity;
         }
 
         protected override TEntity DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TRecord>();
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var filter = parameters.ToFilterDefinition<TDocument>();
             var reader = collection.FindSync(filter);
-            var record = GetSingleRecord(reader);
-            var entity = Mapper.Map<TEntity>(record);
+            var document = GetDocument(reader);
+            var entity = Mapper.Map<TEntity>(document);
 
             return entity;
         }
 
         protected override async Task<TEntity> DoGetAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TRecord>();
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var filter = parameters.ToFilterDefinition<TDocument>();
             var reader = await collection.FindAsync(filter);
-            var record = GetSingleRecord(reader);
-            var entity = Mapper.Map<TEntity>(record);
+            var document = GetDocument(reader);
+            var entity = Mapper.Map<TEntity>(document);
 
             return entity;
         }
 
         protected override IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TRecord>();
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var filter = parameters.ToFilterDefinition<TDocument>();
             var reader = collection.FindSync(filter);
-            var records = GetRecords(reader);
-            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
+            var documents = GetDocuments(reader);
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(documents);
 
             return entities;
         }
 
         protected override async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
         {
-            var database = scope.Client.GetDatabase(RecordType.GetDatabaseName());
-            var collection = database.GetCollection<TRecord>(RecordType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TRecord>();
+            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+            var filter = parameters.ToFilterDefinition<TDocument>();
             var reader = await collection.FindAsync(filter);
-            var records = GetRecords(reader);
-            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
+            var documents = GetDocuments(reader);
+            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(documents);
 
             return entities;
         }
@@ -108,17 +108,17 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
 
         #region Supporting Methods
 
-        private static IEnumerable<TRecord> GetRecords(IAsyncCursor<TRecord> reader)
+        private static TDocument GetDocument(IAsyncCursor<TDocument> reader) => reader.MoveNext() ? reader.Current.SingleOrDefault() : default;
+
+        private static IEnumerable<TDocument> GetDocuments(IAsyncCursor<TDocument> reader)
         {
-            var records = new List<TRecord>();
+            var documents = new List<TDocument>();
 
             while (reader.MoveNext())
-                records.AddRange(reader.Current);
+                documents.AddRange(reader.Current);
 
-            return records;
+            return documents;
         }
-
-        private static TRecord GetSingleRecord(IAsyncCursor<TRecord> reader) => reader.MoveNext() ? reader.Current.SingleOrDefault() : default;
 
         #endregion
     }
