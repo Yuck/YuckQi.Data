@@ -8,25 +8,24 @@ using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers
+namespace YuckQi.Data.Sql.Dapper.Handlers;
+
+public class RevisionHandler<TEntity, TKey, TScope, TRecord> : RevisionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IDbTransaction
 {
-    public class RevisionHandler<TEntity, TKey, TScope, TRecord> : RevisionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IDbTransaction
-    {
-        #region Constructors
+    #region Constructors
 
-        public RevisionHandler(IMapper mapper) : base(mapper) { }
+    public RevisionHandler(IMapper mapper) : base(mapper) { }
 
-        public RevisionHandler(IMapper mapper, RevisionOptions options) : base(mapper, options) { }
+    public RevisionHandler(IMapper mapper, RevisionOptions options) : base(mapper, options) { }
 
-        #endregion
+    #endregion
 
 
-        #region Protected Methods
+    #region Protected Methods
 
-        protected override Boolean DoRevise(TEntity entity, TScope scope) => scope.Connection.Update(Mapper.Map<TRecord>(entity), scope) > 0;
+    protected override Boolean DoRevise(TEntity entity, TScope scope) => scope.Connection.Update(Mapper.Map<TRecord>(entity), scope) > 0;
 
-        protected override async Task<Boolean> DoReviseAsync(TEntity entity, TScope scope) => await scope.Connection.UpdateAsync(Mapper.Map<TRecord>(entity), scope) > 0;
+    protected override async Task<Boolean> DoReviseAsync(TEntity entity, TScope scope) => await scope.Connection.UpdateAsync(Mapper.Map<TRecord>(entity), scope) > 0;
 
-        #endregion
-    }
+    #endregion
 }

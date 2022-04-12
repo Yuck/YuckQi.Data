@@ -2,12 +2,11 @@
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Handlers.Abstract
-{
-    public interface IRevisionHandler<TEntity, TKey, in TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct
-    {
-        TEntity Revise(TEntity entity, TScope scope);
+namespace YuckQi.Data.Handlers.Abstract;
 
-        Task<TEntity> ReviseAsync(TEntity entity, TScope scope);
-    }
+public interface IRevisionHandler<TEntity, TKey, in TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct
+{
+    TEntity Revise(TEntity entity, TScope scope);
+
+    Task<TEntity> ReviseAsync(TEntity entity, TScope scope);
 }

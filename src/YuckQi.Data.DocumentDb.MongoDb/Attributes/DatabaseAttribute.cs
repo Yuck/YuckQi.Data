@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace YuckQi.Data.DocumentDb.MongoDb.Attributes
-{
-    [AttributeUsage(AttributeTargets.Class)]
-    public class DatabaseAttribute : Attribute
-    {
-        public String Name { get; }
+namespace YuckQi.Data.DocumentDb.MongoDb.Attributes;
 
-        public DatabaseAttribute(String name)
-        {
-            Name = name;
-        }
+[AttributeUsage(AttributeTargets.Class)]
+public class DatabaseAttribute : Attribute
+{
+    public String Name { get; }
+
+    public DatabaseAttribute(String name)
+    {
+        Name = name;
     }
 }
