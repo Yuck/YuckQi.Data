@@ -10,7 +10,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class CreationHandler<TEntity, TKey, TScope, TDocument> : CreationHandlerBase<TEntity, TKey, TScope, TDocument> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IClientSessionHandle
+public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope, TDocument> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct where TScope : IClientSessionHandle
 {
     #region Private Members
 
@@ -30,7 +30,7 @@ public class CreationHandler<TEntity, TKey, TScope, TDocument> : CreationHandler
 
     #region Protected Methods
 
-    protected override TKey? DoCreate(TEntity entity, TScope scope)
+    protected override TIdentifier? DoCreate(TEntity entity, TScope scope)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
@@ -38,10 +38,10 @@ public class CreationHandler<TEntity, TKey, TScope, TDocument> : CreationHandler
 
         collection.InsertOne(scope, document);
 
-        return document.GetKey<TDocument, TKey>();
+        return document.GetIdentifier<TDocument, TIdentifier>();
     }
 
-    protected override async Task<TKey?> DoCreateAsync(TEntity entity, TScope scope)
+    protected override async Task<TIdentifier?> DoCreateAsync(TEntity entity, TScope scope)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
@@ -49,7 +49,7 @@ public class CreationHandler<TEntity, TKey, TScope, TDocument> : CreationHandler
 
         await collection.InsertOneAsync(scope, document);
 
-        return document.GetKey<TDocument, TKey>();
+        return document.GetIdentifier<TDocument, TIdentifier>();
     }
 
     #endregion

@@ -8,7 +8,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class PhysicalDeletionHandler<TEntity, TKey, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TDocument> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope, TDocument> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
 {
     #region Private Members
 
@@ -31,9 +31,9 @@ public class PhysicalDeletionHandler<TEntity, TKey, TScope, TDocument> : Physica
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var document = Mapper.Map<TDocument>(entity);
-        var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
-        var key = document.GetKey<TDocument, TKey>();
-        var filter = Builders<TDocument>.Filter.Eq(field, key);
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
+        var identifier = document.GetIdentifier<TDocument, TIdentifier>();
+        var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var result = collection.DeleteOne(scope, filter);
 
         return result.DeletedCount > 0;
@@ -44,9 +44,9 @@ public class PhysicalDeletionHandler<TEntity, TKey, TScope, TDocument> : Physica
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var document = Mapper.Map<TDocument>(entity);
-        var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
-        var key = document.GetKey<TDocument, TKey>();
-        var filter = Builders<TDocument>.Filter.Eq(field, key);
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
+        var identifier = document.GetIdentifier<TDocument, TIdentifier>();
+        var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var result = await collection.DeleteOneAsync(scope, filter);
 
         return result.DeletedCount > 0;

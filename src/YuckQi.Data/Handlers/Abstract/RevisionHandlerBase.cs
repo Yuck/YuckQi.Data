@@ -8,7 +8,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RevisionHandlerBase<TEntity, TKey, TScope, TRecord> : IRevisionHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IRevised where TKey : struct
+public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord> : IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
 {
     #region Private Members
 
@@ -51,7 +51,7 @@ public abstract class RevisionHandlerBase<TEntity, TKey, TScope, TRecord> : IRev
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
         if (! DoRevise(entity, scope))
-            throw new RevisionException<TRecord, TKey>(entity.Key);
+            throw new RevisionException<TRecord, TIdentifier>(entity.Identifier);
 
         return entity;
     }
@@ -67,7 +67,7 @@ public abstract class RevisionHandlerBase<TEntity, TKey, TScope, TRecord> : IRev
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
         if (! await DoReviseAsync(entity, scope))
-            throw new RevisionException<TRecord, TKey>(entity.Key);
+            throw new RevisionException<TRecord, TIdentifier>(entity.Identifier);
 
         return entity;
     }

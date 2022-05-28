@@ -4,7 +4,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public interface IActivationHandler<TEntity, in TKey, in TScope> where TEntity : IEntity<TKey>, IActivated, IRevised where TKey : struct
+public interface IActivationHandler<TEntity, in TIdentifier, in TScope> where TEntity : IEntity<TIdentifier>, IActivated, IRevised where TIdentifier : struct
 {
     TEntity Activate(TEntity entity, TScope scope);
 

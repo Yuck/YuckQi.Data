@@ -21,20 +21,20 @@ public static class DocumentModelExtensions
 
     private static readonly ConcurrentDictionary<Type, String> CollectionNameByType = new();
     private static readonly ConcurrentDictionary<Type, String> DatabaseNameByType = new();
-    private static readonly ConcurrentDictionary<Type, PropertyInfo> KeyByType = new();
+    private static readonly ConcurrentDictionary<Type, PropertyInfo> IdentifierByType = new();
 
     #endregion
 
 
     #region Extension Methods
 
-    public static String GetCollectionName(this Type type) => type != null ? CollectionNameByType.GetOrAdd(type, key => GetCollectionAttribute(key)?.Name ?? key.Name) : null;
+    public static String GetCollectionName(this Type type) => type != null ? CollectionNameByType.GetOrAdd(type, identifier => GetCollectionAttribute(identifier)?.Name ?? identifier.Name) : null;
 
-    public static String GetDatabaseName(this Type type) => type != null ? DatabaseNameByType.GetOrAdd(type, key => GetDatabaseAttribute(key)?.Name) : null;
+    public static String GetDatabaseName(this Type type) => type != null ? DatabaseNameByType.GetOrAdd(type, identifier => GetDatabaseAttribute(identifier)?.Name) : null;
 
-    public static TKey? GetKey<TDocument, TKey>(this TDocument document) where TKey : struct => document != null ? GetKeyPropertyInfo(typeof(TDocument))?.GetValue(document) as TKey? : null;
+    public static TIdentifier? GetIdentifier<TDocument, TIdentifier>(this TDocument document) where TIdentifier : struct => document != null ? GetIdentifierPropertyInfo(typeof(TDocument))?.GetValue(document) as TIdentifier? : null;
 
-    public static StringFieldDefinition<TDocument, TKey?> GetKeyFieldDefinition<TDocument, TKey>(this Type type) where TKey : struct
+    public static StringFieldDefinition<TDocument, TIdentifier?> GetIdentifierFieldDefinition<TDocument, TIdentifier>(this Type type) where TIdentifier : struct
     {
         if (type == null)
             return null;
@@ -42,8 +42,8 @@ public static class DocumentModelExtensions
         if (type != typeof(TDocument))
             throw new ArgumentException($"Type of '{type.FullName}' must match '{typeof(TDocument)}'.");
 
-        var propertyInfo = GetKeyPropertyInfo(typeof(TDocument));
-        var field = new StringFieldDefinition<TDocument, TKey?>(propertyInfo?.Name);
+        var propertyInfo = GetIdentifierPropertyInfo(typeof(TDocument));
+        var field = new StringFieldDefinition<TDocument, TIdentifier?>(propertyInfo?.Name);
 
         return field;
     }
@@ -57,11 +57,11 @@ public static class DocumentModelExtensions
 
     private static DatabaseAttribute GetDatabaseAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(DatabaseAttribute)) as DatabaseAttribute;
 
-    private static PropertyInfo GetKeyPropertyInfo(Type type) => type != null ? KeyByType.GetOrAdd(type, KeyPropertyInfoValueFactory) : null;
+    private static PropertyInfo GetIdentifierPropertyInfo(Type type) => type != null ? IdentifierByType.GetOrAdd(type, IdentifierPropertyInfoValueFactory) : null;
 
-    private static PropertyInfo KeyPropertyInfoValueFactory(Type type) => type.GetProperties()
-                                                                              .Select(t => t.GetCustomAttribute<BsonIdAttribute>() != null ? t : null)
-                                                                              .SingleOrDefault(t => t != null) ?? type.GetProperty(DefaultObjectIdPropertyName);
+    private static PropertyInfo IdentifierPropertyInfoValueFactory(Type type) => type.GetProperties()
+                                                                                     .Select(t => t.GetCustomAttribute<BsonIdAttribute>() != null ? t : null)
+                                                                                     .SingleOrDefault(t => t != null) ?? type.GetProperty(DefaultObjectIdPropertyName);
 
     #endregion
 }

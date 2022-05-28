@@ -8,7 +8,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RetrievalHandlerBase<TEntity, TKey, TScope> : IRetrievalHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
+public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : IRetrievalHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
 {
     #region Properties
 
@@ -29,20 +29,20 @@ public abstract class RetrievalHandlerBase<TEntity, TKey, TScope> : IRetrievalHa
 
     #region Public Methods
 
-    public TEntity Get(TKey key, TScope scope)
+    public TEntity Get(TIdentifier identifier, TScope scope)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        return DoGet(key, scope);
+        return DoGet(identifier, scope);
     }
 
-    public Task<TEntity> GetAsync(TKey key, TScope scope)
+    public Task<TEntity> GetAsync(TIdentifier identifier, TScope scope)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        return DoGetAsync(key, scope);
+        return DoGetAsync(identifier, scope);
     }
 
     public TEntity Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
@@ -130,9 +130,9 @@ public abstract class RetrievalHandlerBase<TEntity, TKey, TScope> : IRetrievalHa
 
     #region Protected Methods
 
-    protected abstract TEntity DoGet(TKey key, TScope scope);
+    protected abstract TEntity DoGet(TIdentifier identifier, TScope scope);
 
-    protected abstract Task<TEntity> DoGetAsync(TKey key, TScope scope);
+    protected abstract Task<TEntity> DoGetAsync(TIdentifier identifier, TScope scope);
 
     protected abstract TEntity DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
 

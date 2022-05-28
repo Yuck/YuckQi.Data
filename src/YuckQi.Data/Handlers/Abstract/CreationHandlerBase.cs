@@ -8,7 +8,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class CreationHandlerBase<TEntity, TKey, TScope, TRecord> : ICreationHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, ICreated where TKey : struct
+public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord> : ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct
 {
     #region Private Members
 
@@ -52,11 +52,11 @@ public abstract class CreationHandlerBase<TEntity, TKey, TScope, TRecord> : ICre
         if (_options.RevisionMomentAssignment == PropertyHandling.Auto && entity is IRevised revised)
             revised.RevisionMomentUtc = entity.CreationMomentUtc;
 
-        var key = DoCreate(entity, scope);
-        if (key == null)
+        var identifier = DoCreate(entity, scope);
+        if (identifier == null)
             throw new CreationException<TRecord>();
 
-        entity.Key = key.Value;
+        entity.Identifier = identifier.Value;
 
         return entity;
     }
@@ -73,11 +73,11 @@ public abstract class CreationHandlerBase<TEntity, TKey, TScope, TRecord> : ICre
         if (_options.RevisionMomentAssignment == PropertyHandling.Auto && entity is IRevised revised)
             revised.RevisionMomentUtc = entity.CreationMomentUtc;
 
-        var key = await DoCreateAsync(entity, scope);
-        if (key == null)
+        var identifier = await DoCreateAsync(entity, scope);
+        if (identifier == null)
             throw new CreationException<TRecord>();
 
-        entity.Key = key.Value;
+        entity.Identifier = identifier.Value;
 
         return entity;
     }
@@ -87,9 +87,9 @@ public abstract class CreationHandlerBase<TEntity, TKey, TScope, TRecord> : ICre
 
     #region Protected Methods
 
-    protected abstract TKey? DoCreate(TEntity entity, TScope scope);
+    protected abstract TIdentifier? DoCreate(TEntity entity, TScope scope);
 
-    protected abstract Task<TKey?> DoCreateAsync(TEntity entity, TScope scope);
+    protected abstract Task<TIdentifier?> DoCreateAsync(TEntity entity, TScope scope);
 
     #endregion
 }

@@ -9,7 +9,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Oracle.Handlers;
 
-public class RetrievalHandler<TEntity, TKey, TScope, TRecord> : RetrievalHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+public class RetrievalHandler<TEntity, TIdentifier, TScope, TRecord> : RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
 {
     public RetrievalHandler(IMapper mapper) : this(mapper, new SqlGenerator<TRecord>()) { }
 

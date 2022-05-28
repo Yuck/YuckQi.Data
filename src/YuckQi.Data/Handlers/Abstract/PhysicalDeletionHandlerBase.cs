@@ -6,7 +6,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TRecord> : IPhysicalDeletionHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
+public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope, TRecord> : IPhysicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
 {
     #region Properties
 
@@ -35,7 +35,7 @@ public abstract class PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TRecord
             throw new ArgumentNullException(nameof(scope));
 
         if (! DoDelete(entity, scope))
-            throw new PhysicalDeletionException<TRecord, TKey>(entity.Key);
+            throw new PhysicalDeletionException<TRecord, TIdentifier>(entity.Identifier);
 
         return entity;
     }
@@ -48,7 +48,7 @@ public abstract class PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TRecord
             throw new ArgumentNullException(nameof(scope));
 
         if (! await DoDeleteAsync(entity, scope))
-            throw new PhysicalDeletionException<TRecord, TKey>(entity.Key);
+            throw new PhysicalDeletionException<TRecord, TIdentifier>(entity.Identifier);
 
         return entity;
     }

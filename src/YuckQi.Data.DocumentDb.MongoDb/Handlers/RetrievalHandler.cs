@@ -11,7 +11,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class RetrievalHandler<TEntity, TKey, TScope, TDocument> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
 {
     #region Private Members
 
@@ -29,12 +29,12 @@ public class RetrievalHandler<TEntity, TKey, TScope, TDocument> : RetrievalHandl
 
     #region Public Methods
 
-    protected override TEntity DoGet(TKey key, TScope scope)
+    protected override TEntity DoGet(TIdentifier identifier, TScope scope)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
-        var filter = Builders<TDocument>.Filter.Eq(field, key);
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
+        var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var reader = collection.FindSync(filter);
         var document = GetDocument(reader);
         var entity = Mapper.Map<TEntity>(document);
@@ -42,12 +42,12 @@ public class RetrievalHandler<TEntity, TKey, TScope, TDocument> : RetrievalHandl
         return entity;
     }
 
-    protected override async Task<TEntity> DoGetAsync(TKey key, TScope scope)
+    protected override async Task<TEntity> DoGetAsync(TIdentifier identifier, TScope scope)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
-        var filter = Builders<TDocument>.Filter.Eq(field, key);
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
+        var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var reader = await collection.FindAsync(filter);
         var document = GetDocument(reader);
         var entity = Mapper.Map<TEntity>(document);

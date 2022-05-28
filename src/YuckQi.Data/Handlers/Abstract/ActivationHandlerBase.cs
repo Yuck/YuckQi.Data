@@ -5,18 +5,18 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class ActivationHandlerBase<TEntity, TKey, TScope> : IActivationHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey>, IActivated, IRevised where TKey : struct
+public abstract class ActivationHandlerBase<TEntity, TIdentifier, TScope> : IActivationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IActivated, IRevised where TIdentifier : struct
 {
     #region Private Members
 
-    private readonly IRevisionHandler<TEntity, TKey, TScope> _reviser;
+    private readonly IRevisionHandler<TEntity, TIdentifier, TScope> _reviser;
 
     #endregion
 
 
     #region Constructors
 
-    protected ActivationHandlerBase(IRevisionHandler<TEntity, TKey, TScope> reviser)
+    protected ActivationHandlerBase(IRevisionHandler<TEntity, TIdentifier, TScope> reviser)
     {
         _reviser = reviser ?? throw new ArgumentNullException(nameof(reviser));
     }

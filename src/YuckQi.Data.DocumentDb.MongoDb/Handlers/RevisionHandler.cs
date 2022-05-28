@@ -10,7 +10,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class RevisionHandler<TEntity, TKey, TScope, TDocument> : RevisionHandlerBase<TEntity, TKey, TScope, TDocument> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IClientSessionHandle
+public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope, TDocument> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct where TScope : IClientSessionHandle
 {
     #region Constructors
 
@@ -34,10 +34,10 @@ public class RevisionHandler<TEntity, TKey, TScope, TDocument> : RevisionHandler
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
         var document = Mapper.Map<TDocument>(entity);
-        var key = document.GetKey<TDocument, TKey>();
-        var filter = Builders<TDocument>.Filter.Eq(field, key);
+        var identifier = document.GetIdentifier<TDocument, TIdentifier>();
+        var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var result = collection.ReplaceOne(scope, filter, document);
 
         return result.ModifiedCount > 0;
@@ -47,10 +47,10 @@ public class RevisionHandler<TEntity, TKey, TScope, TDocument> : RevisionHandler
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
         var document = Mapper.Map<TDocument>(entity);
-        var key = document.GetKey<TDocument, TKey>();
-        var filter = Builders<TDocument>.Filter.Eq(field, key);
+        var identifier = document.GetIdentifier<TDocument, TIdentifier>();
+        var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var result = await collection.ReplaceOneAsync(scope, filter, document);
 
         return result.ModifiedCount > 0;

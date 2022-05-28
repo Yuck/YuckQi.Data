@@ -12,7 +12,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class SearchHandlerBase<TEntity, TKey, TScope> : ISearchHandler<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ISearchHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
 {
     #region Properties
 

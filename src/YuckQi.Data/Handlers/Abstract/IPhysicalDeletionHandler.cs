@@ -3,7 +3,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public interface IPhysicalDeletionHandler<TEntity, in TKey, in TScope> where TEntity : IEntity<TKey> where TKey : struct
+public interface IPhysicalDeletionHandler<TEntity, in TIdentifier, in TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
 {
     TEntity Delete(TEntity entity, TScope scope);
 

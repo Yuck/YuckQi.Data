@@ -12,7 +12,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract;
 
-public class RetrievalHandlerBase<TEntity, TKey, TScope, TRecord> : RetrievalHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : RetrievalHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
 {
     #region Private Members
 
@@ -35,17 +35,17 @@ public class RetrievalHandlerBase<TEntity, TKey, TScope, TRecord> : RetrievalHan
 
     #region Public Methods
 
-    protected override TEntity DoGet(TKey key, TScope scope)
+    protected override TEntity DoGet(TIdentifier identifier, TScope scope)
     {
-        var record = scope.Connection.Get<TRecord>(key, scope);
+        var record = scope.Connection.Get<TRecord>(identifier, scope);
         var entity = Mapper.Map<TEntity>(record);
 
         return entity;
     }
 
-    protected override async Task<TEntity> DoGetAsync(TKey key, TScope scope)
+    protected override async Task<TEntity> DoGetAsync(TIdentifier identifier, TScope scope)
     {
-        var record = await scope.Connection.GetAsync<TRecord>(key, scope);
+        var record = await scope.Connection.GetAsync<TRecord>(identifier, scope);
         var entity = Mapper.Map<TEntity>(record);
 
         return entity;

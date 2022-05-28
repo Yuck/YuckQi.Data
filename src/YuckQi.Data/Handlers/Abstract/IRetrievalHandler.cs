@@ -6,11 +6,11 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public interface IRetrievalHandler<TEntity, in TKey, in TScope> where TEntity : IEntity<TKey> where TKey : struct
+public interface IRetrievalHandler<TEntity, in TIdentifier, in TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
 {
-    TEntity Get(TKey key, TScope scope);
+    TEntity Get(TIdentifier identifier, TScope scope);
 
-    Task<TEntity> GetAsync(TKey key, TScope scope);
+    Task<TEntity> GetAsync(TIdentifier identifier, TScope scope);
 
     TEntity Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
 

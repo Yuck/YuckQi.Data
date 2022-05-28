@@ -51,18 +51,18 @@ public class DocumentModelExtensionTests
     }
 
     [Test]
-    public void GetKeyFieldDefinition_WithNullType_IsNull()
+    public void GetIdentifierFieldDefinition_WithNullType_IsNull()
     {
-        var name = ((Type) null).GetKeyFieldDefinition<SurLaTableRecord, Int32>();
+        var name = ((Type) null).GetIdentifierFieldDefinition<SurLaTableRecord, Int32>();
 
         Assert.IsNull(name);
     }
 
     [Test]
-    public async Task GetKeyFieldDefinition_WithMultipleRequests_IsValid()
+    public async Task GetIdentifierFieldDefinition_WithMultipleRequests_IsValid()
     {
         var type = typeof(SurLaTableRecord);
-        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetKeyFieldDefinition<SurLaTableRecord, Int32>())).ToList();
+        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetIdentifierFieldDefinition<SurLaTableRecord, Int32>())).ToList();
         var result = await Task.WhenAll(tasks);
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
@@ -72,18 +72,18 @@ public class DocumentModelExtensionTests
     }
 
     [Test]
-    public void GetKey_WithNullRecord_IsNull()
+    public void GetIdentifier_WithNullRecord_IsNull()
     {
-        var name = ((SurLaTableRecord) null).GetKey<SurLaTableRecord, Int32>();
+        var name = ((SurLaTableRecord) null).GetIdentifier<SurLaTableRecord, Int32>();
 
         Assert.IsNull(name);
     }
 
     [Test]
-    public async Task GetKey_WithMultipleRequests_IsValid()
+    public async Task GetIdentifier_WithMultipleRequests_IsValid()
     {
         var record = new SurLaTableRecord { Id = 1, Name = "test" };
-        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => record.GetKey<SurLaTableRecord, Int32>())).ToList();
+        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => record.GetIdentifier<SurLaTableRecord, Int32>())).ToList();
         var result = await Task.WhenAll(tasks);
         var first = tasks.First().Result;
 

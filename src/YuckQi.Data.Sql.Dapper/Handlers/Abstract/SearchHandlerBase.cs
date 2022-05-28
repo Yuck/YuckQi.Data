@@ -15,7 +15,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract;
 
-public abstract class SearchHandlerBase<TEntity, TKey, TScope, TRecord> : SearchHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
 {
     #region Private Members
 

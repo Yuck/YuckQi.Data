@@ -4,7 +4,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public interface ILogicalDeletionHandler<TEntity, in TKey, in TScope> where TEntity : IEntity<TKey>, IDeleted, IRevised where TKey : struct
+public interface ILogicalDeletionHandler<TEntity, in TIdentifier, in TScope> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : struct
 {
     TEntity Delete(TEntity entity, TScope scope);
 
