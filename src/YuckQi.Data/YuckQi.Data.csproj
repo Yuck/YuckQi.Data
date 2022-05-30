@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>6.0.2</Version>
+    <Version>6.0.3</Version>
     <Description>A .NET library of lightweight data access handlers which can be used to compose repositories and domain services.</Description>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="YuckQi.Domain" Version="6.0.2" />
+    <PackageReference Include="YuckQi.Domain" Version="6.0.3" />
     <PackageReference Include="YuckQi.Extensions.Mapping.Abstractions" Version="6.0.0" />
   </ItemGroup>
 
