@@ -55,7 +55,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
         var identifier = DoCreate(entity, scope);
         if (identifier == null)
-            throw new CreationException<TRecord>();
+            throw new CreationException<TEntity>();
 
         entity.Identifier = identifier.Value;
 
@@ -76,7 +76,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
         var identifier = await DoCreate(entity, scope, cancellationToken);
         if (identifier == null)
-            throw new CreationException<TRecord>();
+            throw new CreationException<TEntity>();
 
         entity.Identifier = identifier.Value;
 

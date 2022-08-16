@@ -2,7 +2,7 @@
 
 namespace YuckQi.Data.Exceptions;
 
-public sealed class CreationException<TRecord> : ApplicationException
+public sealed class CreationException<TEntity> : ApplicationException
 {
     #region Constructors
 
@@ -15,7 +15,7 @@ public sealed class CreationException<TRecord> : ApplicationException
 
     #region Supporting Methods
 
-    private static String GetMessageText() => $"Failed to create '{nameof(TRecord)}'.";
+    private static String GetMessageText() => $"Failed to create '{typeof(TEntity).Name}'.";
 
     #endregion
 }

@@ -52,7 +52,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
         if (! DoRevise(entity, scope))
-            throw new RevisionException<TRecord, TIdentifier>(entity.Identifier);
+            throw new RevisionException<TEntity, TIdentifier>(entity.Identifier);
 
         return entity;
     }
@@ -68,7 +68,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
         if (! await DoRevise(entity, scope, cancellationToken))
-            throw new RevisionException<TRecord, TIdentifier>(entity.Identifier);
+            throw new RevisionException<TEntity, TIdentifier>(entity.Identifier);
 
         return entity;
     }

@@ -2,7 +2,7 @@
 
 namespace YuckQi.Data.Exceptions;
 
-public sealed class PhysicalDeletionException<TRecord, TIdentifier> : ApplicationException where TIdentifier : struct
+public sealed class PhysicalDeletionException<TEntity, TIdentifier> : ApplicationException where TIdentifier : struct
 {
     #region Constructors
 
@@ -15,7 +15,7 @@ public sealed class PhysicalDeletionException<TRecord, TIdentifier> : Applicatio
 
     #region Supporting Methods
 
-    private static String GetMessageText(TIdentifier identifier) => $"Failed to delete '{nameof(TRecord)}' with identifier '{identifier}'.";
+    private static String GetMessageText(TIdentifier identifier) => $"Failed to delete '{typeof(TEntity).Name}' with identifier '{identifier}'.";
 
     #endregion
 }

@@ -36,7 +36,7 @@ public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope, 
             throw new ArgumentNullException(nameof(scope));
 
         if (! DoDelete(entity, scope))
-            throw new PhysicalDeletionException<TRecord, TIdentifier>(entity.Identifier);
+            throw new PhysicalDeletionException<TEntity, TIdentifier>(entity.Identifier);
 
         return entity;
     }
