@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Options;
@@ -8,11 +9,11 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord> : ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct
+public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct
 {
     #region Private Members
 
-    private readonly CreationOptions _options;
+    private readonly CreationOptions<TIdentifier> _options;
 
     #endregion
 
@@ -26,13 +27,17 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
     #region Constructors
 
+    protected CreationHandlerBase() : this(null, null) { }
+
+    protected CreationHandlerBase(CreationOptions<TIdentifier> options) : this(null, options) { }
+
     protected CreationHandlerBase(IMapper mapper) : this(mapper, null) { }
 
-    protected CreationHandlerBase(IMapper mapper, CreationOptions options)
+    protected CreationHandlerBase(IMapper mapper, CreationOptions<TIdentifier> options)
     {
-        Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        Mapper = mapper;
 
-        _options = options ?? new CreationOptions();
+        _options = options ?? new CreationOptions<TIdentifier>();
     }
 
     #endregion
@@ -47,6 +52,8 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
+        if (_options.IdentifierFactory != null)
+            entity.Identifier = _options.IdentifierFactory();
         if (_options.CreationMomentAssignment == PropertyHandling.Auto)
             entity.CreationMomentUtc = DateTime.UtcNow;
         if (_options.RevisionMomentAssignment == PropertyHandling.Auto && entity is IRevised revised)
@@ -54,28 +61,30 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
         var identifier = DoCreate(entity, scope);
         if (identifier == null)
-            throw new CreationException<TRecord>();
+            throw new CreationException<TEntity>();
 
         entity.Identifier = identifier.Value;
 
         return entity;
     }
 
-    public async Task<TEntity> CreateAsync(TEntity entity, TScope scope)
+    public async Task<TEntity> Create(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
+        if (_options.IdentifierFactory != null)
+            entity.Identifier = _options.IdentifierFactory();
         if (_options.CreationMomentAssignment == PropertyHandling.Auto)
             entity.CreationMomentUtc = DateTime.UtcNow;
         if (_options.RevisionMomentAssignment == PropertyHandling.Auto && entity is IRevised revised)
             revised.RevisionMomentUtc = entity.CreationMomentUtc;
 
-        var identifier = await DoCreateAsync(entity, scope);
+        var identifier = await DoCreate(entity, scope, cancellationToken);
         if (identifier == null)
-            throw new CreationException<TRecord>();
+            throw new CreationException<TEntity>();
 
         entity.Identifier = identifier.Value;
 
@@ -89,7 +98,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
     protected abstract TIdentifier? DoCreate(TEntity entity, TScope scope);
 
-    protected abstract Task<TIdentifier?> DoCreateAsync(TEntity entity, TScope scope);
+    protected abstract Task<TIdentifier?> DoCreate(TEntity entity, TScope scope, CancellationToken cancellationToken);
 
     #endregion
 }

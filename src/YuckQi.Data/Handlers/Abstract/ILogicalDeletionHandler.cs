@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
@@ -8,9 +9,9 @@ public interface ILogicalDeletionHandler<TEntity, in TIdentifier, in TScope> whe
 {
     TEntity Delete(TEntity entity, TScope scope);
 
-    Task<TEntity> DeleteAsync(TEntity entity, TScope scope);
+    Task<TEntity> Delete(TEntity entity, TScope scope, CancellationToken cancellationToken);
 
     TEntity Restore(TEntity entity, TScope scope);
 
-    Task<TEntity> RestoreAsync(TEntity entity, TScope scope);
+    Task<TEntity> Restore(TEntity entity, TScope scope, CancellationToken cancellationToken);
 }

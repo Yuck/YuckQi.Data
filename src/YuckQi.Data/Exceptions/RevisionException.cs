@@ -2,7 +2,7 @@
 
 namespace YuckQi.Data.Exceptions;
 
-public sealed class RevisionException<TRecord, TIdentifier> : ApplicationException where TIdentifier : struct
+public sealed class RevisionException<TEntity, TIdentifier> : ApplicationException where TIdentifier : struct
 {
     #region Constructors
 
@@ -15,7 +15,7 @@ public sealed class RevisionException<TRecord, TIdentifier> : ApplicationExcepti
 
     #region Supporting Methods
 
-    private static String GetMessageText(TIdentifier identifier) => $"Failed to revise '{nameof(TRecord)}' with identifier '{identifier}'.";
+    private static String GetMessageText(TIdentifier identifier) => $"Failed to revise '{typeof(TEntity).Name}' with identifier '{identifier}'.";
 
     #endregion
 }

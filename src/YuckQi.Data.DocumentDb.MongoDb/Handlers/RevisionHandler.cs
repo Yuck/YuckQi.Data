@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
@@ -10,7 +11,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope, TDocument> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct where TScope : IClientSessionHandle
+public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct where TScope : IClientSessionHandle
 {
     #region Constructors
 
@@ -43,7 +44,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         return result.ModifiedCount > 0;
     }
 
-    protected override async Task<Boolean> DoReviseAsync(TEntity entity, TScope scope)
+    protected override async Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
@@ -51,7 +52,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         var document = Mapper.Map<TDocument>(entity);
         var identifier = document.GetIdentifier<TDocument, TIdentifier>();
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
-        var result = await collection.ReplaceOneAsync(scope, filter, document);
+        var result = await collection.ReplaceOneAsync(scope, filter, document, cancellationToken: cancellationToken);
 
         return result.ModifiedCount > 0;
     }

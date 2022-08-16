@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Filtering;
 using YuckQi.Domain.Entities.Abstract;
@@ -10,25 +11,25 @@ public interface IRetrievalHandler<TEntity, in TIdentifier, in TScope> where TEn
 {
     TEntity Get(TIdentifier identifier, TScope scope);
 
-    Task<TEntity> GetAsync(TIdentifier identifier, TScope scope);
+    Task<TEntity> Get(TIdentifier identifier, TScope scope, CancellationToken cancellationToken);
 
     TEntity Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
 
-    Task<TEntity> GetAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
+    Task<TEntity> Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken);
 
     TEntity Get(Object parameters, TScope scope);
 
-    Task<TEntity> GetAsync(Object parameters, TScope scope);
+    Task<TEntity> Get(Object parameters, TScope scope, CancellationToken cancellationToken);
 
     IReadOnlyCollection<TEntity> GetList(TScope scope);
 
-    Task<IReadOnlyCollection<TEntity>> GetListAsync(TScope scope);
+    Task<IReadOnlyCollection<TEntity>> GetList(TScope scope, CancellationToken cancellationToken);
 
     IReadOnlyCollection<TEntity> GetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
 
-    Task<IReadOnlyCollection<TEntity>> GetListAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
+    Task<IReadOnlyCollection<TEntity>> GetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken);
 
     IReadOnlyCollection<TEntity> GetList(Object parameters, TScope scope);
 
-    Task<IReadOnlyCollection<TEntity>> GetListAsync(Object parameters, TScope scope);
+    Task<IReadOnlyCollection<TEntity>> GetList(Object parameters, TScope scope, CancellationToken cancellationToken);
 }

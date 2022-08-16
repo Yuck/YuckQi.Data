@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
@@ -42,13 +43,13 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entity;
     }
 
-    protected override async Task<TEntity> DoGetAsync(TIdentifier identifier, TScope scope)
+    protected override async Task<TEntity> DoGet(TIdentifier identifier, TScope scope, CancellationToken cancellationToken)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
-        var reader = await collection.FindAsync(filter);
+        var reader = await collection.FindAsync(filter, cancellationToken: cancellationToken);
         var document = GetDocument(reader);
         var entity = Mapper.Map<TEntity>(document);
 
@@ -67,12 +68,12 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entity;
     }
 
-    protected override async Task<TEntity> DoGetAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override async Task<TEntity> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
-        var reader = await collection.FindAsync(filter);
+        var reader = await collection.FindAsync(filter, cancellationToken: cancellationToken);
         var document = GetDocument(reader);
         var entity = Mapper.Map<TEntity>(document);
 
@@ -91,12 +92,12 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entities;
     }
 
-    protected override async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override async Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
-        var reader = await collection.FindAsync(filter);
+        var reader = await collection.FindAsync(filter, cancellationToken: cancellationToken);
         var documents = GetDocuments(reader);
         var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(documents);
 

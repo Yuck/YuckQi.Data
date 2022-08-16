@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
@@ -7,5 +8,5 @@ public interface IPhysicalDeletionHandler<TEntity, in TIdentifier, in TScope> wh
 {
     TEntity Delete(TEntity entity, TScope scope);
 
-    Task<TEntity> DeleteAsync(TEntity entity, TScope scope);
+    Task<TEntity> Delete(TEntity entity, TScope scope, CancellationToken cancellationToken);
 }

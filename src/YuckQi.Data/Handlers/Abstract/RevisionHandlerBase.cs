@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Options;
@@ -8,7 +9,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord> : IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
+public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
 {
     #region Private Members
 
@@ -26,11 +27,15 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
     #region Constructors
 
+    protected RevisionHandlerBase() : this(null, null) { }
+
+    protected RevisionHandlerBase(RevisionOptions options) : this(null, options) { }
+
     protected RevisionHandlerBase(IMapper mapper) : this(mapper, null) { }
 
     protected RevisionHandlerBase(IMapper mapper, RevisionOptions options)
     {
-        Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        Mapper = mapper;
 
         _options = options ?? new RevisionOptions();
     }
@@ -51,12 +56,12 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
         if (! DoRevise(entity, scope))
-            throw new RevisionException<TRecord, TIdentifier>(entity.Identifier);
+            throw new RevisionException<TEntity, TIdentifier>(entity.Identifier);
 
         return entity;
     }
 
-    public async Task<TEntity> ReviseAsync(TEntity entity, TScope scope)
+    public async Task<TEntity> Revise(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -66,8 +71,8 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
         if (_options.RevisionMomentAssignment == PropertyHandling.Auto)
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
-        if (! await DoReviseAsync(entity, scope))
-            throw new RevisionException<TRecord, TIdentifier>(entity.Identifier);
+        if (! await DoRevise(entity, scope, cancellationToken))
+            throw new RevisionException<TEntity, TIdentifier>(entity.Identifier);
 
         return entity;
     }
@@ -79,7 +84,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
     protected abstract Boolean DoRevise(TEntity entity, TScope scope);
 
-    protected abstract Task<Boolean> DoReviseAsync(TEntity entity, TScope scope);
+    protected abstract Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken);
 
     #endregion
 }

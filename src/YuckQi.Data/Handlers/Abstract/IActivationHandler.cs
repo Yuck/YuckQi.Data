@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
@@ -8,9 +9,9 @@ public interface IActivationHandler<TEntity, in TIdentifier, in TScope> where TE
 {
     TEntity Activate(TEntity entity, TScope scope);
 
-    Task<TEntity> ActivateAsync(TEntity entity, TScope scope);
+    Task<TEntity> Activate(TEntity entity, TScope scope, CancellationToken cancellationToken);
 
     TEntity Deactivate(TEntity entity, TScope scope);
 
-    Task<TEntity> DeactivateAsync(TEntity entity, TScope scope);
+    Task<TEntity> Deactivate(TEntity entity, TScope scope, CancellationToken cancellationToken);
 }
