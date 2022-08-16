@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>6.0.3</Version>
+    <Version>6.1.0</Version>
     <Description>An implementation of YuckQi.Data for MSSQL databases using Dapper and SimpleCRUD.</Description>
     <Product>YuckQi.Data</Product>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
