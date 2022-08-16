@@ -24,7 +24,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
 
     public CreationHandler(IMapper mapper) : base(mapper) { }
 
-    public CreationHandler(IMapper mapper, CreationOptions options) : base(mapper, options) { }
+    public CreationHandler(IMapper mapper, CreationOptions<TIdentifier> options) : base(mapper, options) { }
 
     #endregion
 
