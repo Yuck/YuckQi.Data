@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
@@ -8,5 +9,5 @@ public interface ICreationHandler<TEntity, TIdentifier, in TScope> where TEntity
 {
     TEntity Create(TEntity entity, TScope scope);
 
-    Task<TEntity> CreateAsync(TEntity entity, TScope scope);
+    Task<TEntity> Create(TEntity entity, TScope scope, CancellationToken cancellationToken);
 }

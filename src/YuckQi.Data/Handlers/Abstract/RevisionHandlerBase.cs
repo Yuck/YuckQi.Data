@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Options;
@@ -56,7 +57,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
         return entity;
     }
 
-    public async Task<TEntity> ReviseAsync(TEntity entity, TScope scope)
+    public async Task<TEntity> Revise(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -66,7 +67,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
         if (_options.RevisionMomentAssignment == PropertyHandling.Auto)
             entity.RevisionMomentUtc = DateTime.UtcNow;
 
-        if (! await DoReviseAsync(entity, scope))
+        if (! await DoRevise(entity, scope, cancellationToken))
             throw new RevisionException<TRecord, TIdentifier>(entity.Identifier);
 
         return entity;
@@ -79,7 +80,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
     protected abstract Boolean DoRevise(TEntity entity, TScope scope);
 
-    protected abstract Task<Boolean> DoReviseAsync(TEntity entity, TScope scope);
+    protected abstract Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken);
 
     #endregion
 }

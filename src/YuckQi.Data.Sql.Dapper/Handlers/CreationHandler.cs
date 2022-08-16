@@ -1,4 +1,5 @@
-﻿using System.Data;
+using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using YuckQi.Data.Handlers.Abstract;
@@ -24,7 +25,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHa
 
     protected override TIdentifier? DoCreate(TEntity entity, TScope scope) => scope.Connection.Insert<TIdentifier?, TRecord>(Mapper.Map<TRecord>(entity), scope);
 
-    protected override Task<TIdentifier?> DoCreateAsync(TEntity entity, TScope scope) => scope.Connection.InsertAsync<TIdentifier?, TRecord>(Mapper.Map<TRecord>(entity), scope);
+    protected override Task<TIdentifier?> DoCreate(TEntity entity, TScope scope, CancellationToken cancellationToken) => scope.Connection.InsertAsync<TIdentifier?, TRecord>(Mapper.Map<TRecord>(entity), scope);
 
     #endregion
 }

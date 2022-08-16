@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -41,7 +42,7 @@ public abstract class ActivationHandlerBase<TEntity, TIdentifier, TScope> : IAct
         return _reviser.Revise(entity, scope);
     }
 
-    public Task<TEntity> ActivateAsync(TEntity entity, TScope scope)
+    public Task<TEntity> Activate(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -53,7 +54,7 @@ public abstract class ActivationHandlerBase<TEntity, TIdentifier, TScope> : IAct
 
         entity.ActivationMomentUtc = DateTime.UtcNow;
 
-        return _reviser.ReviseAsync(entity, scope);
+        return _reviser.Revise(entity, scope, cancellationToken);
     }
 
     public TEntity Deactivate(TEntity entity, TScope scope)
@@ -71,7 +72,7 @@ public abstract class ActivationHandlerBase<TEntity, TIdentifier, TScope> : IAct
         return _reviser.Revise(entity, scope);
     }
 
-    public Task<TEntity> DeactivateAsync(TEntity entity, TScope scope)
+    public Task<TEntity> Deactivate(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -83,7 +84,7 @@ public abstract class ActivationHandlerBase<TEntity, TIdentifier, TScope> : IAct
 
         entity.ActivationMomentUtc = null;
 
-        return _reviser.ReviseAsync(entity, scope);
+        return _reviser.Revise(entity, scope, cancellationToken);
     }
 
     #endregion

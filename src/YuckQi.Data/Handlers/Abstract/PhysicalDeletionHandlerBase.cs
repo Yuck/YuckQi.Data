@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
 using YuckQi.Domain.Entities.Abstract;
@@ -40,15 +41,15 @@ public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope, 
         return entity;
     }
 
-    public async Task<TEntity> DeleteAsync(TEntity entity, TScope scope)
+    public async Task<TEntity> Delete(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        if (! await DoDeleteAsync(entity, scope))
-            throw new PhysicalDeletionException<TRecord, TIdentifier>(entity.Identifier);
+        if (! await DoDelete(entity, scope, cancellationToken))
+            throw new PhysicalDeletionException<TEntity, TIdentifier>(entity.Identifier);
 
         return entity;
     }
@@ -60,7 +61,7 @@ public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope, 
 
     protected abstract Boolean DoDelete(TEntity entity, TScope scope);
 
-    protected abstract Task<Boolean> DoDeleteAsync(TEntity entity, TScope scope);
+    protected abstract Task<Boolean> DoDelete(TEntity entity, TScope scope, CancellationToken cancellationToken);
 
     #endregion
 }

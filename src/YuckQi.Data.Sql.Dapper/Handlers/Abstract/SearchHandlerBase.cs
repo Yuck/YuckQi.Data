@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using YuckQi.Data.Filtering;
@@ -46,7 +47,7 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> :
         return total;
     }
 
-    protected override Task<Int32> DoCountAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
     {
         var sql = _sqlGenerator.GenerateCountQuery(parameters);
         var total = scope.Connection.ExecuteScalarAsync<Int32>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
@@ -63,7 +64,7 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> :
         return entities;
     }
 
-    protected override async Task<IReadOnlyCollection<TEntity>> DoSearchAsync(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+    protected override async Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken)
     {
         var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
         var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);

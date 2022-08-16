@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
@@ -41,12 +42,12 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
         return (Int32) total;
     }
 
-    protected override async Task<Int32> DoCountAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override async Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
-        var total = await collection.CountDocumentsAsync(filter);
+        var total = await collection.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
 
         return (Int32) total;
     }
@@ -66,7 +67,7 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
         return entities;
     }
 
-    protected override async Task<IReadOnlyCollection<TEntity>> DoSearchAsync(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+    protected override async Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
@@ -75,7 +76,7 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
                                         .Sort(GetSortDefinition(sort))
                                         .Skip((page.PageNumber - 1) * page.PageSize)
                                         .Limit(page.PageSize)
-                                        .ToListAsync();
+                                        .ToListAsync(cancellationToken);
         var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(documents);
 
         return entities;

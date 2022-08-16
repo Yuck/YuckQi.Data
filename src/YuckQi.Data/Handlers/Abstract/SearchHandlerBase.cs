@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
@@ -50,7 +51,7 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ISearchH
         return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
     }
 
-    public async Task<IPage<TEntity>> SearchAsync(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+    public async Task<IPage<TEntity>> Search(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken)
     {
         if (parameters == null)
             throw new ArgumentNullException(nameof(parameters));
@@ -61,15 +62,15 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ISearchH
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var entities = await DoSearchAsync(parameters, page, sort, scope);
-        var total = await DoCountAsync(parameters, scope);
+        var entities = await DoSearch(parameters, page, sort, scope, cancellationToken);
+        var total = await DoCount(parameters, scope, cancellationToken);
 
         return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
     }
 
     public IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => Search(parameters?.ToFilterCollection(), page, sort, scope);
 
-    public Task<IPage<TEntity>> SearchAsync(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => SearchAsync(parameters?.ToFilterCollection(), page, sort, scope);
+    public Task<IPage<TEntity>> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken) => Search(parameters?.ToFilterCollection(), page, sort, scope, cancellationToken);
 
     #endregion
 
@@ -78,11 +79,11 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ISearchH
 
     protected abstract Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
 
-    protected abstract Task<Int32> DoCountAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
+    protected abstract Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken);
 
     protected abstract IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope);
 
-    protected abstract Task<IReadOnlyCollection<TEntity>> DoSearchAsync(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope);
+    protected abstract Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken);
 
     #endregion
 }

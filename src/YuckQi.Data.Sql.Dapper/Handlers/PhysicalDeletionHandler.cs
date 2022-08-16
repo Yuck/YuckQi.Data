@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using YuckQi.Data.Handlers.Abstract;
@@ -21,7 +22,7 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TRecord> : Ph
 
     protected override Boolean DoDelete(TEntity entity, TScope scope) => scope.Connection.Delete(Mapper.Map<TRecord>(entity), scope) > 0;
 
-    protected override async Task<Boolean> DoDeleteAsync(TEntity entity, TScope scope) => await scope.Connection.DeleteAsync(Mapper.Map<TRecord>(entity), scope) > 0;
+    protected override async Task<Boolean> DoDelete(TEntity entity, TScope scope, CancellationToken cancellationToken) => await scope.Connection.DeleteAsync(Mapper.Map<TRecord>(entity), scope) > 0;
 
     #endregion
 }

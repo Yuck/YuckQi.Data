@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using YuckQi.Data.Filtering;
@@ -43,7 +44,7 @@ public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Retri
         return entity;
     }
 
-    protected override async Task<TEntity> DoGetAsync(TIdentifier identifier, TScope scope)
+    protected override async Task<TEntity> DoGet(TIdentifier identifier, TScope scope, CancellationToken cancellationToken)
     {
         var record = await scope.Connection.GetAsync<TRecord>(identifier, scope);
         var entity = Mapper.Map<TEntity>(record);
@@ -60,7 +61,7 @@ public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Retri
         return entity;
     }
 
-    protected override async Task<TEntity> DoGetAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override async Task<TEntity> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
     {
         var sql = _sqlGenerator.GenerateGetQuery(parameters);
         var record = await scope.Connection.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
@@ -78,7 +79,7 @@ public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Retri
         return entities;
     }
 
-    protected override async Task<IReadOnlyCollection<TEntity>> DoGetListAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override async Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
     {
         var sql = _sqlGenerator.GenerateGetQuery(parameters);
         var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters?.ToDynamicParameters(_dbTypeMap), scope);

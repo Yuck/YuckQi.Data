@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
@@ -39,7 +40,7 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
         return result.DeletedCount > 0;
     }
 
-    protected override async Task<Boolean> DoDeleteAsync(TEntity entity, TScope scope)
+    protected override async Task<Boolean> DoDelete(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
@@ -47,7 +48,7 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
         var identifier = document.GetIdentifier<TDocument, TIdentifier>();
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
-        var result = await collection.DeleteOneAsync(scope, filter);
+        var result = await collection.DeleteOneAsync(scope, filter, cancellationToken: cancellationToken);
 
         return result.DeletedCount > 0;
     }

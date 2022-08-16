@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Options;
@@ -61,7 +62,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
         return entity;
     }
 
-    public async Task<TEntity> CreateAsync(TEntity entity, TScope scope)
+    public async Task<TEntity> Create(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -73,7 +74,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
         if (_options.RevisionMomentAssignment == PropertyHandling.Auto && entity is IRevised revised)
             revised.RevisionMomentUtc = entity.CreationMomentUtc;
 
-        var identifier = await DoCreateAsync(entity, scope);
+        var identifier = await DoCreate(entity, scope, cancellationToken);
         if (identifier == null)
             throw new CreationException<TRecord>();
 
@@ -89,7 +90,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
     protected abstract TIdentifier? DoCreate(TEntity entity, TScope scope);
 
-    protected abstract Task<TIdentifier?> DoCreateAsync(TEntity entity, TScope scope);
+    protected abstract Task<TIdentifier?> DoCreate(TEntity entity, TScope scope, CancellationToken cancellationToken);
 
     #endregion
 }

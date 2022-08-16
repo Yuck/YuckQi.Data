@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
@@ -8,5 +9,5 @@ public interface IRevisionHandler<TEntity, TIdentifier, in TScope> where TEntity
 {
     TEntity Revise(TEntity entity, TScope scope);
 
-    Task<TEntity> ReviseAsync(TEntity entity, TScope scope);
+    Task<TEntity> Revise(TEntity entity, TScope scope, CancellationToken cancellationToken);
 }
