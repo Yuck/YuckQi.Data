@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
@@ -11,7 +11,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope, TDocument> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct where TScope : IClientSessionHandle
+public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct where TScope : IClientSessionHandle
 {
     #region Private Members
 

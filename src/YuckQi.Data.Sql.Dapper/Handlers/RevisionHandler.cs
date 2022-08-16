@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers;
 
-public class RevisionHandler<TEntity, TIdentifier, TScope, TRecord> : RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct where TScope : IDbTransaction
+public class RevisionHandler<TEntity, TIdentifier, TScope, TRecord> : RevisionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct where TScope : IDbTransaction
 {
     #region Constructors
 

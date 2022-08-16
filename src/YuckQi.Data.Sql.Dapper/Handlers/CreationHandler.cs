@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
@@ -10,7 +10,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers;
 
-public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct where TScope : IDbTransaction
+public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct where TScope : IDbTransaction
 {
     #region Constructors
 

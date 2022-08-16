@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
@@ -9,7 +9,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord> : ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct
+public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct
 {
     #region Private Members
 
@@ -35,7 +35,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
     protected CreationHandlerBase(IMapper mapper, CreationOptions<TIdentifier> options)
     {
-        Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        Mapper = mapper;
 
         _options = options ?? new CreationOptions<TIdentifier>();
     }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,7 +9,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers;
 
-public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TRecord> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope, TRecord> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TRecord> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
 {
     #region Constructors
 

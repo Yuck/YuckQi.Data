@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
@@ -9,7 +9,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord> : IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
+public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
 {
     #region Private Members
 
@@ -27,11 +27,15 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TRecord>
 
     #region Constructors
 
+    protected RevisionHandlerBase() : this(null, null) { }
+
+    protected RevisionHandlerBase(RevisionOptions options) : this(null, options) { }
+
     protected RevisionHandlerBase(IMapper mapper) : this(mapper, null) { }
 
     protected RevisionHandlerBase(IMapper mapper, RevisionOptions options)
     {
-        Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        Mapper = mapper;
 
         _options = options ?? new RevisionOptions();
     }

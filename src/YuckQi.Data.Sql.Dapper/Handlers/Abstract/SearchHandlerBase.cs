@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -28,7 +28,7 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> :
 
     #region Constructors
 
-    protected SearchHandlerBase(IMapper mapper, ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(mapper)
+    protected SearchHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper mapper) : base(mapper)
     {
         _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         _dbTypeMap = dbTypeMap;

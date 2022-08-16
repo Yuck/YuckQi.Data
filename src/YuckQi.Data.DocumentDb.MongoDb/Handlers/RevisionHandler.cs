@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
@@ -11,7 +11,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope, TDocument> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct where TScope : IClientSessionHandle
+public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct where TScope : IClientSessionHandle
 {
     #region Constructors
 

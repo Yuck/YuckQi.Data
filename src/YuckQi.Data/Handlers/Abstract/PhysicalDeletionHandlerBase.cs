@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
@@ -7,7 +7,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope, TRecord> : IPhysicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : IPhysicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
 {
     #region Properties
 
@@ -18,9 +18,11 @@ public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope, 
 
     #region Constructors
 
+    protected PhysicalDeletionHandlerBase() : this(null) { }
+
     protected PhysicalDeletionHandlerBase(IMapper mapper)
     {
-        Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        Mapper = mapper;
     }
 
     #endregion

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -24,9 +24,11 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ISearchH
 
     #region Constructors
 
+    protected SearchHandlerBase() : this(null) { }
+
     protected SearchHandlerBase(IMapper mapper)
     {
-        Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        Mapper = mapper;
     }
 
     #endregion

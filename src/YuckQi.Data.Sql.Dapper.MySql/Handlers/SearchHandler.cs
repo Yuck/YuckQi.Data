@@ -15,5 +15,5 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TRecord> : SearchHandle
 
     public SearchHandler(IMapper mapper, ISqlGenerator<TRecord> sqlGenerator) : this(mapper, sqlGenerator, DbTypeMap.Default) { }
 
-    public SearchHandler(IMapper mapper, ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(mapper, sqlGenerator, dbTypeMap) { }
+    public SearchHandler(IMapper mapper, ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, mapper) { }
 }

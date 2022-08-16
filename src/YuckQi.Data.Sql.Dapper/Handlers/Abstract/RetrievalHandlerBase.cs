@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
@@ -25,7 +25,7 @@ public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Retri
 
     #region Constructors
 
-    protected RetrievalHandlerBase(IMapper mapper, ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(mapper)
+    protected RetrievalHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper mapper) : base(mapper)
     {
         _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         _dbTypeMap = dbTypeMap;
