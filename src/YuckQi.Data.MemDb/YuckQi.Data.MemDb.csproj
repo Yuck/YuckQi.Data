@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Kevin J Lambert</Authors>
+    <Product>YuckQi.Data</Product>
+    <Version>6.1.0</Version>
+    <Description>An implementation of YuckQi.Data for a in-memory "database" (ConcurrentDictionary), ideal for rapid development without external dependencies.</Description>
+    <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Yuck/YuckQi.Data</PackageProjectUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="readme.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\YuckQi.Data\YuckQi.Data.csproj" />
+  </ItemGroup>
+
+</Project>
