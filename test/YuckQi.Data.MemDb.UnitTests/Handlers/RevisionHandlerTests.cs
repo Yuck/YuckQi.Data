@@ -63,7 +63,7 @@ public class RevisionHandlerTests
 
     public class SurLaTable : EntityBase<Int32>, IRevised
     {
-        public String Name { get; set; }
+        public String Name { get; set; } = String.Empty;
 
         public DateTime RevisionMomentUtc { get; set; }
     }

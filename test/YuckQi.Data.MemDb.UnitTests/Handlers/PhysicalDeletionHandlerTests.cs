@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using NUnit.Framework;
+using YuckQi.Data.Exceptions;
 using YuckQi.Data.MemDb.Handlers;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -28,9 +29,20 @@ public class PhysicalDeletionHandlerTests
         Assert.That(entities.Values.ToList(), Does.Not.Contain(deleted));
     }
 
+    [Test]
+    public void B()
+    {
+        var entities = new ConcurrentDictionary<Int32, SurLaTable>();
+        var deleter = new PhysicalDeletionHandler<SurLaTable, Int32, Object>(entities);
+        var scope = new Object();
+        var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
+
+        Assert.Throws<PhysicalDeletionException<SurLaTable, Int32>>(() => deleter.Delete(entity, scope));
+    }
+
     public class SurLaTable : EntityBase<Int32>, ICreated
     {
-        public String Name { get; set; }
+        public String Name { get; set; } = String.Empty;
 
         public DateTime CreationMomentUtc { get; set; }
     }

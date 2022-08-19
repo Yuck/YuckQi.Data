@@ -22,12 +22,10 @@ public class CreationHandlerTests
 
         var created = creator.Create(entity, scope);
 
-        // TODO: What to test? CreationMoment I guess? Both auto and manual?
-
         Assert.Multiple(() =>
         {
-            Assert.That(entity.Identifier, Is.EqualTo(created.Identifier));
             Assert.That(entities.Values.ToList(), Does.Contain(created));
+            Assert.That(entity.Identifier, Is.EqualTo(created.Identifier));
         });
     }
 
@@ -46,7 +44,7 @@ public class CreationHandlerTests
 
     public class SurLaTable : EntityBase<Int32>, ICreated
     {
-        public String Name { get; set; }
+        public String Name { get; set; } = String.Empty;
 
         public DateTime CreationMomentUtc { get; set; }
     }

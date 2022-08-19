@@ -1,4 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
@@ -11,7 +14,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandlerBase
 {
     private readonly ConcurrentDictionary<TIdentifier, TEntity> _entities;
 
-    public RevisionHandler(ConcurrentDictionary<TIdentifier, TEntity> entities, RevisionOptions? options = null) : base(options)
+    public RevisionHandler(ConcurrentDictionary<TIdentifier, TEntity> entities, RevisionOptions options = null) : base(options)
     {
         _entities = entities ?? throw new ArgumentNullException(nameof(entities));
     }

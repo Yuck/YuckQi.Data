@@ -1,4 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
@@ -15,7 +20,7 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope> : IRetrievalHandler<
         _entities = entities ?? throw new ArgumentNullException(nameof(entities));
     }
 
-    public TEntity Get(TIdentifier identifier, TScope scope) => _entities.TryGetValue(identifier, out var entity) ? entity : default; // TODO: Want to return null here though, not "default"
+    public TEntity Get(TIdentifier identifier, TScope scope) => _entities.TryGetValue(identifier, out var entity) ? entity : default;
 
     public Task<TEntity> Get(TIdentifier identifier, TScope scope, CancellationToken cancellationToken) => Task.FromResult(Get(identifier, scope));
 

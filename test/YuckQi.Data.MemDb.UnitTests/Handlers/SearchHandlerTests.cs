@@ -1,5 +1,8 @@
 ﻿using System.Collections.Concurrent;
+using System.Text;
 using NUnit.Framework;
+using YuckQi.Data.Filtering;
+using YuckQi.Data.Handlers.Options;
 using YuckQi.Data.MemDb.Handlers;
 using YuckQi.Data.Sorting;
 using YuckQi.Domain.Aspects.Abstract;
@@ -76,9 +79,69 @@ public class SearchHandlerTests
         Assert.That(found.Items, Does.Not.Contain(created));
     }
 
+    [Test]
+    public void D()
+    {
+        var entities = new ConcurrentDictionary<Int32, SurLaTable>();
+        var creator = new CreationHandler<SurLaTable, Int32, Object>(entities, new CreationOptions<Int32>(() => entities.Count + 1));
+        var searcher = new SearchHandler<SurLaTable, Int32, Object>(entities);
+        var scope = new Object();
+        for (var i = 0; i < 50; i++)
+            creator.Create(new SurLaTable { Name = "ABC" }, scope);
+
+        Assert.That(entities.Count, Is.EqualTo(50));
+
+        var parameters = new[] { new FilterCriteria("Identifier", FilterOperation.LessThanOrEqual, 25) };
+        var page = new Page(1, 10);
+        var sort = new[] { new SortCriteria("Identifier", SortOrder.Descending) }.OrderBy(_ => 1);
+        var found = searcher.Search(parameters, page, sort, scope);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(found.TotalCount, Is.EqualTo(25));
+            Assert.That(found.Items.Count, Is.EqualTo(10));
+        });
+    }
+
+    [Test]
+    public void E()
+    {
+        var entities = new ConcurrentDictionary<Int32, SurLaTable>();
+        var creator = new CreationHandler<SurLaTable, Int32, Object>(entities, new CreationOptions<Int32>(() => entities.Count + 1));
+        var searcher = new SearchHandler<SurLaTable, Int32, Object>(entities);
+        var scope = new Object();
+        for (var i = 0; i < 50; i++)
+            creator.Create(new SurLaTable { Name = GetRandomName() }, scope);
+
+        Assert.That(entities.Count, Is.EqualTo(50));
+
+        var parameters = new[] { new FilterCriteria("Identifier", FilterOperation.LessThanOrEqual, 25) };
+        var page = new Page(1, 50);
+        var sort = new[] { new SortCriteria("Name", SortOrder.Descending) }.OrderBy(_ => 1);
+        var found = searcher.Search(parameters, page, sort, scope);
+
+        var items = found.Items.ToArray();
+        for (var i = 1; i < items.Length; i++)
+        {
+            var current = items[i];
+            var previous = items[i - 1];
+
+            Assert.That(current.Name, Is.LessThanOrEqualTo(previous.Name));
+        }
+    }
+
+    private static String GetRandomName(Int32 length = 5)
+    {
+        var name = new StringBuilder();
+        for (var i = 0; i <= length; i++)
+            name.Append((Char) new Random().Next('A', 'Z'));
+
+        return name.ToString();
+    }
+
     public class SurLaTable : EntityBase<Int32>, ICreated
     {
-        public String Name { get; set; }
+        public String Name { get; set; } = String.Empty;
 
         public DateTime CreationMomentUtc { get; set; }
     }

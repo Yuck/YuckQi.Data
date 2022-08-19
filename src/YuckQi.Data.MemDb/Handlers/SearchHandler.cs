@@ -1,4 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Sorting;
@@ -29,7 +34,7 @@ public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEn
     protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
     {
         var entities = GetEntities(parameters);
-        var sorted = entities; // TODO: Apply "sort"       
+        var sorted = entities.AsQueryable().OrderBy(sort);
         var paged = sorted.Skip((page.PageNumber - 1) * page.PageSize).Take(page.PageSize);
 
         return paged.ToList();
