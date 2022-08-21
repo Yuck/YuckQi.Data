@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Dapper;
 using NUnit.Framework;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
-using YuckQi.Domain.Aspects.Abstract;
-using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects;
 
 namespace YuckQi.Data.Sql.Dapper.SqlServer.UnitTests;
@@ -23,7 +18,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Id", 1) };
         var sql = generator.GenerateCountQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select count(*) from [dbo].[SurLaTable] where ([Id] = @Id);", sql);
+        Assert.That(sql, Is.EqualTo("select count(*) from [dbo].[SurLaTable] where ([Id] = @Id);"));
     }
 
     [Test]
@@ -33,7 +28,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Id", 1) };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Id] = @Id);", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Id] = @Id);"));
     }
 
     [Test]
@@ -45,7 +40,7 @@ public class SqlGeneratorTests
         var sort = new List<SortCriteria> { new("Name", SortOrder.Descending) }.OrderBy(t => t);
         var sql = generator.GenerateSearchQuery(parameters, page, sort).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] = @Name) order by [Name] desc offset 50 rows fetch first 50 rows only;", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] = @Name) order by [Name] desc offset 50 rows fetch first 50 rows only;"));
     }
 
     [Test]
@@ -55,7 +50,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Name", "Some Guy") };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] = @Name);", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] = @Name);"));
     }
 
     [Test]
@@ -65,7 +60,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Name", null) };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] is null);", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] is null);"));
     }
 
     [Test]
@@ -75,7 +70,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Name", FilterOperation.NotEqual, "Some Guy") };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] != @Name);", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] != @Name);"));
     }
 
     [Test]
@@ -85,7 +80,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Name", FilterOperation.NotEqual, null) };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] is not null);", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] is not null);"));
     }
 
     [Test]
@@ -95,7 +90,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Name", FilterOperation.GreaterThan, 1234) };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] > @Name);", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] > @Name);"));
     }
 
     [Test]
@@ -105,7 +100,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Name", FilterOperation.GreaterThanOrEqual, 1234) };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] >= @Name);", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] >= @Name);"));
     }
 
     [Test]
@@ -115,7 +110,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Name", FilterOperation.LessThan, 1234) };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] < @Name);", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] < @Name);"));
     }
 
     [Test]
@@ -125,21 +120,13 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Name", FilterOperation.LessThanOrEqual, 1234) };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.AreEqual("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] <= @Name);", sql);
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] <= @Name);"));
     }
-}
 
-public class SurLaTable : EntityBase<Int32>, ICreated, IRevised
-{
-    public String Name { get; set; }
-
-    public DateTime CreationMomentUtc { get; set; }
-    public DateTime RevisionMomentUtc { get; set; }
-}
-
-[Table("SurLaTable")]
-public class SurLaTableRecord
-{
-    public Int32 Id { get; set; }
-    public String Name { get; set; }
+    [Table("SurLaTable")]
+    public class SurLaTableRecord
+    {
+        public Int32 Id { get; set; }
+        public String Name { get; set; } = String.Empty;
+    }
 }

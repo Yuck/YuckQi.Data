@@ -26,15 +26,16 @@ public class SearchHandlerTests
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
 
         var created = creator.Create(entity, scope);
-
-        Assert.That(entities.Values.ToList(), Does.Contain(created));
-
         var parameters = new { Identifier = 1 };
         var page = new Page(1, 10);
         var sort = new[] { new SortCriteria("Identifier", SortOrder.Descending) }.OrderBy(_ => 1);
         var found = searcher.Search(parameters, page, sort, scope);
 
-        Assert.That(found.Items, Contains.Item(created));
+        Assert.Multiple(() =>
+        {
+            Assert.That(entities.Values.ToList(), Does.Contain(created));
+            Assert.That(found.Items, Contains.Item(created));
+        });
     }
 
     [Test]
@@ -47,15 +48,16 @@ public class SearchHandlerTests
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
 
         var created = creator.Create(entity, scope);
-
-        Assert.That(entities.Values.ToList(), Does.Contain(created));
-
         var parameters = new { Name = "ABC" };
         var page = new Page(1, 10);
         var sort = new[] { new SortCriteria("Identifier", SortOrder.Descending) }.OrderBy(_ => 1);
         var found = searcher.Search(parameters, page, sort, scope);
 
-        Assert.That(found.Items, Contains.Item(created));
+        Assert.Multiple(() =>
+        {
+            Assert.That(entities.Values.ToList(), Does.Contain(created));
+            Assert.That(found.Items, Contains.Item(created));
+        });
     }
 
     [Test]
@@ -68,15 +70,16 @@ public class SearchHandlerTests
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
 
         var created = creator.Create(entity, scope);
-
-        Assert.That(entities.Values.ToList(), Does.Contain(created));
-
         var parameters = new { Name = "ZZZ" };
         var page = new Page(1, 10);
         var sort = new[] { new SortCriteria("Identifier", SortOrder.Descending) }.OrderBy(_ => 1);
         var found = searcher.Search(parameters, page, sort, scope);
 
-        Assert.That(found.Items, Does.Not.Contain(created));
+        Assert.Multiple(() =>
+        {
+            Assert.That(entities.Values.ToList(), Does.Contain(created));
+            Assert.That(found.Items, Does.Not.Contain(created));
+        });
     }
 
     [Test]
@@ -89,8 +92,6 @@ public class SearchHandlerTests
         for (var i = 0; i < 50; i++)
             creator.Create(new SurLaTable { Name = "ABC" }, scope);
 
-        Assert.That(entities.Count, Is.EqualTo(50));
-
         var parameters = new[] { new FilterCriteria("Identifier", FilterOperation.LessThanOrEqual, 25) };
         var page = new Page(1, 10);
         var sort = new[] { new SortCriteria("Identifier", SortOrder.Descending) }.OrderBy(_ => 1);
@@ -98,6 +99,7 @@ public class SearchHandlerTests
 
         Assert.Multiple(() =>
         {
+            Assert.That(entities.Count, Is.EqualTo(50));
             Assert.That(found.TotalCount, Is.EqualTo(25));
             Assert.That(found.Items.Count, Is.EqualTo(10));
         });

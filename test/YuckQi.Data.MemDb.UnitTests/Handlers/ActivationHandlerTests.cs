@@ -20,6 +20,7 @@ public class ActivationHandlerTests
         var activator = new ActivationHandler<SurLaTable, Int32, Object>(reviser);
         var scope = new Object();
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
+
         var created = creator.Create(entity, scope);
 
         Assert.That(created.ActivationMomentUtc, Is.Null);
@@ -38,6 +39,7 @@ public class ActivationHandlerTests
         var activator = new ActivationHandler<SurLaTable, Int32, Object>(reviser);
         var scope = new Object();
         var entity = new SurLaTable { Identifier = 1, Name = "ABC", ActivationMomentUtc = DateTime.UtcNow };
+
         var created = creator.Create(entity, scope);
 
         Assert.That(created.ActivationMomentUtc, Is.Not.Null);

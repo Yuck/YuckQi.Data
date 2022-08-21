@@ -1,5 +1,4 @@
-﻿using System;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using YuckQi.Data.Abstract;
 
 namespace YuckQi.Data.DocumentDb.MongoDb;
@@ -10,22 +9,22 @@ public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
 
     private readonly IMongoClient _client;
     private readonly Object _lock = new();
-    private readonly ClientSessionOptions _options;
-    private Lazy<IClientSessionHandle> _session;
+    private readonly ClientSessionOptions? _options;
+    private Lazy<IClientSessionHandle>? _session;
 
     #endregion
 
 
     #region Properties
 
-    public IClientSessionHandle Scope => _session.Value;
+    public IClientSessionHandle Scope => _session != null ? _session.Value : throw new NullReferenceException();
 
     #endregion
 
 
     #region Constructors
 
-    public UnitOfWork(IMongoClient client, ClientSessionOptions options = null)
+    public UnitOfWork(IMongoClient client, ClientSessionOptions? options = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _options = options;
@@ -42,8 +41,8 @@ public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
         if (_session == null)
             return;
 
-        Scope?.AbortTransaction();
-        Scope?.Dispose();
+        Scope.AbortTransaction();
+        Scope.Dispose();
 
         _session = null;
     }

@@ -21,12 +21,13 @@ public class RetrievalHandlerTests
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
 
         var created = creator.Create(entity, scope);
-
-        Assert.That(entities.Values.ToList(), Does.Contain(created));
-
         var retrieved = retriever.Get(created.Identifier, scope);
 
-        Assert.That(retrieved.Identifier, Is.EqualTo(created.Identifier));
+        Assert.Multiple(() =>
+        {
+            Assert.That(entities.Values.ToList(), Does.Contain(created));
+            Assert.That(retrieved?.Identifier, Is.EqualTo(created.Identifier));
+        });
     }
 
     [Test]
@@ -39,13 +40,14 @@ public class RetrievalHandlerTests
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
 
         var created = creator.Create(entity, scope);
-
-        Assert.That(entities.Values.ToList(), Does.Contain(created));
-
         var parameters = new { Name = "ABC" };
         var retrieved = retriever.Get(parameters, scope);
 
-        Assert.That(retrieved.Identifier, Is.EqualTo(created.Identifier));
+        Assert.Multiple(() =>
+        {
+            Assert.That(entities.Values.ToList(), Does.Contain(created));
+            Assert.That(retrieved?.Identifier, Is.EqualTo(created.Identifier));
+        });
     }
 
     [Test]
@@ -58,13 +60,14 @@ public class RetrievalHandlerTests
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
 
         var created = creator.Create(entity, scope);
-
-        Assert.That(entities.Values.ToList(), Does.Contain(created));
-
         var parameters = new { Name = "ZZZ" };
         var retrieved = retriever.Get(parameters, scope);
 
-        Assert.That(retrieved, Is.Null);
+        Assert.Multiple(() =>
+        {
+            Assert.That(entities.Values.ToList(), Does.Contain(created));
+            Assert.That(retrieved, Is.Null);
+        });
     }
 
     [Test]
@@ -77,13 +80,14 @@ public class RetrievalHandlerTests
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
 
         var created = creator.Create(entity, scope);
-
-        Assert.That(entities.Values.ToList(), Does.Contain(created));
-
         var parameters = new { Name = "ABC" };
         var retrieved = retriever.GetList(parameters, scope);
 
-        Assert.That(retrieved, Contains.Item(created));
+        Assert.Multiple(() =>
+        {
+            Assert.That(entities.Values.ToList(), Does.Contain(created));
+            Assert.That(retrieved, Contains.Item(created));
+        });
     }
 
     [Test]
@@ -96,13 +100,14 @@ public class RetrievalHandlerTests
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
 
         var created = creator.Create(entity, scope);
-
-        Assert.That(entities.Values.ToList(), Does.Contain(created));
-
         var parameters = new { Name = "ZZZ" };
         var retrieved = retriever.GetList(parameters, scope);
 
-        Assert.That(retrieved, Does.Not.Contain(created));
+        Assert.Multiple(() =>
+        {
+            Assert.That(entities.Values.ToList(), Does.Contain(created));
+            Assert.That(retrieved, Does.Not.Contain(created));
+        });
     }
 
     public class SurLaTable : EntityBase<Int32>, ICreated

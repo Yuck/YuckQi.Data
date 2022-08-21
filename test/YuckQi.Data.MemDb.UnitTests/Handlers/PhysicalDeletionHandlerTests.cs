@@ -20,6 +20,7 @@ public class PhysicalDeletionHandlerTests
         var deleter = new PhysicalDeletionHandler<SurLaTable, Int32, Object>(entities);
         var scope = new Object();
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
+
         var created = creator.Create(entity, scope);
 
         Assert.That(entities.Values.ToList(), Does.Contain(created));

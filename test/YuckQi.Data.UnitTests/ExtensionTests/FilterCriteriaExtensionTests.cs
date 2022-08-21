@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 
@@ -9,6 +6,8 @@ namespace YuckQi.Data.UnitTests.ExtensionTests;
 
 public class FilterCriteriaExtensionTests
 {
+    private static readonly Object? NullObject = null;
+
     [SetUp]
     public void Setup() { }
 
@@ -18,8 +17,11 @@ public class FilterCriteriaExtensionTests
         var parameters = new { thing = "a test" };
         var filters = parameters.ToFilterCollection();
 
-        Assert.AreEqual(1, filters.Count);
-        Assert.AreEqual("a test", filters.First().Value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(filters.Count, Is.EqualTo(1));
+            Assert.That(filters.First().Value, Is.EqualTo("a test"));
+        });
     }
 
     [Test]
@@ -28,8 +30,11 @@ public class FilterCriteriaExtensionTests
         var parameters = new { thing = (Int32?) null };
         var filters = parameters.ToFilterCollection();
 
-        Assert.AreEqual(1, filters.Count);
-        Assert.IsNull(filters.First().Value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(filters.Count, Is.EqualTo(1));
+            Assert.That(filters.First().Value, Is.Null);
+        });
     }
 
     [Test]
@@ -38,7 +43,7 @@ public class FilterCriteriaExtensionTests
         var parameters = new { };
         var filters = parameters.ToFilterCollection();
 
-        Assert.AreEqual(0, filters.Count);
+        Assert.That(filters.Count, Is.EqualTo(0));
     }
 
     [Test]
@@ -47,18 +52,21 @@ public class FilterCriteriaExtensionTests
         var parameters = new { thing = "a test", other = 1234.56M };
         var filters = parameters.ToFilterCollection();
 
-        Assert.AreEqual(2, filters.Count);
-        Assert.AreEqual("a test", filters.First().Value);
-        Assert.AreEqual(1234.56M, filters.Last().Value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(filters.Count, Is.EqualTo(2));
+            Assert.That(filters.First().Value, Is.EqualTo("a test"));
+            Assert.That(filters.Last().Value, Is.EqualTo(1234.56M));
+        });
     }
 
     [Test]
     public void Null_IsValid()
     {
-        var parameters = (Object) null;
+        var parameters = NullObject;
         var filters = parameters.ToFilterCollection();
 
-        Assert.AreEqual(0, filters.Count);
+        Assert.That(filters.Count, Is.Zero);
     }
 
     [Test]
@@ -67,8 +75,11 @@ public class FilterCriteriaExtensionTests
         var parameters = new FilterCriteria("SomeField", 1234);
         var filters = parameters.ToFilterCollection();
 
-        Assert.AreEqual(1, filters.Count);
-        Assert.AreEqual(1234, filters.First().Value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(filters.Count, Is.EqualTo(1));
+            Assert.That(filters.First().Value, Is.EqualTo(1234));
+        });
     }
 
     [Test]
@@ -77,8 +88,11 @@ public class FilterCriteriaExtensionTests
         var parameters = new List<FilterCriteria> { new("SomeField", 1234), new("AnotherOne", "hi") };
         var filters = parameters.ToFilterCollection();
 
-        Assert.AreEqual(2, filters.Count);
-        Assert.AreEqual(1234, filters.First().Value);
-        Assert.AreEqual("hi", filters.Last().Value);
+        Assert.Multiple(() =>
+        {
+            Assert.That(filters.Count, Is.EqualTo(2));
+            Assert.That(filters.First().Value, Is.EqualTo(1234));
+            Assert.That(filters.Last().Value, Is.EqualTo("hi"));
+        });
     }
 }

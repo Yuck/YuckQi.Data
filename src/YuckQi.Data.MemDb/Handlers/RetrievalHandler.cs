@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
@@ -20,11 +15,11 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope> : IRetrievalHandler<
         _entities = entities ?? throw new ArgumentNullException(nameof(entities));
     }
 
-    public TEntity Get(TIdentifier identifier, TScope scope) => _entities.TryGetValue(identifier, out var entity) ? entity : default;
+    public TEntity? Get(TIdentifier identifier, TScope scope) => _entities.TryGetValue(identifier, out var entity) ? entity : default;
 
-    public Task<TEntity> Get(TIdentifier identifier, TScope scope, CancellationToken cancellationToken) => Task.FromResult(Get(identifier, scope));
+    public Task<TEntity?> Get(TIdentifier identifier, TScope scope, CancellationToken cancellationToken) => Task.FromResult(Get(identifier, scope));
 
-    public TEntity Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    public TEntity? Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
     {
         var entities = GetEntities(parameters);
         var entity = entities.SingleOrDefault();
@@ -32,11 +27,11 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope> : IRetrievalHandler<
         return entity;
     }
 
-    public Task<TEntity> Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken) => Task.FromResult(Get(parameters, scope));
+    public Task<TEntity?> Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken) => Task.FromResult(Get(parameters, scope));
 
-    public TEntity Get(Object parameters, TScope scope) => Get(parameters.ToFilterCollection(), scope);
+    public TEntity? Get(Object parameters, TScope scope) => Get(parameters.ToFilterCollection(), scope);
 
-    public Task<TEntity> Get(Object parameters, TScope scope, CancellationToken cancellationToken) => Task.FromResult(Get(parameters, scope));
+    public Task<TEntity?> Get(Object parameters, TScope scope, CancellationToken cancellationToken) => Task.FromResult(Get(parameters, scope));
 
     public IReadOnlyCollection<TEntity> GetList(TScope scope) => _entities.Values.Select(t => t).ToList();
 

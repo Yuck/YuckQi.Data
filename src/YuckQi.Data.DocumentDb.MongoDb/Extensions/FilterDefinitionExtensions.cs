@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using YuckQi.Data.Filtering;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Extensions;
 
 public static class FilterDefinitionExtensions
 {
-    public static FilterDefinition<TDocument> ToFilterDefinition<TDocument>(this IEnumerable<FilterCriteria> parameters)
+    public static FilterDefinition<TDocument>? ToFilterDefinition<TDocument>(this IEnumerable<FilterCriteria>? parameters)
     {
         if (parameters == null)
             return null;
@@ -17,7 +15,7 @@ public static class FilterDefinitionExtensions
 
         foreach (var parameter in parameters)
         {
-            var field = new StringFieldDefinition<TDocument, Object>(parameter.FieldName);
+            var field = new StringFieldDefinition<TDocument, Object?>(parameter.FieldName);
             switch (parameter.Operation)
             {
                 case FilterOperation.Equal:

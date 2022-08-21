@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using YuckQi.Data.Abstract;
 
 namespace YuckQi.Data.Sql;
@@ -8,17 +7,17 @@ public class UnitOfWork<TScope, TDbConnection> : IUnitOfWork<TScope> where TScop
 {
     #region Private Members
 
-    private TDbConnection _connection;
+    private TDbConnection? _connection;
     private readonly IsolationLevel _isolation;
     private readonly Object _lock = new();
-    private Lazy<TScope> _transaction;
+    private Lazy<TScope>? _transaction;
 
     #endregion
 
 
     #region Properties
 
-    public TScope Scope => _transaction.Value;
+    public TScope Scope => _transaction != null ? _transaction.Value : throw new NullReferenceException();
 
     #endregion
 
@@ -41,8 +40,8 @@ public class UnitOfWork<TScope, TDbConnection> : IUnitOfWork<TScope> where TScop
     {
         if (_transaction != null)
         {
-            Scope?.Rollback();
-            Scope?.Dispose();
+            Scope.Rollback();
+            Scope.Dispose();
 
             _transaction = null;
         }
@@ -79,10 +78,10 @@ public class UnitOfWork<TScope, TDbConnection> : IUnitOfWork<TScope> where TScop
     {
         lock (_lock)
         {
-            if (_connection.State == ConnectionState.Closed)
+            if (_connection is { State: ConnectionState.Closed })
                 _connection.Open();
 
-            return _connection.BeginTransaction(_isolation) as TScope;
+            return _connection != null ? (TScope) _connection.BeginTransaction(_isolation) : throw new NullReferenceException();
         }
     }
 

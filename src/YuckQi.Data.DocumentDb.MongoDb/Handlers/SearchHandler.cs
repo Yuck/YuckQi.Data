@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
@@ -13,6 +8,11 @@ using YuckQi.Domain.ValueObjects.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
+
+public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+{
+    public SearchHandler() : base(null) { }
+}
 
 public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
 {
@@ -25,7 +25,7 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
 
     #region Constructors
 
-    public SearchHandler(IMapper mapper) : base(mapper) { }
+    public SearchHandler(IMapper? mapper) : base(mapper) { }
 
     #endregion
 
@@ -62,7 +62,7 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
                                   .Skip((page.PageNumber - 1) * page.PageSize)
                                   .Limit(page.PageSize)
                                   .ToList();
-        var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(documents);
+        var entities = MapToEntityCollection(documents);
 
         return entities;
     }
@@ -77,7 +77,7 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
                                         .Skip((page.PageNumber - 1) * page.PageSize)
                                         .Limit(page.PageSize)
                                         .ToListAsync(cancellationToken);
-        var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(documents);
+        var entities = MapToEntityCollection(documents);
 
         return entities;
     }

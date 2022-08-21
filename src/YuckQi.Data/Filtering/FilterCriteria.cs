@@ -1,22 +1,33 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace YuckQi.Data.Filtering;
 
 public readonly struct FilterCriteria
 {
+    #region Properties
+
     public String FieldName { get; }
     public FilterOperation Operation { get; }
-    public Object Value { get; }
+    public Object? Value { get; }
 
-    public FilterCriteria(String fieldName, Object value) : this(fieldName, FilterOperation.Equal, value) { }
+    #endregion
 
-    public FilterCriteria(String fieldName, FilterOperation operation, Object value)
+
+    #region Constructors
+
+    public FilterCriteria(String fieldName, Object? value) : this(fieldName, FilterOperation.Equal, value) { }
+
+    public FilterCriteria(String fieldName, FilterOperation operation, Object? value)
     {
         FieldName = fieldName ?? throw new ArgumentNullException(nameof(fieldName));
         Operation = operation;
         Value = value;
     }
+
+    #endregion
+
+
+    #region Public Methods
 
     public Func<Boolean> ToExpression<T>(T instance)
     {
@@ -34,4 +45,6 @@ public readonly struct FilterCriteria
             _ => throw new NotSupportedException()
         };
     }
+
+    #endregion
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using Dapper;
 using YuckQi.Data.Filtering;
 
@@ -8,12 +6,12 @@ namespace YuckQi.Data.Sql.Dapper.Extensions;
 
 public static class DynamicParameterExtensions
 {
-    public static DynamicParameters ToDynamicParameters(this IEnumerable<FilterCriteria> parameters, IReadOnlyDictionary<Type, DbType> dbTypeMap)
+    public static DynamicParameters ToDynamicParameters(this IEnumerable<FilterCriteria>? parameters, IReadOnlyDictionary<Type, DbType>? dbTypeMap = null)
     {
-        if (parameters == null)
-            return null;
-
         var result = new DynamicParameters();
+
+        if (parameters == null)
+            return result;
 
         foreach (var parameter in parameters)
         {

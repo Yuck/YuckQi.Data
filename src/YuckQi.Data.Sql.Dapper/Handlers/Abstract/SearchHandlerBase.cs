@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Data;
 using Dapper;
 using YuckQi.Data.Filtering;
-using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Sorting;
 using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
@@ -16,7 +10,12 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract;
 
-public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+{
+    protected SearchHandlerBase(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
+}
+
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.Handlers.Abstract.SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
 {
     #region Private Members
 
@@ -28,7 +27,7 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> :
 
     #region Constructors
 
-    protected SearchHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper mapper) : base(mapper)
+    protected SearchHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(mapper)
     {
         _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         _dbTypeMap = dbTypeMap;
@@ -59,7 +58,7 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> :
     {
         var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
         var records = scope.Connection.Query<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-        var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
+        var entities = MapToEntityCollection(records);
 
         return entities;
     }
@@ -68,7 +67,7 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> :
     {
         var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
         var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-        var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
+        var entities = MapToEntityCollection(records);
 
         return entities;
     }

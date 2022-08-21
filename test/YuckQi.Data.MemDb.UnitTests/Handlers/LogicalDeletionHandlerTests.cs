@@ -21,8 +21,8 @@ public class LogicalDeletionHandlerTests
         var deleter = new LogicalDeletionHandler<SurLaTable, Int32, Object>(reviser);
         var scope = new Object();
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
-        var created = creator.Create(entity, scope);
 
+        var created = creator.Create(entity, scope);
         Assert.That(created.DeletionMomentUtc, Is.Null);
 
         var deleted = deleter.Delete(created, scope);
@@ -39,20 +39,19 @@ public class LogicalDeletionHandlerTests
         var deleter = new LogicalDeletionHandler<SurLaTable, Int32, Object>(reviser);
         var scope = new Object();
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
+
         var created = creator.Create(entity, scope);
 
         Assert.That(created.DeletionMomentUtc, Is.Null);
 
         var deleted = deleter.Delete(created, scope);
-
-        Assert.That(deleted.DeletionMomentUtc, Is.Not.Null);
-
         var deletionMomentUtc = deleted.DeletionMomentUtc;
         var revisionMomentUtc = deleted.RevisionMomentUtc;
         var _ = deleter.Delete(created, scope);
 
         Assert.Multiple(() =>
         {
+            Assert.That(deleted.DeletionMomentUtc, Is.Not.Null);
             Assert.That(deleted.DeletionMomentUtc, Is.EqualTo(deletionMomentUtc));
             Assert.That(deleted.RevisionMomentUtc, Is.EqualTo(revisionMomentUtc));
         });

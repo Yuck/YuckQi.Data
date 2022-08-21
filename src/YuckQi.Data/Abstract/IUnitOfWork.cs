@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace YuckQi.Data.Abstract;
+﻿namespace YuckQi.Data.Abstract;
 
 public interface IUnitOfWork<out TScope> : IDisposable
 {

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 using Dapper;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
@@ -15,14 +12,14 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
     #region Private Members
 
     private static readonly String DefaultTableName = typeof(TRecord).Name;
-    private static readonly TableAttribute TableAttribute = (TableAttribute) typeof(TRecord).GetCustomAttribute(typeof(TableAttribute));
+    private static readonly TableAttribute? TableAttribute = typeof(TRecord).GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
 
     #endregion
 
 
     #region Properties
 
-    private static String SchemaName => TableAttribute?.Schema;
+    private static String? SchemaName => TableAttribute?.Schema;
     private static String TableName => TableAttribute?.Name ?? DefaultTableName;
 
     #endregion
@@ -40,7 +37,7 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
         return sql;
     }
 
-    public String GenerateGetQuery(IReadOnlyCollection<FilterCriteria> parameters)
+    public String GenerateGetQuery(IReadOnlyCollection<FilterCriteria>? parameters)
     {
         var columns = BuildColumnsSql();
 
@@ -61,7 +58,7 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
         var from = BuildFromSql();
         var where = BuildWhereSql(parameters);
         var order = ! String.IsNullOrWhiteSpace(sorting) ? $"order by {sorting}" : String.Empty;
-        var limit = page != null ? $"limit {page.PageSize} offset {(page.PageNumber - 1) * page.PageSize}" : String.Empty;
+        var limit = $"limit {page.PageSize} offset {(page.PageNumber - 1) * page.PageSize}";
         var sql = $"{CombineSql(select, from, where, order, limit)};";
 
         return sql;
@@ -89,7 +86,7 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
         return columns;
     }
 
-    private static String BuildComparison(Object value, FilterOperation operation)
+    private static String BuildComparison(Object? value, FilterOperation operation)
     {
         return operation switch
         {
@@ -105,9 +102,9 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
 
     private static String BuildFromSql() => String.IsNullOrWhiteSpace(SchemaName) ? $"from `{TableName}`" : $"from `{SchemaName}`.`{TableName}`";
 
-    private static String BuildWhereSql(IEnumerable<FilterCriteria> parameters)
+    private static String BuildWhereSql(IEnumerable<FilterCriteria>? parameters)
     {
-        var filter = String.Join(" and ", parameters.Select(t =>
+        var filter = String.Join(" and ", parameters?.Select(t =>
         {
             var column = $"`{t.FieldName}`";
             var value = t.Value;
@@ -115,7 +112,7 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
             var parameter = value != null ? $"@{t.FieldName}" : "null";
 
             return $"({column} {comparison} {parameter})";
-        }));
+        }) ?? Array.Empty<String>());
         var where = $"{(String.IsNullOrWhiteSpace(filter) ? "" : $"where {filter}")}";
 
         return where;

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using System.Reflection;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
@@ -28,19 +26,20 @@ public static class DocumentModelExtensions
 
     #region Extension Methods
 
-    public static String GetCollectionName(this Type type) => type != null ? CollectionNameByType.GetOrAdd(type, identifier => GetCollectionAttribute(identifier)?.Name ?? identifier.Name) : null;
+    public static String? GetCollectionName(this Type? type) => type != null ? CollectionNameByType.GetOrAdd(type, identifier => GetCollectionAttribute(identifier)?.Name ?? identifier.Name) : null;
 
-    public static String GetDatabaseName(this Type type) => type != null ? DatabaseNameByType.GetOrAdd(type, identifier => GetDatabaseAttribute(identifier)?.Name) : null;
+    public static String? GetDatabaseName(this Type? type) => type != null ? DatabaseNameByType.GetOrAdd(type, identifier => GetDatabaseAttribute(identifier).Name) : null;
 
     public static TIdentifier? GetIdentifier<TDocument, TIdentifier>(this TDocument document) where TIdentifier : struct => document != null ? GetIdentifierPropertyInfo(typeof(TDocument))?.GetValue(document) as TIdentifier? : null;
 
-    public static StringFieldDefinition<TDocument, TIdentifier?> GetIdentifierFieldDefinition<TDocument, TIdentifier>(this Type type) where TIdentifier : struct
+    public static StringFieldDefinition<TDocument, TIdentifier?>? GetIdentifierFieldDefinition<TDocument, TIdentifier>(this Type? type) where TIdentifier : struct
     {
         if (type == null)
             return null;
+
         // This isn't great since it should be enforced at compile time
         if (type != typeof(TDocument))
-            throw new ArgumentException($"Type of '{type.FullName}' must match '{typeof(TDocument)}'.");
+            throw new ArgumentException($"Type of '{type.FullName}' must match '{typeof(TDocument).Name}'.");
 
         var propertyInfo = GetIdentifierPropertyInfo(typeof(TDocument));
         var field = new StringFieldDefinition<TDocument, TIdentifier?>(propertyInfo?.Name);
@@ -53,15 +52,28 @@ public static class DocumentModelExtensions
 
     #region Supporting Methods
 
-    private static CollectionAttribute GetCollectionAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(CollectionAttribute)) as CollectionAttribute;
+    private static CollectionAttribute? GetCollectionAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(CollectionAttribute)) as CollectionAttribute;
 
-    private static DatabaseAttribute GetDatabaseAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(DatabaseAttribute)) as DatabaseAttribute;
+    private static DatabaseAttribute GetDatabaseAttribute(MemberInfo type)
+    {
+        if (type.GetCustomAttribute(typeof(DatabaseAttribute)) is DatabaseAttribute attribute)
+            return attribute;
 
-    private static PropertyInfo GetIdentifierPropertyInfo(Type type) => type != null ? IdentifierByType.GetOrAdd(type, IdentifierPropertyInfoValueFactory) : null;
+        throw new NullReferenceException();
+    }
 
-    private static PropertyInfo IdentifierPropertyInfoValueFactory(Type type) => type.GetProperties()
-                                                                                     .Select(t => t.GetCustomAttribute<BsonIdAttribute>() != null ? t : null)
-                                                                                     .SingleOrDefault(t => t != null) ?? type.GetProperty(DefaultObjectIdPropertyName);
+    private static PropertyInfo? GetIdentifierPropertyInfo(Type? type) => type != null ? IdentifierByType.GetOrAdd(type, IdentifierPropertyInfoValueFactory) : null;
+
+    private static PropertyInfo IdentifierPropertyInfoValueFactory(Type type)
+    {
+        var property = type.GetProperties()
+                           .Select(t => t.GetCustomAttribute<BsonIdAttribute>() != null ? t : null)
+                           .SingleOrDefault(t => t != null) ?? type.GetProperty(DefaultObjectIdPropertyName);
+        if (property != null)
+            return property;
+
+        throw new NullReferenceException();
+    }
 
     #endregion
 }

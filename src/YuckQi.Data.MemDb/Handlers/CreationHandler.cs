@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Concurrent;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
@@ -13,7 +10,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandlerBase
 {
     private readonly ConcurrentDictionary<TIdentifier, TEntity> _entities;
 
-    public CreationHandler(ConcurrentDictionary<TIdentifier, TEntity> entities, CreationOptions<TIdentifier> options = null) : base(options)
+    public CreationHandler(ConcurrentDictionary<TIdentifier, TEntity> entities, CreationOptions<TIdentifier>? options = null) : base(options)
     {
         _entities = entities ?? throw new ArgumentNullException(nameof(entities));
     }

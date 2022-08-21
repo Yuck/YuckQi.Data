@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace YuckQi.Data.Sorting;
+﻿namespace YuckQi.Data.Sorting;
 
 public readonly struct SortCriteria
 {

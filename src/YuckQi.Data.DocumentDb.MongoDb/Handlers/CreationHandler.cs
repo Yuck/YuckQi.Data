@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
@@ -10,6 +7,17 @@ using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
+
+public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct where TScope : IClientSessionHandle
+{
+    #region Constructors
+
+    public CreationHandler() : this(null) { }
+
+    public CreationHandler(CreationOptions<TIdentifier>? options) : base(options, null) { }
+
+    #endregion
+}
 
 public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct where TScope : IClientSessionHandle
 {
@@ -22,9 +30,9 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
 
     #region Constructors
 
-    public CreationHandler(IMapper mapper) : base(mapper) { }
+    public CreationHandler(IMapper? mapper) : base(mapper) { }
 
-    public CreationHandler(IMapper mapper, CreationOptions<TIdentifier> options) : base(mapper, options) { }
+    public CreationHandler(CreationOptions<TIdentifier>? options, IMapper? mapper) : base(options, mapper) { }
 
     #endregion
 
@@ -35,7 +43,9 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var document = Mapper.Map<TDocument>(entity);
+        var document = MapToData<TDocument>(entity);
+        if (document == null)
+            throw new NullReferenceException();
 
         collection.InsertOne(scope, document);
 
@@ -46,7 +56,9 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var document = Mapper.Map<TDocument>(entity);
+        var document = MapToData<TDocument>(entity);
+        if (document == null)
+            throw new NullReferenceException();
 
         await collection.InsertOneAsync(scope, document, cancellationToken: cancellationToken);
 

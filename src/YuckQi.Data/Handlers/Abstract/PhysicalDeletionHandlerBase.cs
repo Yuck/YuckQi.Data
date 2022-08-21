@@ -1,29 +1,16 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using YuckQi.Data.Exceptions;
+﻿using YuckQi.Data.Exceptions;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : IPhysicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IPhysicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
 {
-    #region Properties
-
-    protected IMapper Mapper { get; }
-
-    #endregion
-
-
     #region Constructors
 
     protected PhysicalDeletionHandlerBase() : this(null) { }
 
-    protected PhysicalDeletionHandlerBase(IMapper mapper)
-    {
-        Mapper = mapper;
-    }
+    protected PhysicalDeletionHandlerBase(IMapper? mapper) : base(mapper) { }
 
     #endregion
 

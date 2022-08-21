@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using YuckQi.Data.Exceptions;
+﻿using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -9,7 +6,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
+public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
 {
     #region Private Members
 
@@ -18,25 +15,16 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : IRevis
     #endregion
 
 
-    #region Properties
-
-    protected IMapper Mapper { get; }
-
-    #endregion
-
-
     #region Constructors
 
     protected RevisionHandlerBase() : this(null, null) { }
 
-    protected RevisionHandlerBase(RevisionOptions options) : this(null, options) { }
+    protected RevisionHandlerBase(RevisionOptions? options) : this(options, null) { }
 
-    protected RevisionHandlerBase(IMapper mapper) : this(mapper, null) { }
+    protected RevisionHandlerBase(IMapper? mapper) : this(null, mapper) { }
 
-    protected RevisionHandlerBase(IMapper mapper, RevisionOptions options)
+    protected RevisionHandlerBase(RevisionOptions? options, IMapper? mapper) : base(mapper)
     {
-        Mapper = mapper;
-
         _options = options ?? new RevisionOptions();
     }
 

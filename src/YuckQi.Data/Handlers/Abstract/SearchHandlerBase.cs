@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using YuckQi.Data.Extensions;
+﻿using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
 using YuckQi.Domain.Entities.Abstract;
@@ -13,23 +8,13 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ISearchHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ReadHandlerBase<TEntity>, ISearchHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
 {
-    #region Properties
-
-    protected IMapper Mapper { get; }
-
-    #endregion
-
-
     #region Constructors
 
     protected SearchHandlerBase() : this(null) { }
 
-    protected SearchHandlerBase(IMapper mapper)
-    {
-        Mapper = mapper;
-    }
+    protected SearchHandlerBase(IMapper? mapper) : base(mapper) { }
 
     #endregion
 
@@ -70,9 +55,9 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ISearchH
         return new Page<TEntity>(entities, total, page.PageNumber, page.PageSize);
     }
 
-    public IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => Search(parameters?.ToFilterCollection(), page, sort, scope);
+    public IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope) => Search(parameters.ToFilterCollection(), page, sort, scope);
 
-    public Task<IPage<TEntity>> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken) => Search(parameters?.ToFilterCollection(), page, sort, scope, cancellationToken);
+    public Task<IPage<TEntity>> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken) => Search(parameters.ToFilterCollection(), page, sort, scope, cancellationToken);
 
     #endregion
 

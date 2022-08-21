@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace YuckQi.Data.Exceptions;
+﻿namespace YuckQi.Data.Exceptions;
 
 public sealed class PhysicalDeletionException<TEntity, TIdentifier> : ApplicationException where TIdentifier : struct
 {

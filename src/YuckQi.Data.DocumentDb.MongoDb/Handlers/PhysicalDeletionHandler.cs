@@ -1,13 +1,19 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
+
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+{
+    #region Constructors
+
+    public PhysicalDeletionHandler() : base(null) { }
+
+    #endregion
+}
 
 public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
 {
@@ -20,7 +26,7 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
 
     #region Constructors
 
-    public PhysicalDeletionHandler(IMapper mapper) : base(mapper) { }
+    public PhysicalDeletionHandler(IMapper? mapper) : base(mapper) { }
 
     #endregion
 
@@ -31,9 +37,9 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var document = Mapper.Map<TDocument>(entity);
+        var document = GetDocument(entity);
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
-        var identifier = document.GetIdentifier<TDocument, TIdentifier>();
+        var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var result = collection.DeleteOne(scope, filter);
 
@@ -44,13 +50,26 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
     {
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var document = Mapper.Map<TDocument>(entity);
+        var document = GetDocument(entity);
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
-        var identifier = document.GetIdentifier<TDocument, TIdentifier>();
+        var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var result = await collection.DeleteOneAsync(scope, filter, cancellationToken: cancellationToken);
 
         return result.DeletedCount > 0;
+    }
+
+    #endregion
+
+
+    #region Supporting Methods
+
+    private TDocument? GetDocument(TEntity entity)
+    {
+        if (entity is TDocument document)
+            return document;
+
+        return Mapper != null ? Mapper.Map<TDocument>(entity) : default;
     }
 
     #endregion

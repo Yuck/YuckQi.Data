@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Description>An implementation of YuckQi.Data for Oracle databases using Dapper and SimpleCRUD.</Description>
     <Authors>Kevin J Lambert</Authors>
     <Version>6.1.0</Version>
@@ -12,6 +13,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Yuck/YuckQi.Data</PackageProjectUrl>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

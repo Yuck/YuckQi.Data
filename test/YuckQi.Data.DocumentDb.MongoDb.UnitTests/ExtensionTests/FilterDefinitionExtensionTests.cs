@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using NUnit.Framework;
@@ -20,11 +18,22 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition.Render(serializer, registry);
+        var query = definition?.Render(serializer, registry);
 
-        Assert.AreEqual(1, query.ElementCount);
-        Assert.AreEqual("_id", query.Elements.First().Name);
-        Assert.AreEqual("{ \"_id\" : 123 }", query.ToString());
+        Assert.Multiple(() =>
+        {
+            if (query != null)
+            {
+                Assert.That(query, Is.Not.Null);
+                Assert.That(query.ElementCount, Is.EqualTo(1));
+                Assert.That(query.Elements.First().Name, Is.EqualTo("_id"));
+                Assert.That(query.ToString(), Is.EqualTo("{ \"_id\" : 123 }"));
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+        });
     }
 
     [Test]
@@ -34,11 +43,21 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition.Render(serializer, registry);
+        var query = definition?.Render(serializer, registry);
 
-        Assert.AreEqual(1, query.ElementCount);
-        Assert.AreEqual("_id", query.Elements.First().Name);
-        Assert.AreEqual("{ \"_id\" : { \"$gt\" : 123 } }", query.ToString());
+        Assert.Multiple(() =>
+        {
+            if (query != null)
+            {
+                Assert.That(query.ElementCount, Is.EqualTo(1));
+                Assert.That(query.Elements.First().Name, Is.EqualTo("_id"));
+                Assert.That(query.ToString(), Is.EqualTo("{ \"_id\" : { \"$gt\" : 123 } }"));
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+        });
     }
 
     [Test]
@@ -48,11 +67,21 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition.Render(serializer, registry);
+        var query = definition?.Render(serializer, registry);
 
-        Assert.AreEqual(1, query.ElementCount);
-        Assert.AreEqual("_id", query.Elements.First().Name);
-        Assert.AreEqual("{ \"_id\" : { \"$gte\" : 123 } }", query.ToString());
+        Assert.Multiple(() =>
+        {
+            if (query != null)
+            {
+                Assert.That(query.ElementCount, Is.EqualTo(1));
+                Assert.That(query.Elements.First().Name, Is.EqualTo("_id"));
+                Assert.That(query.ToString(), Is.EqualTo("{ \"_id\" : { \"$gte\" : 123 } }"));
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+        });
     }
 
     [Test]
@@ -62,11 +91,21 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition.Render(serializer, registry);
+        var query = definition?.Render(serializer, registry);
 
-        Assert.AreEqual(1, query.ElementCount);
-        Assert.AreEqual("_id", query.Elements.First().Name);
-        Assert.AreEqual("{ \"_id\" : { \"$lt\" : 123 } }", query.ToString());
+        Assert.Multiple(() =>
+        {
+            if (query != null)
+            {
+                Assert.That(query.ElementCount, Is.EqualTo(1));
+                Assert.That(query.Elements.First().Name, Is.EqualTo("_id"));
+                Assert.That(query.ToString(), Is.EqualTo("{ \"_id\" : { \"$lt\" : 123 } }"));
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+        });
     }
 
     [Test]
@@ -76,11 +115,21 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition.Render(serializer, registry);
+        var query = definition?.Render(serializer, registry);
 
-        Assert.AreEqual(1, query.ElementCount);
-        Assert.AreEqual("_id", query.Elements.First().Name);
-        Assert.AreEqual("{ \"_id\" : { \"$lte\" : 123 } }", query.ToString());
+        Assert.Multiple(() =>
+        {
+            if (query != null)
+            {
+                Assert.That(query.ElementCount, Is.EqualTo(1));
+                Assert.That(query.Elements.First().Name, Is.EqualTo("_id"));
+                Assert.That(query.ToString(), Is.EqualTo("{ \"_id\" : { \"$lte\" : 123 } }"));
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+        });
     }
 
     [Test]
@@ -90,16 +139,26 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition.Render(serializer, registry);
+        var query = definition?.Render(serializer, registry);
 
-        Assert.AreEqual(1, query.ElementCount);
-        Assert.AreEqual("_id", query.Elements.First().Name);
-        Assert.AreEqual("{ \"_id\" : { \"$ne\" : 123 } }", query.ToString());
+        Assert.Multiple(() =>
+        {
+            if (query != null)
+            {
+                Assert.That(query.ElementCount, Is.EqualTo(1));
+                Assert.That(query.Elements.First().Name, Is.EqualTo("_id"));
+                Assert.That(query.ToString(), Is.EqualTo("{ \"_id\" : { \"$ne\" : 123 } }"));
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+        });
     }
-}
 
-public class SurLaTableRecord
-{
-    [BsonId] public Int32 Id { get; set; }
-    public String Name { get; set; }
+    public class SurLaTableRecord
+    {
+        [BsonId] public Int32 Id { get; set; }
+        public String Name { get; set; } = String.Empty;
+    }
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using YuckQi.Data.Exceptions;
+﻿using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -9,7 +6,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct
+public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct
 {
     #region Private Members
 
@@ -18,25 +15,16 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : ICreat
     #endregion
 
 
-    #region Properties
-
-    protected IMapper Mapper { get; }
-
-    #endregion
-
-
     #region Constructors
 
     protected CreationHandlerBase() : this(null, null) { }
 
-    protected CreationHandlerBase(CreationOptions<TIdentifier> options) : this(null, options) { }
+    protected CreationHandlerBase(CreationOptions<TIdentifier>? options) : this(options, null) { }
 
-    protected CreationHandlerBase(IMapper mapper) : this(mapper, null) { }
+    protected CreationHandlerBase(IMapper? mapper) : this(null, mapper) { }
 
-    protected CreationHandlerBase(IMapper mapper, CreationOptions<TIdentifier> options)
+    protected CreationHandlerBase(CreationOptions<TIdentifier>? options, IMapper? mapper) : base(mapper)
     {
-        Mapper = mapper;
-
         _options = options ?? new CreationOptions<TIdentifier>();
     }
 

@@ -1,36 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using YuckQi.Data.Extensions;
+﻿using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : IRetrievalHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : ReadHandlerBase<TEntity>, IRetrievalHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
 {
-    #region Properties
-
-    protected IMapper Mapper { get; }
-
-    #endregion
-
-
     #region Constructors
 
-    protected RetrievalHandlerBase(IMapper mapper)
-    {
-        Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+    protected RetrievalHandlerBase(IMapper? mapper) : base(mapper) { }
 
     #endregion
 
 
     #region Public Methods
 
-    public TEntity Get(TIdentifier identifier, TScope scope)
+    public TEntity? Get(TIdentifier identifier, TScope scope)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
@@ -38,7 +24,7 @@ public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : IRetr
         return DoGet(identifier, scope);
     }
 
-    public Task<TEntity> Get(TIdentifier identifier, TScope scope, CancellationToken cancellationToken)
+    public Task<TEntity?> Get(TIdentifier identifier, TScope scope, CancellationToken cancellationToken)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
@@ -46,7 +32,7 @@ public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : IRetr
         return DoGet(identifier, scope, cancellationToken);
     }
 
-    public TEntity Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    public TEntity? Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
     {
         if (parameters == null)
             throw new ArgumentNullException(nameof(parameters));
@@ -56,7 +42,7 @@ public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : IRetr
         return DoGet(parameters, scope);
     }
 
-    public Task<TEntity> Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
+    public Task<TEntity?> Get(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
     {
         if (parameters == null)
             throw new ArgumentNullException(nameof(parameters));
@@ -66,7 +52,7 @@ public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : IRetr
         return DoGet(parameters, scope, cancellationToken);
     }
 
-    public TEntity Get(Object parameters, TScope scope)
+    public TEntity? Get(Object parameters, TScope scope)
     {
         if (parameters == null)
             throw new ArgumentNullException(nameof(parameters));
@@ -76,7 +62,7 @@ public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : IRetr
         return Get(parameters.ToFilterCollection(), scope);
     }
 
-    public Task<TEntity> Get(Object parameters, TScope scope, CancellationToken cancellationToken)
+    public Task<TEntity?> Get(Object parameters, TScope scope, CancellationToken cancellationToken)
     {
         if (parameters == null)
             throw new ArgumentNullException(nameof(parameters));
@@ -122,26 +108,26 @@ public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : IRetr
         return DoGetList(parameters, scope, cancellationToken);
     }
 
-    public IReadOnlyCollection<TEntity> GetList(Object parameters, TScope scope) => GetList(parameters?.ToFilterCollection(), scope);
+    public IReadOnlyCollection<TEntity> GetList(Object parameters, TScope scope) => GetList(parameters.ToFilterCollection(), scope);
 
-    public Task<IReadOnlyCollection<TEntity>> GetList(Object parameters, TScope scope, CancellationToken cancellationToken) => GetList(parameters?.ToFilterCollection(), scope, cancellationToken);
+    public Task<IReadOnlyCollection<TEntity>> GetList(Object parameters, TScope scope, CancellationToken cancellationToken) => GetList(parameters.ToFilterCollection(), scope, cancellationToken);
 
     #endregion
 
 
     #region Protected Methods
 
-    protected abstract TEntity DoGet(TIdentifier identifier, TScope scope);
+    protected abstract TEntity? DoGet(TIdentifier identifier, TScope scope);
 
-    protected abstract Task<TEntity> DoGet(TIdentifier identifier, TScope scope, CancellationToken cancellationToken);
+    protected abstract Task<TEntity?> DoGet(TIdentifier identifier, TScope scope, CancellationToken cancellationToken);
 
-    protected abstract TEntity DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
+    protected abstract TEntity? DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
 
-    protected abstract Task<TEntity> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken);
+    protected abstract Task<TEntity?> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken);
 
-    protected abstract IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
+    protected abstract IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope);
 
-    protected abstract Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken);
+    protected abstract Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope, CancellationToken cancellationToken);
 
     #endregion
 }
