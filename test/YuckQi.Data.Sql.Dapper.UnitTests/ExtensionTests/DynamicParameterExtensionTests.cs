@@ -1,58 +1,63 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Sql.Dapper.Extensions;
 
-namespace YuckQi.Data.Sql.Dapper.UnitTests.ExtensionTests
+namespace YuckQi.Data.Sql.Dapper.UnitTests.ExtensionTests;
+
+public class DynamicParameterExtensionTests
 {
-    public class DynamicParameterExtensionTests
+    [SetUp]
+    public void Setup() { }
+
+    [Test]
+    public void FilterCriteria_SingleValue_IsValid()
     {
-        [SetUp]
-        public void Setup() { }
+        var criteria = new[] { new FilterCriteria("thing", "a test") };
+        var parameters = criteria.ToDynamicParameters();
 
-        [Test]
-        public void FilterCriteria_SingleValue_IsValid()
+        Assert.Multiple(() =>
         {
-            var criteria = new[] { new FilterCriteria("thing", "a test") };
-            var parameters = criteria.ToDynamicParameters(null);
+            Assert.That(parameters.ParameterNames.Count(), Is.EqualTo(1));
+            Assert.That(parameters.ParameterNames.First(), Is.EqualTo("thing"));
+            Assert.That(parameters.Get<Object>("thing"), Is.EqualTo("a test"));
+        });
+    }
 
-            Assert.AreEqual(1, parameters.ParameterNames.Count());
-            Assert.AreEqual("thing", parameters.ParameterNames.First());
-            Assert.AreEqual("a test", parameters.Get<Object>("thing"));
-        }
+    [Test]
+    public void FilterCriteria_SingleNullValue_IsValid()
+    {
+        var criteria = new[] { new FilterCriteria("thing", null) };
+        var parameters = criteria.ToDynamicParameters();
 
-        [Test]
-        public void FilterCriteria_SingleNullValue_IsValid()
+        Assert.Multiple(() =>
         {
-            var criteria = new[] { new FilterCriteria("thing", null) };
-            var parameters = criteria.ToDynamicParameters(null);
+            Assert.That(parameters.ParameterNames.Count(), Is.EqualTo(1));
+            Assert.That(parameters.ParameterNames.First(), Is.EqualTo("thing"));
+            Assert.That(parameters.Get<Object>("thing"), Is.Null);
+        });
+    }
 
-            Assert.AreEqual(1, parameters.ParameterNames.Count());
-            Assert.AreEqual("thing", parameters.ParameterNames.First());
-            Assert.IsNull(parameters.Get<Object>("thing"));
-        }
+    [Test]
+    public void FilterCriteria_EmptyList_IsValid()
+    {
+        var parameters = new List<FilterCriteria>().ToDynamicParameters();
 
-        [Test]
-        public void FilterCriteria_EmptyList_IsValid()
+        Assert.That(parameters.ParameterNames.Count(), Is.Zero);
+    }
+
+    [Test]
+    public void FilterCriteria_MultipleValues_IsValid()
+    {
+        var criteria = new[] { new FilterCriteria("thing", "a test"), new FilterCriteria("other", 1234.56M) };
+        var parameters = criteria.ToDynamicParameters();
+
+        Assert.Multiple(() =>
         {
-            var parameters = new List<FilterCriteria>().ToDynamicParameters(null);
-
-            Assert.AreEqual(0, parameters.ParameterNames.Count());
-        }
-
-        [Test]
-        public void FilterCriteria_MultipleValues_IsValid()
-        {
-            var criteria = new[] { new FilterCriteria("thing", "a test"), new FilterCriteria("other", 1234.56M) };
-            var parameters = criteria.ToDynamicParameters(null);
-
-            Assert.AreEqual(2, parameters.ParameterNames.Count());
-            Assert.AreEqual("thing", parameters.ParameterNames.First());
-            Assert.AreEqual("a test", parameters.Get<Object>("thing"));
-            Assert.AreEqual("other", parameters.ParameterNames.Last());
-            Assert.AreEqual(1234.56M, parameters.Get<Object>("other"));
-        }
+            Assert.That(parameters.ParameterNames.Count(), Is.EqualTo(2));
+            Assert.That(parameters.ParameterNames.First(), Is.EqualTo("thing"));
+            Assert.That(parameters.Get<Object>("thing"), Is.EqualTo("a test"));
+            Assert.That(parameters.ParameterNames.Last(), Is.EqualTo("other"));
+            Assert.That(parameters.Get<Object>("other"), Is.EqualTo(1234.56M));
+        });
     }
 }

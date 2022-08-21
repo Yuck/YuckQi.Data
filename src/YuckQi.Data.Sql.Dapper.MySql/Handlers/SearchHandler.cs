@@ -1,20 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Handlers.Abstract;
 using YuckQi.Data.Sql.Dapper.MySql.Internal;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
-namespace YuckQi.Data.Sql.Dapper.MySql.Handlers
+namespace YuckQi.Data.Sql.Dapper.MySql.Handlers;
+
+public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
 {
-    public class SearchHandler<TEntity, TKey, TScope, TRecord> : SearchHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
-    {
-        public SearchHandler(IMapper mapper) : this(mapper, new SqlGenerator<TRecord>()) { }
+    public SearchHandler() : this(new SqlGenerator<TEntity>()) { }
 
-        public SearchHandler(IMapper mapper, ISqlGenerator<TRecord> sqlGenerator) : this(mapper, sqlGenerator, DbTypeMap.Default) { }
+    public SearchHandler(ISqlGenerator<TEntity> sqlGenerator) : this(sqlGenerator, DbTypeMap.Default) { }
 
-        public SearchHandler(IMapper mapper, ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(mapper, sqlGenerator, dbTypeMap) { }
-    }
+    public SearchHandler(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
+}
+
+public class SearchHandler<TEntity, TIdentifier, TScope, TRecord> : SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+{
+    public SearchHandler(IMapper mapper) : this(new SqlGenerator<TRecord>(), mapper) { }
+
+    public SearchHandler(ISqlGenerator<TRecord> sqlGenerator, IMapper mapper) : this(sqlGenerator, DbTypeMap.Default, mapper) { }
+
+    public SearchHandler(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(sqlGenerator, dbTypeMap, mapper) { }
 }

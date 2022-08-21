@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Threading.Tasks;
 using Dapper;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
@@ -7,25 +6,45 @@ using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers
+namespace YuckQi.Data.Sql.Dapper.Handlers;
+
+public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct where TScope : IDbTransaction
 {
-    public class CreationHandler<TEntity, TKey, TScope, TRecord> : CreationHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IDbTransaction
+    public CreationHandler() : this(null) { }
+
+    public CreationHandler(CreationOptions<TIdentifier>? options) : base(options, null) { }
+}
+
+public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct where TScope : IDbTransaction
+{
+    #region Constructors
+
+    public CreationHandler(IMapper? mapper) : base(mapper) { }
+
+    public CreationHandler(CreationOptions<TIdentifier>? options, IMapper? mapper) : base(options, mapper) { }
+
+    #endregion
+
+
+    #region Protected Methods
+
+    protected override TIdentifier? DoCreate(TEntity entity, TScope scope)
     {
-        #region Constructors
+        var record = MapToData<TRecord>(entity);
+        if (record == null)
+            throw new NullReferenceException();
 
-        public CreationHandler(IMapper mapper) : base(mapper) { }
-
-        public CreationHandler(IMapper mapper, CreationOptions options) : base(mapper, options) { }
-
-        #endregion
-
-
-        #region Protected Methods
-
-        protected override TKey? DoCreate(TEntity entity, TScope scope) => scope.Connection.Insert<TKey?, TRecord>(Mapper.Map<TRecord>(entity), scope);
-
-        protected override Task<TKey?> DoCreateAsync(TEntity entity, TScope scope) => scope.Connection.InsertAsync<TKey?, TRecord>(Mapper.Map<TRecord>(entity), scope);
-
-        #endregion
+        return scope.Connection.Insert<TIdentifier?, TRecord>(record, scope);
     }
+
+    protected override Task<TIdentifier?> DoCreate(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    {
+        var record = MapToData<TRecord>(entity);
+        if (record == null)
+            throw new NullReferenceException();
+
+        return scope.Connection.InsertAsync<TIdentifier?, TRecord>(record, scope);
+    }
+
+    #endregion
 }

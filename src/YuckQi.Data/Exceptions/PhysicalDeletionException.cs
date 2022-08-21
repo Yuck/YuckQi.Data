@@ -1,22 +1,19 @@
-﻿using System;
+﻿namespace YuckQi.Data.Exceptions;
 
-namespace YuckQi.Data.Exceptions
+public sealed class PhysicalDeletionException<TEntity, TIdentifier> : ApplicationException where TIdentifier : struct
 {
-    public sealed class PhysicalDeletionException<TRecord, TKey> : ApplicationException where TKey : struct
-    {
-        #region Constructors
+    #region Constructors
 
-        public PhysicalDeletionException(TKey key) : base(GetMessageText(key)) { }
+    public PhysicalDeletionException(TIdentifier identifier) : base(GetMessageText(identifier)) { }
 
-        public PhysicalDeletionException(TKey key, Exception inner) : base(GetMessageText(key), inner) { }
+    public PhysicalDeletionException(TIdentifier identifier, Exception inner) : base(GetMessageText(identifier), inner) { }
 
-        #endregion
+    #endregion
 
 
-        #region Supporting Methods
+    #region Supporting Methods
 
-        private static String GetMessageText(TKey key) => $"Failed to delete '{nameof(TRecord)}' with key '{key}'.";
+    private static String GetMessageText(TIdentifier identifier) => $"Failed to delete '{typeof(TEntity).Name}' with identifier '{identifier}'.";
 
-        #endregion
-    }
+    #endregion
 }

@@ -1,22 +1,19 @@
-﻿using System;
+﻿namespace YuckQi.Data.Exceptions;
 
-namespace YuckQi.Data.Exceptions
+public sealed class RevisionException<TEntity, TIdentifier> : ApplicationException where TIdentifier : struct
 {
-    public sealed class RevisionException<TRecord, TKey> : ApplicationException where TKey : struct
-    {
-        #region Constructors
+    #region Constructors
 
-        public RevisionException(TKey key) : base(GetMessageText(key)) { }
+    public RevisionException(TIdentifier identifier) : base(GetMessageText(identifier)) { }
 
-        public RevisionException(TKey key, Exception inner) : base(GetMessageText(key), inner) { }
+    public RevisionException(TIdentifier identifier, Exception inner) : base(GetMessageText(identifier), inner) { }
 
-        #endregion
+    #endregion
 
 
-        #region Supporting Methods
+    #region Supporting Methods
 
-        private static String GetMessageText(TKey key) => $"Failed to revise '{nameof(TRecord)}' with key '{key}'.";
+    private static String GetMessageText(TIdentifier identifier) => $"Failed to revise '{typeof(TEntity).Name}' with identifier '{identifier}'.";
 
-        #endregion
-    }
+    #endregion
 }

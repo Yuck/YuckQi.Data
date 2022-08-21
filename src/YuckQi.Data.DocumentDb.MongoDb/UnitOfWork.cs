@@ -1,67 +1,65 @@
-﻿using System;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using YuckQi.Data.Abstract;
 
-namespace YuckQi.Data.DocumentDb.MongoDb
+namespace YuckQi.Data.DocumentDb.MongoDb;
+
+public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
 {
-    public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
+    #region Private Members
+
+    private readonly IMongoClient _client;
+    private readonly Object _lock = new();
+    private readonly ClientSessionOptions? _options;
+    private Lazy<IClientSessionHandle>? _session;
+
+    #endregion
+
+
+    #region Properties
+
+    public IClientSessionHandle Scope => _session != null ? _session.Value : throw new NullReferenceException();
+
+    #endregion
+
+
+    #region Constructors
+
+    public UnitOfWork(IMongoClient client, ClientSessionOptions? options = null)
     {
-        #region Private Members
+        _client = client ?? throw new ArgumentNullException(nameof(client));
+        _options = options;
+        _session = new Lazy<IClientSessionHandle>(() => _client.StartSession(_options));
+    }
 
-        private readonly IMongoClient _client;
-        private readonly Object _lock = new Object();
-        private readonly ClientSessionOptions _options;
-        private Lazy<IClientSessionHandle> _session;
-
-        #endregion
+    #endregion
 
 
-        #region Properties
+    #region Public Methods
 
-        public IClientSessionHandle Scope => _session.Value;
+    public void Dispose()
+    {
+        if (_session == null)
+            return;
 
-        #endregion
+        Scope.AbortTransaction();
+        Scope.Dispose();
 
+        _session = null;
+    }
 
-        #region Constructors
-
-        public UnitOfWork(IMongoClient client, ClientSessionOptions options = null)
-        {
-            _client = client ?? throw new ArgumentNullException(nameof(client));
-            _options = options;
-            _session = new Lazy<IClientSessionHandle>(() => _client.StartSession(_options));
-        }
-
-        #endregion
-
-
-        #region Public Methods
-
-        public void Dispose()
+    public void SaveChanges()
+    {
+        lock (_lock)
         {
             if (_session == null)
-                return;
+                throw new InvalidOperationException();
 
-            Scope?.AbortTransaction();
-            Scope?.Dispose();
+            Scope.CommitTransaction();
+            Scope.Dispose();
 
-            _session = null;
+            _session = new Lazy<IClientSessionHandle>(() => _client.StartSession(_options));
         }
-
-        public void SaveChanges()
-        {
-            lock (_lock)
-            {
-                if (_session == null)
-                    throw new InvalidOperationException();
-
-                Scope.CommitTransaction();
-                Scope.Dispose();
-
-                _session = new Lazy<IClientSessionHandle>(() => _client.StartSession(_options));
-            }
-        }
-
-        #endregion
     }
+
+    #endregion
 }
