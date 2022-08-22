@@ -68,9 +68,10 @@ public class DocumentModelExtensionTests
         var _ = await Task.WhenAll(tasks);
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var first = tasks.First().Result.Render(serializer, registry).FieldName;
+        var first = tasks.First().Result;
+        var field = first?.Render(serializer, registry).FieldName;
 
-        Assert.That(tasks.All(t => Equals(t.Result.Render(serializer, registry).FieldName, first)), Is.True);
+        Assert.That(tasks.All(t => Equals(t.Result?.Render(serializer, registry).FieldName, field)), Is.True);
     }
 
     [Test]
