@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Reflection;
 using Dapper;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
@@ -93,6 +94,7 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
             FilterOperation.Equal => value != null ? "=" : "is",
             FilterOperation.GreaterThan => ">",
             FilterOperation.GreaterThanOrEqual => ">=",
+            FilterOperation.In => "in",
             FilterOperation.LessThan => "<",
             FilterOperation.LessThanOrEqual => "<=",
             FilterOperation.NotEqual => value != null ? "!=" : "is not",
@@ -106,10 +108,22 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
     {
         var filter = String.Join(" and ", parameters?.Select(t =>
         {
+            if (t is { Operation: FilterOperation.In, Value: not IEnumerable })
+                throw new ArgumentException($"{nameof(t.Value)} must be convertible to {nameof(IEnumerable)}.");
+
             var column = $"\"{t.FieldName}\"";
             var value = t.Value;
             var comparison = BuildComparison(value, t.Operation);
-            var parameter = value != null ? $":{t.FieldName}" : "null";
+            var set = t.Value is IEnumerable enumerable
+                          ? (from Object? item in enumerable select item is String stringItem ? $"'{stringItem}'" : $"{item}").ToList()
+                          : null;
+            var parameter = t.Operation == FilterOperation.In
+                                ? set != null && set.Any()
+                                      ? $"({String.Join(",", set)})"
+                                      : "(null)"
+                                : value != null
+                                    ? $":{t.FieldName}"
+                                    : "null";
 
             return $"({column} {comparison} {parameter})";
         }) ?? Array.Empty<String>());
