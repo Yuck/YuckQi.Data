@@ -115,7 +115,7 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
             var value = t.Value;
             var comparison = BuildComparison(value, t.Operation);
             var set = t.Value is IEnumerable enumerable
-                          ? (from Object? item in enumerable select item is String stringItem ? $"'{stringItem}'" : $"{item}").ToList()
+                          ? enumerable.Cast<Object>().ToArray().Select((_, i) => $"@{t.FieldName}{i}").ToList()
                           : null;
             var parameter = t.Operation == FilterOperation.In
                                 ? set != null && set.Any()

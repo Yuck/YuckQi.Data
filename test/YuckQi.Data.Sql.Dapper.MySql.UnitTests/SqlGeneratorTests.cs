@@ -130,7 +130,7 @@ public class SqlGeneratorTests
         var parameters = new[] { new FilterCriteria("Name", FilterOperation.In, new[] { "Bill", "Billy", "Mac", "Buddy" }) };
         var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
 
-        Assert.That(sql, Is.EqualTo("select `Id`, `Name` from `SurLaTable` where (`Name` in ('Bill','Billy','Mac','Buddy'));"));
+        Assert.That(sql, Is.EqualTo("select `Id`, `Name` from `SurLaTable` where (`Name` in (@Name0,@Name1,@Name2,@Name3));"));
     }
 
     [Test]
