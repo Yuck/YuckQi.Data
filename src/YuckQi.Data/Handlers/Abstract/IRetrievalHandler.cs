@@ -3,7 +3,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public interface IRetrievalHandler<TEntity, in TIdentifier, in TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public interface IRetrievalHandler<TEntity, in TIdentifier, in TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
     TEntity? Get(TIdentifier identifier, TScope scope);
 

@@ -27,7 +27,9 @@ public class DocumentModelExtensionTests
     {
         var type = typeof(SurLaTableRecord);
         var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetCollectionName())).ToList();
-        var _ = await Task.WhenAll(tasks);
+
+        await Task.WhenAll(tasks);
+
         var first = tasks.First().Result;
 
         Assert.That(tasks.All(t => Equals(t.Result, first)), Is.True);
@@ -46,7 +48,9 @@ public class DocumentModelExtensionTests
     {
         var type = typeof(SurLaTableRecord);
         var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetDatabaseName())).ToList();
-        var _ = await Task.WhenAll(tasks);
+
+        await Task.WhenAll(tasks);
+
         var first = tasks.First().Result;
 
         Assert.That(tasks.All(t => Equals(t.Result, first)), Is.True);
@@ -65,7 +69,9 @@ public class DocumentModelExtensionTests
     {
         var type = typeof(SurLaTableRecord);
         var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetIdentifierFieldDefinition<SurLaTableRecord, Int32>())).ToList();
-        var _ = await Task.WhenAll(tasks);
+
+        await Task.WhenAll(tasks);
+
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
         var first = tasks.First().Result;
@@ -87,7 +93,9 @@ public class DocumentModelExtensionTests
     {
         var record = new SurLaTableRecord { Id = 1, Name = "test" };
         var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => record.GetIdentifier<SurLaTableRecord, Int32>())).ToList();
-        var _ = await Task.WhenAll(tasks);
+
+        await Task.WhenAll(tasks);
+
         var first = tasks.First().Result;
 
         Assert.That(tasks.All(t => Equals(t.Result, first)), Is.True);

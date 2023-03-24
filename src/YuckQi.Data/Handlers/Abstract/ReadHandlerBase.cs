@@ -4,24 +4,12 @@ namespace YuckQi.Data.Handlers.Abstract;
 
 public abstract class ReadHandlerBase<TEntity>
 {
-    #region Properties
-
     protected IMapper? Mapper { get; }
-
-    #endregion
-
-
-    #region Constructors
 
     protected ReadHandlerBase(IMapper? mapper)
     {
         Mapper = mapper;
     }
-
-    #endregion
-
-
-    #region Protected Methods
 
     protected TEntity? MapToEntity<T>(T? data)
     {
@@ -46,6 +34,4 @@ public abstract class ReadHandlerBase<TEntity>
                      : throw new InvalidOperationException($"Unable to map '{typeof(IEnumerable<T>).Name}' to {typeof(IEnumerable<TEntity>).Name}; {nameof(Mapper)} instance is null.")
         };
     }
-
-    #endregion
 }

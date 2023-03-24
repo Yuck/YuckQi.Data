@@ -2,11 +2,12 @@
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.MemDb.Filtering;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.MemDb.Handlers;
 
-public class RetrievalHandler<TEntity, TIdentifier, TScope> : IRetrievalHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public class RetrievalHandler<TEntity, TIdentifier, TScope> : IRetrievalHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly ConcurrentDictionary<TIdentifier, TEntity> _entities;
 

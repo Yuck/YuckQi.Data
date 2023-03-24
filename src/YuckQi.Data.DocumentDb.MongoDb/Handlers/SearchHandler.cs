@@ -9,28 +9,16 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle
 {
     public SearchHandler() : base(null) { }
 }
 
-public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle
 {
-    #region Private Members
-
     private static readonly Type DocumentType = typeof(TDocument);
 
-    #endregion
-
-
-    #region Constructors
-
     public SearchHandler(IMapper? mapper) : base(mapper) { }
-
-    #endregion
-
-
-    #region Protected Methods
 
     protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
     {
@@ -82,11 +70,6 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
         return entities;
     }
 
-    #endregion
-
-
-    #region Supporting Methods
-
     private static SortDefinition<TDocument> GetSortDefinition(IEnumerable<SortCriteria> criteria)
     {
         var sorts = criteria.Select(t =>
@@ -100,6 +83,4 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
 
         return combined;
     }
-
-    #endregion
 }

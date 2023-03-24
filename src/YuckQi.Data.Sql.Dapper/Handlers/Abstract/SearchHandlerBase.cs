@@ -10,33 +10,21 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract;
 
-public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction
 {
     protected SearchHandlerBase(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
 }
 
-public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.Handlers.Abstract.SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.Handlers.Abstract.SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction
 {
-    #region Private Members
-
     private readonly IReadOnlyDictionary<Type, DbType> _dbTypeMap;
     private readonly ISqlGenerator<TRecord> _sqlGenerator;
-
-    #endregion
-
-
-    #region Constructors
 
     protected SearchHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(mapper)
     {
         _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         _dbTypeMap = dbTypeMap;
     }
-
-    #endregion
-
-
-    #region Protected Methods
 
     protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
     {
@@ -71,6 +59,4 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> :
 
         return entities;
     }
-
-    #endregion
 }

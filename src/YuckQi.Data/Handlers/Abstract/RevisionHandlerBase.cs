@@ -6,16 +6,9 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
+public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
-    #region Private Members
-
     private readonly RevisionOptions _options;
-
-    #endregion
-
-
-    #region Constructors
 
     protected RevisionHandlerBase() : this(null, null) { }
 
@@ -27,11 +20,6 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
     {
         _options = options ?? new RevisionOptions();
     }
-
-    #endregion
-
-
-    #region Public Methods
 
     public TEntity Revise(TEntity entity, TScope scope)
     {
@@ -65,14 +53,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return entity;
     }
 
-    #endregion
-
-
-    #region Protected Methods
-
     protected abstract Boolean DoRevise(TEntity entity, TScope scope);
 
     protected abstract Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken);
-
-    #endregion
 }

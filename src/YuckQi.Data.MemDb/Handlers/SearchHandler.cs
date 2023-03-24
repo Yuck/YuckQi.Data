@@ -1,13 +1,14 @@
 ﻿using System.Collections.Concurrent;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.MemDb.Filtering;
 using YuckQi.Data.Sorting;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.MemDb.Handlers;
 
-public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly ConcurrentDictionary<TIdentifier, TEntity> _entities;
 

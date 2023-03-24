@@ -10,24 +10,12 @@ namespace YuckQi.Data.Sql.Dapper.SqlServer;
 
 public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
 {
-    #region Private Members
-
     private const String DefaultSchemaName = "dbo";
     private static readonly String DefaultTableName = typeof(TRecord).Name;
     private static readonly TableAttribute? TableAttribute = typeof(TRecord).GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
 
-    #endregion
-
-
-    #region Properties
-
     private static String SchemaName => TableAttribute?.Schema ?? DefaultSchemaName;
     private static String TableName => TableAttribute?.Name ?? DefaultTableName;
-
-    #endregion
-
-
-    #region Public Methods
 
     public String GenerateCountQuery(IReadOnlyCollection<FilterCriteria> parameters)
     {
@@ -65,11 +53,6 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
 
         return sql;
     }
-
-    #endregion
-
-
-    #region Supporting Methods
 
     private static String BuildColumnsSql()
     {
@@ -137,6 +120,4 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
     {
         return String.Join(Environment.NewLine, fragments.Where(t => ! String.IsNullOrWhiteSpace(t)));
     }
-
-    #endregion
 }

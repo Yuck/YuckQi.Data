@@ -5,16 +5,9 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : ReadHandlerBase<TEntity>, IRetrievalHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : ReadHandlerBase<TEntity>, IRetrievalHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
-    #region Constructors
-
     protected RetrievalHandlerBase(IMapper? mapper) : base(mapper) { }
-
-    #endregion
-
-
-    #region Public Methods
 
     public TEntity? Get(TIdentifier identifier, TScope scope)
     {
@@ -112,11 +105,6 @@ public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : ReadH
 
     public Task<IReadOnlyCollection<TEntity>> GetList(Object parameters, TScope scope, CancellationToken cancellationToken) => GetList(parameters.ToFilterCollection(), scope, cancellationToken);
 
-    #endregion
-
-
-    #region Protected Methods
-
     protected abstract TEntity? DoGet(TIdentifier identifier, TScope scope);
 
     protected abstract Task<TEntity?> DoGet(TIdentifier identifier, TScope scope, CancellationToken cancellationToken);
@@ -128,6 +116,4 @@ public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : ReadH
     protected abstract IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope);
 
     protected abstract Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope, CancellationToken cancellationToken);
-
-    #endregion
 }

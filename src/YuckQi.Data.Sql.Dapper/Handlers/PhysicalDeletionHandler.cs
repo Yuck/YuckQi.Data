@@ -6,25 +6,16 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers;
 
-public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction
 {
     public PhysicalDeletionHandler() : base(null) { }
 }
 
-public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TRecord> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TRecord> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction
 {
-    #region Constructors
-
     public PhysicalDeletionHandler(IMapper? mapper) : base(mapper) { }
-
-    #endregion
-
-
-    #region Protected Methods
 
     protected override Boolean DoDelete(TEntity entity, TScope scope) => scope.Connection.Delete(MapToData<TRecord>(entity), scope) > 0;
 
     protected override async Task<Boolean> DoDelete(TEntity entity, TScope scope, CancellationToken cancellationToken) => await scope.Connection.DeleteAsync(MapToData<TRecord>(entity), scope) > 0;
-
-    #endregion
 }

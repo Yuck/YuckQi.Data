@@ -3,26 +3,14 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : ILogicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : struct
+public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : ILogicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
-    #region Private Members
-
     private readonly IRevisionHandler<TEntity, TIdentifier, TScope> _reviser;
-
-    #endregion
-
-
-    #region Constructors
 
     protected LogicalDeletionHandlerBase(IRevisionHandler<TEntity, TIdentifier, TScope> reviser)
     {
         _reviser = reviser ?? throw new ArgumentNullException(nameof(reviser));
     }
-
-    #endregion
-
-
-    #region Public Methods
 
     public TEntity Delete(TEntity entity, TScope scope)
     {
@@ -83,6 +71,4 @@ public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> :
 
         return _reviser.Revise(entity, scope, cancellationToken);
     }
-
-    #endregion
 }

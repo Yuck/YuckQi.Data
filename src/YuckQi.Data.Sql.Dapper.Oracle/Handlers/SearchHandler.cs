@@ -7,7 +7,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Oracle.Handlers;
 
-public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDbTransaction
 {
     public SearchHandler() : this(new SqlGenerator<TEntity>()) { }
 
@@ -16,7 +16,7 @@ public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity
     public SearchHandler(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
 }
 
-public class SearchHandler<TEntity, TIdentifier, TScope, TRecord> : SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public class SearchHandler<TEntity, TIdentifier, TScope, TRecord> : SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDbTransaction
 {
     public SearchHandler(IMapper mapper) : this(new SqlGenerator<TRecord>(), mapper) { }
 

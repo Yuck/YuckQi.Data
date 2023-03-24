@@ -21,7 +21,7 @@ public static class DynamicParameterExtensions
                               ? enumerable.Cast<Object>().ToArray()
                               : throw new ArgumentException($"{nameof(parameter.Value)} must be convertible to {nameof(IEnumerable)}.");
 
-                for (var i = 0; i <= set.Length; i++)
+                for (var i = 0; i < set.Length; i++)
                 {
                     var name = $"{parameter.FieldName}{i}";
                     var value = set[i];

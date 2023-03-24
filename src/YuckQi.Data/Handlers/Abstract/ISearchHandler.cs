@@ -5,7 +5,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public interface ISearchHandler<TEntity, TIdentifier, in TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public interface ISearchHandler<TEntity, TIdentifier, in TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
     IPage<TEntity> Search(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope);
 

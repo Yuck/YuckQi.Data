@@ -3,7 +3,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public interface IRevisionHandler<TEntity, TIdentifier, in TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
+public interface IRevisionHandler<TEntity, TIdentifier, in TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
     TEntity Revise(TEntity entity, TScope scope);
 

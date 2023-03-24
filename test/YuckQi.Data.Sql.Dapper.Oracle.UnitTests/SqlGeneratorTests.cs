@@ -149,10 +149,7 @@ public class SqlGeneratorTests
         var generator = new SqlGenerator<SurLaTableRecord>();
         var parameters = new[] { new FilterCriteria("Name", FilterOperation.In, 1234) };
 
-        Assert.Throws<ArgumentException>(() =>
-        {
-            var _ = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
-        });
+        Assert.Throws<ArgumentException>(() => { _ = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " "); });
     }
 
     [Table("SurLaTable")]

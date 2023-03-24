@@ -8,18 +8,11 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ReadHandlerBase<TEntity>, ISearchHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ReadHandlerBase<TEntity>, ISearchHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
-    #region Constructors
-
     protected SearchHandlerBase() : this(null) { }
 
     protected SearchHandlerBase(IMapper? mapper) : base(mapper) { }
-
-    #endregion
-
-
-    #region Public Methods
 
     public IPage<TEntity> Search(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
     {
@@ -59,11 +52,6 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ReadHand
 
     public Task<IPage<TEntity>> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken) => Search(parameters.ToFilterCollection(), page, sort, scope, cancellationToken);
 
-    #endregion
-
-
-    #region Protected Methods
-
     protected abstract Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope);
 
     protected abstract Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken);
@@ -71,6 +59,4 @@ public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ReadHand
     protected abstract IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope);
 
     protected abstract Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken);
-
-    #endregion
 }

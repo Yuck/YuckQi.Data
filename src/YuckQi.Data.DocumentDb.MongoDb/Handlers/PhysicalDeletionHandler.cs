@@ -6,32 +6,16 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
 {
-    #region Constructors
-
     public PhysicalDeletionHandler() : base(null) { }
-
-    #endregion
 }
 
-public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
 {
-    #region Private Members
-
     private static readonly Type DocumentType = typeof(TDocument);
 
-    #endregion
-
-
-    #region Constructors
-
     public PhysicalDeletionHandler(IMapper? mapper) : base(mapper) { }
-
-    #endregion
-
-
-    #region Protected Methods
 
     protected override Boolean DoDelete(TEntity entity, TScope scope)
     {
@@ -59,11 +43,6 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
         return result.DeletedCount > 0;
     }
 
-    #endregion
-
-
-    #region Supporting Methods
-
     private TDocument? GetDocument(TEntity entity)
     {
         if (entity is TDocument document)
@@ -71,6 +50,4 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
 
         return Mapper != null ? Mapper.Map<TDocument>(entity) : default;
     }
-
-    #endregion
 }

@@ -7,28 +7,16 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class RetrievalHandler<TEntity, TIdentifier, TScope> : RetrievalHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+public class RetrievalHandler<TEntity, TIdentifier, TScope> : RetrievalHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
 {
     public RetrievalHandler() : base(null) { }
 }
 
-public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
 {
-    #region Private Members
-
     private static readonly Type DocumentType = typeof(TDocument);
 
-    #endregion
-
-
-    #region Constructors
-
     public RetrievalHandler(IMapper? mapper) : base(mapper) { }
-
-    #endregion
-
-
-    #region Public Methods
 
     protected override TEntity? DoGet(TIdentifier identifier, TScope scope)
     {
@@ -104,11 +92,6 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entities;
     }
 
-    #endregion
-
-
-    #region Supporting Methods
-
     private static TDocument? GetDocument(IAsyncCursor<TDocument> reader) => reader.MoveNext() ? reader.Current.SingleOrDefault() : default;
 
     private static IEnumerable<TDocument> GetDocuments(IAsyncCursor<TDocument> reader)
@@ -120,6 +103,4 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
 
         return documents;
     }
-
-    #endregion
 }

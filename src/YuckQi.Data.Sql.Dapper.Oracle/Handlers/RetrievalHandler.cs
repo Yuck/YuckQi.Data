@@ -7,7 +7,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Oracle.Handlers;
 
-public class RetrievalHandler<TEntity, TIdentifier, TScope> : RetrievalHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public class RetrievalHandler<TEntity, TIdentifier, TScope> : RetrievalHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDbTransaction
 {
     public RetrievalHandler() : this(new SqlGenerator<TEntity>()) { }
 
@@ -16,7 +16,7 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope> : RetrievalHandler<T
     public RetrievalHandler(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
 }
 
-public class RetrievalHandler<TEntity, TIdentifier, TScope, TRecord> : RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public class RetrievalHandler<TEntity, TIdentifier, TScope, TRecord> : RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDbTransaction
 {
     public RetrievalHandler(IMapper mapper) : this(new SqlGenerator<TRecord>(), mapper) { }
 

@@ -4,18 +4,11 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IPhysicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IPhysicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
-    #region Constructors
-
     protected PhysicalDeletionHandlerBase() : this(null) { }
 
     protected PhysicalDeletionHandlerBase(IMapper? mapper) : base(mapper) { }
-
-    #endregion
-
-
-    #region Public Methods
 
     public TEntity Delete(TEntity entity, TScope scope)
     {
@@ -43,14 +36,7 @@ public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> 
         return entity;
     }
 
-    #endregion
-
-
-    #region Protected Methods
-
     protected abstract Boolean DoDelete(TEntity entity, TScope scope);
 
     protected abstract Task<Boolean> DoDelete(TEntity entity, TScope scope, CancellationToken cancellationToken);
-
-    #endregion
 }

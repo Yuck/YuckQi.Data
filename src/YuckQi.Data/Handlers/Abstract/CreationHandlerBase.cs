@@ -1,4 +1,5 @@
-﻿using YuckQi.Data.Exceptions;
+﻿using CSharpFunctionalExtensions;
+using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -6,16 +7,9 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct
+public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier>
 {
-    #region Private Members
-
     private readonly CreationOptions<TIdentifier> _options;
-
-    #endregion
-
-
-    #region Constructors
 
     protected CreationHandlerBase() : this(null, null) { }
 
@@ -27,11 +21,6 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
     {
         _options = options ?? new CreationOptions<TIdentifier>();
     }
-
-    #endregion
-
-
-    #region Public Methods
 
     public TEntity Create(TEntity entity, TScope scope)
     {
@@ -48,7 +37,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
             revised.RevisionMomentUtc = entity.CreationMomentUtc;
 
         var identifier = DoCreate(entity, scope);
-        if (identifier == null)
+        if (identifier.HasNoValue)
             throw new CreationException<TEntity>();
 
         entity.Identifier = identifier.Value;
@@ -71,7 +60,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
             revised.RevisionMomentUtc = entity.CreationMomentUtc;
 
         var identifier = await DoCreate(entity, scope, cancellationToken);
-        if (identifier == null)
+        if (identifier.HasNoValue)
             throw new CreationException<TEntity>();
 
         entity.Identifier = identifier.Value;
@@ -79,14 +68,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return entity;
     }
 
-    #endregion
+    protected abstract Maybe<TIdentifier?> DoCreate(TEntity entity, TScope scope);
 
-
-    #region Protected Methods
-
-    protected abstract TIdentifier? DoCreate(TEntity entity, TScope scope);
-
-    protected abstract Task<TIdentifier?> DoCreate(TEntity entity, TScope scope, CancellationToken cancellationToken);
-
-    #endregion
+    protected abstract Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope scope, CancellationToken cancellationToken);
 }

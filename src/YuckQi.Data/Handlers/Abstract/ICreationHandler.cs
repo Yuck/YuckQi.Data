@@ -3,7 +3,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public interface ICreationHandler<TEntity, TIdentifier, in TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct
+public interface ICreationHandler<TEntity, TIdentifier, in TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier>
 {
     TEntity Create(TEntity entity, TScope scope);
 
