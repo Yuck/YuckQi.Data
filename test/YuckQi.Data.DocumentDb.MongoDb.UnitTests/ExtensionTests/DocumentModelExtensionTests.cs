@@ -1,93 +1,110 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using MongoDB.Bson.Serialization;
+﻿using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
 using NUnit.Framework;
+using YuckQi.Data.DocumentDb.MongoDb.Attributes;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 
-namespace YuckQi.Data.DocumentDb.MongoDb.UnitTests.ExtensionTests
+namespace YuckQi.Data.DocumentDb.MongoDb.UnitTests.ExtensionTests;
+
+public class DocumentModelExtensionTests
 {
-    public class DocumentModelExtensionTests
+    private static readonly SurLaTableRecord? NullSurLaTableRecord = null;
+    private static readonly Type? NullType = null;
+
+    [SetUp]
+    public void Setup() { }
+
+    [Test]
+    public void GetCollectionName_WithNullType_IsNull()
     {
-        [SetUp]
-        public void Setup() { }
+        var name = NullType.GetCollectionName();
 
-        [Test]
-        public void GetCollectionName_WithNullType_IsNull()
-        {
-            var name = ((Type) null).GetCollectionName();
+        Assert.That(name, Is.Null);
+    }
 
-            Assert.IsNull(name);
-        }
+    [Test]
+    public async Task GetCollectionName_WithMultipleRequests_IsValid()
+    {
+        var type = typeof(SurLaTableRecord);
+        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetCollectionName())).ToList();
 
-        [Test]
-        public async Task GetCollectionName_WithMultipleRequests_IsValid()
-        {
-            var type = typeof(SurLaTableRecord);
-            var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetCollectionName())).ToList();
-            var result = await Task.WhenAll(tasks);
-            var first = tasks.First().Result;
+        await Task.WhenAll(tasks);
 
-            Assert.IsTrue(tasks.All(t => Equals(t.Result, first)));
-        }
+        var first = tasks.First().Result;
 
-        [Test]
-        public void GetDatabaseName_WithNullType_IsNull()
-        {
-            var name = ((Type) null).GetDatabaseName();
+        Assert.That(tasks.All(t => Equals(t.Result, first)), Is.True);
+    }
 
-            Assert.IsNull(name);
-        }
+    [Test]
+    public void GetDatabaseName_WithNullType_IsNull()
+    {
+        var name = NullType.GetDatabaseName();
 
-        [Test]
-        public async Task GetDatabaseName_WithMultipleRequests_IsValid()
-        {
-            var type = typeof(SurLaTableRecord);
-            var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetDatabaseName())).ToList();
-            var result = await Task.WhenAll(tasks);
-            var first = tasks.First().Result;
+        Assert.That(name, Is.Null);
+    }
 
-            Assert.IsTrue(tasks.All(t => Equals(t.Result, first)));
-        }
+    [Test]
+    public async Task GetDatabaseName_WithMultipleRequests_IsValid()
+    {
+        var type = typeof(SurLaTableRecord);
+        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetDatabaseName())).ToList();
 
-        [Test]
-        public void GetKeyFieldDefinition_WithNullType_IsNull()
-        {
-            var name = ((Type) null).GetKeyFieldDefinition<SurLaTableRecord, Int32>();
+        await Task.WhenAll(tasks);
 
-            Assert.IsNull(name);
-        }
+        var first = tasks.First().Result;
 
-        [Test]
-        public async Task GetKeyFieldDefinition_WithMultipleRequests_IsValid()
-        {
-            var type = typeof(SurLaTableRecord);
-            var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetKeyFieldDefinition<SurLaTableRecord, Int32>())).ToList();
-            var result = await Task.WhenAll(tasks);
-            var registry = BsonSerializer.SerializerRegistry;
-            var serializer = registry.GetSerializer<SurLaTableRecord>();
-            var first = tasks.First().Result.Render(serializer, registry).FieldName;
+        Assert.That(tasks.All(t => Equals(t.Result, first)), Is.True);
+    }
 
-            Assert.IsTrue(tasks.All(t => Equals(t.Result.Render(serializer, registry).FieldName, first)));
-        }
+    [Test]
+    public void GetIdentifierFieldDefinition_WithNullType_IsNull()
+    {
+        var name = NullType.GetIdentifierFieldDefinition<SurLaTableRecord, Int32>();
 
-        [Test]
-        public void GetKey_WithNullRecord_IsNull()
-        {
-            var name = ((SurLaTableRecord) null).GetKey<SurLaTableRecord, Int32>();
+        Assert.That(name, Is.Null);
+    }
 
-            Assert.IsNull(name);
-        }
+    [Test]
+    public async Task GetIdentifierFieldDefinition_WithMultipleRequests_IsValid()
+    {
+        var type = typeof(SurLaTableRecord);
+        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetIdentifierFieldDefinition<SurLaTableRecord, Int32>())).ToList();
 
-        [Test]
-        public async Task GetKey_WithMultipleRequests_IsValid()
-        {
-            var record = new SurLaTableRecord { Id = 1, Name = "test" };
-            var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => record.GetKey<SurLaTableRecord, Int32>())).ToList();
-            var result = await Task.WhenAll(tasks);
-            var first = tasks.First().Result;
+        await Task.WhenAll(tasks);
 
-            Assert.IsTrue(tasks.All(t => Equals(t.Result, first)));
-        }
+        var registry = BsonSerializer.SerializerRegistry;
+        var serializer = registry.GetSerializer<SurLaTableRecord>();
+        var first = tasks.First().Result;
+        var field = first?.Render(serializer, registry).FieldName;
+
+        Assert.That(tasks.All(t => Equals(t.Result?.Render(serializer, registry).FieldName, field)), Is.True);
+    }
+
+    [Test]
+    public void GetIdentifier_WithNullRecord_IsNull()
+    {
+        var name = NullSurLaTableRecord?.GetIdentifier<SurLaTableRecord, Int32>();
+
+        Assert.That(name, Is.Null);
+    }
+
+    [Test]
+    public async Task GetIdentifier_WithMultipleRequests_IsValid()
+    {
+        var record = new SurLaTableRecord { Id = 1, Name = "test" };
+        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => record.GetIdentifier<SurLaTableRecord, Int32>())).ToList();
+
+        await Task.WhenAll(tasks);
+
+        var first = tasks.First().Result;
+
+        Assert.That(tasks.All(t => Equals(t.Result, first)), Is.True);
+    }
+
+    [Database("Tableau")]
+    public class SurLaTableRecord
+    {
+        [BsonId] public Int32 Id { get; set; }
+        public String Name { get; set; } = String.Empty;
     }
 }

@@ -1,68 +1,71 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Linq;
+﻿using System.Collections.Concurrent;
 using System.Reflection;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Attributes;
 
-namespace YuckQi.Data.DocumentDb.MongoDb.Extensions
+namespace YuckQi.Data.DocumentDb.MongoDb.Extensions;
+
+public static class DocumentModelExtensions
 {
-    public static class DocumentModelExtensions
+    private const String DefaultObjectIdPropertyName = "_id";
+
+    private static readonly ConcurrentDictionary<Type, String> CollectionNameByType = new();
+    private static readonly ConcurrentDictionary<Type, String> DatabaseNameByType = new();
+    private static readonly ConcurrentDictionary<Type, PropertyInfo> IdentifierByType = new();
+
+    public static String? GetCollectionName(this Type? type) => type != null ? CollectionNameByType.GetOrAdd(type, identifier => GetCollectionAttribute(identifier)?.Name ?? identifier.Name) : null;
+
+    public static String? GetDatabaseName(this Type? type) => type != null ? DatabaseNameByType.GetOrAdd(type, identifier => GetDatabaseAttribute(identifier).Name) : null;
+
+    public static TIdentifier GetIdentifier<TDocument, TIdentifier>(this TDocument document) where TIdentifier : struct
     {
-        #region Constants
+        if (document == null)
+            return default;
 
-        private const String DefaultObjectIdPropertyName = "_id";
+        var property = GetIdentifierPropertyInfo(typeof(TDocument));
+        var value = property?.GetValue(document);
+        if (value is TIdentifier identifier)
+            return identifier;
 
-        #endregion
+        return default;
+    }
 
+    public static StringFieldDefinition<TDocument, TIdentifier?>? GetIdentifierFieldDefinition<TDocument, TIdentifier>(this Type? type) where TIdentifier : struct
+    {
+        if (type == null)
+            return null;
 
-        #region Private Members
+        // This isn't great since it should be enforced at compile time
+        if (type != typeof(TDocument))
+            throw new ArgumentException($"Type of '{type.FullName}' must match '{typeof(TDocument).Name}'.");
 
-        private static readonly ConcurrentDictionary<Type, String> CollectionNameByType = new ConcurrentDictionary<Type, String>();
-        private static readonly ConcurrentDictionary<Type, String> DatabaseNameByType = new ConcurrentDictionary<Type, String>();
-        private static readonly ConcurrentDictionary<Type, PropertyInfo> KeyByType = new ConcurrentDictionary<Type, PropertyInfo>();
+        var propertyInfo = GetIdentifierPropertyInfo(typeof(TDocument));
+        var field = new StringFieldDefinition<TDocument, TIdentifier?>(propertyInfo?.Name);
 
-        #endregion
+        return field;
+    }
 
+    private static CollectionAttribute? GetCollectionAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(CollectionAttribute)) as CollectionAttribute;
 
-        #region Extension Methods
+    private static DatabaseAttribute GetDatabaseAttribute(MemberInfo type)
+    {
+        if (type.GetCustomAttribute(typeof(DatabaseAttribute)) is DatabaseAttribute attribute)
+            return attribute;
 
-        public static String GetCollectionName(this Type type) => type != null ? CollectionNameByType.GetOrAdd(type, key => GetCollectionAttribute(key)?.Name ?? key.Name) : null;
+        throw new NullReferenceException();
+    }
 
-        public static String GetDatabaseName(this Type type) => type != null ? DatabaseNameByType.GetOrAdd(type, key => GetDatabaseAttribute(key)?.Name) : null;
+    private static PropertyInfo? GetIdentifierPropertyInfo(Type? type) => type != null ? IdentifierByType.GetOrAdd(type, IdentifierPropertyInfoValueFactory) : null;
 
-        public static TKey? GetKey<TDocument, TKey>(this TDocument document) where TKey : struct => document != null ? GetKeyPropertyInfo(typeof(TDocument))?.GetValue(document) as TKey? : null;
+    private static PropertyInfo IdentifierPropertyInfoValueFactory(Type type)
+    {
+        var property = type.GetProperties()
+                           .Select(t => t.GetCustomAttribute<BsonIdAttribute>() != null ? t : null)
+                           .SingleOrDefault(t => t != null) ?? type.GetProperty(DefaultObjectIdPropertyName);
+        if (property != null)
+            return property;
 
-        public static StringFieldDefinition<TDocument, TKey?> GetKeyFieldDefinition<TDocument, TKey>(this Type type) where TKey : struct
-        {
-            if (type == null)
-                return null;
-            // This isn't great since it should be enforced at compile time
-            if (type != typeof(TDocument))
-                throw new ArgumentException($"Type of '{type.FullName}' must match '{typeof(TDocument)}'.");
-
-            var propertyInfo = GetKeyPropertyInfo(typeof(TDocument));
-            var field = new StringFieldDefinition<TDocument, TKey?>(propertyInfo?.Name);
-
-            return field;
-        }
-
-        #endregion
-
-
-        #region Supporting Methods
-
-        private static CollectionAttribute GetCollectionAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(CollectionAttribute)) as CollectionAttribute;
-
-        private static DatabaseAttribute GetDatabaseAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(DatabaseAttribute)) as DatabaseAttribute;
-
-        private static PropertyInfo GetKeyPropertyInfo(Type type) => type != null ? KeyByType.GetOrAdd(type, KeyPropertyInfoValueFactory) : null;
-
-        private static PropertyInfo KeyPropertyInfoValueFactory(Type type) => type.GetProperties()
-                                                                                  .Select(t => t.GetCustomAttribute<BsonIdAttribute>() != null ? t : null)
-                                                                                  .SingleOrDefault(t => t != null) ?? type.GetProperty(DefaultObjectIdPropertyName);
-
-        #endregion
+        throw new NullReferenceException();
     }
 }

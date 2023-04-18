@@ -1,8 +1,7 @@
-﻿namespace YuckQi.Data.Sorting
+﻿namespace YuckQi.Data.Sorting;
+
+public enum SortOrder
 {
-    public enum SortOrder
-    {
-        Ascending = 0,
-        Descending = 1
-    }
+    Ascending = 0,
+    Descending = 1
 }

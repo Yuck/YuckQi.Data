@@ -1,57 +1,53 @@
-﻿using System;
-using System.Threading.Tasks;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
-namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
+namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
+
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
 {
-    public class PhysicalDeletionHandler<TEntity, TKey, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TKey, TScope, TDocument> where TEntity : IEntity<TKey> where TKey : struct where TScope : IClientSessionHandle
+    public PhysicalDeletionHandler() : base(null) { }
+}
+
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
+{
+    private static readonly Type DocumentType = typeof(TDocument);
+
+    public PhysicalDeletionHandler(IMapper? mapper) : base(mapper) { }
+
+    protected override Boolean DoDelete(TEntity entity, TScope scope)
     {
-        #region Private Members
+        var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+        var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+        var document = GetDocument(entity);
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
+        var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+        var filter = Builders<TDocument>.Filter.Eq(field, identifier);
+        var result = collection.DeleteOne(scope, filter);
 
-        private static readonly Type DocumentType = typeof(TDocument);
+        return result.DeletedCount > 0;
+    }
 
-        #endregion
+    protected override async Task<Boolean> DoDelete(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    {
+        var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+        var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+        var document = GetDocument(entity);
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
+        var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+        var filter = Builders<TDocument>.Filter.Eq(field, identifier);
+        var result = await collection.DeleteOneAsync(scope, filter, cancellationToken: cancellationToken);
 
+        return result.DeletedCount > 0;
+    }
 
-        #region Constructors
+    private TDocument? GetDocument(TEntity entity)
+    {
+        if (entity is TDocument document)
+            return document;
 
-        public PhysicalDeletionHandler(IMapper mapper) : base(mapper) { }
-
-        #endregion
-
-
-        #region Protected Methods
-
-        protected override Boolean DoDelete(TEntity entity, TScope scope)
-        {
-            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
-            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-            var document = Mapper.Map<TDocument>(entity);
-            var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
-            var key = document.GetKey<TDocument, TKey>();
-            var filter = Builders<TDocument>.Filter.Eq(field, key);
-            var result = collection.DeleteOne(scope, filter);
-
-            return result.DeletedCount > 0;
-        }
-
-        protected override async Task<Boolean> DoDeleteAsync(TEntity entity, TScope scope)
-        {
-            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
-            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-            var document = Mapper.Map<TDocument>(entity);
-            var field = DocumentType.GetKeyFieldDefinition<TDocument, TKey>();
-            var key = document.GetKey<TDocument, TKey>();
-            var filter = Builders<TDocument>.Filter.Eq(field, key);
-            var result = await collection.DeleteOneAsync(scope, filter);
-
-            return result.DeletedCount > 0;
-        }
-
-        #endregion
+        return Mapper != null ? Mapper.Map<TDocument>(entity) : default;
     }
 }

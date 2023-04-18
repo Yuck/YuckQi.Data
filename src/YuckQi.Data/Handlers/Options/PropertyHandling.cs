@@ -1,8 +1,7 @@
-﻿namespace YuckQi.Data.Handlers.Options
+﻿namespace YuckQi.Data.Handlers.Options;
+
+public enum PropertyHandling
 {
-    public enum PropertyHandling
-    {
-        Manual = 0,
-        Auto = 1
-    }
+    Manual = 0,
+    Auto = 1
 }

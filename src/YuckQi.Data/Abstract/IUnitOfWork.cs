@@ -1,11 +1,8 @@
-﻿using System;
+﻿namespace YuckQi.Data.Abstract;
 
-namespace YuckQi.Data.Abstract
+public interface IUnitOfWork<out TScope> : IDisposable
 {
-    public interface IUnitOfWork<out TScope> : IDisposable
-    {
-        TScope Scope { get; }
+    TScope Scope { get; }
 
-        void SaveChanges();
-    }
+    void SaveChanges();
 }

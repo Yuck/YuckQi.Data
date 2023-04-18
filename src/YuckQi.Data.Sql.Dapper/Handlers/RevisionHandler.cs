@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.Threading.Tasks;
+﻿using System.Data;
 using Dapper;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
@@ -8,25 +6,22 @@ using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers
+namespace YuckQi.Data.Sql.Dapper.Handlers;
+
+public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction
 {
-    public class RevisionHandler<TEntity, TKey, TScope, TRecord> : RevisionHandlerBase<TEntity, TKey, TScope, TRecord> where TEntity : IEntity<TKey>, IRevised where TKey : struct where TScope : IDbTransaction
-    {
-        #region Constructors
+    public RevisionHandler() : this(null) { }
 
-        public RevisionHandler(IMapper mapper) : base(mapper) { }
+    public RevisionHandler(RevisionOptions? options) : base(options, null) { }
+}
 
-        public RevisionHandler(IMapper mapper, RevisionOptions options) : base(mapper, options) { }
+public class RevisionHandler<TEntity, TIdentifier, TScope, TRecord> : RevisionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction
+{
+    public RevisionHandler(IMapper mapper) : base(mapper) { }
 
-        #endregion
+    public RevisionHandler(RevisionOptions? options, IMapper? mapper) : base(options, mapper) { }
 
+    protected override Boolean DoRevise(TEntity entity, TScope scope) => scope.Connection.Update(MapToData<TRecord>(entity), scope) > 0;
 
-        #region Protected Methods
-
-        protected override Boolean DoRevise(TEntity entity, TScope scope) => scope.Connection.Update(Mapper.Map<TRecord>(entity), scope) > 0;
-
-        protected override async Task<Boolean> DoReviseAsync(TEntity entity, TScope scope) => await scope.Connection.UpdateAsync(Mapper.Map<TRecord>(entity), scope) > 0;
-
-        #endregion
-    }
+    protected override async Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken) => await scope.Connection.UpdateAsync(MapToData<TRecord>(entity), scope, token: cancellationToken) > 0;
 }

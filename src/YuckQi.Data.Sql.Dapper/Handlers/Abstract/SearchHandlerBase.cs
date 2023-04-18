@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Data;
 using Dapper;
 using YuckQi.Data.Filtering;
-using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Sorting;
 using YuckQi.Data.Sql.Dapper.Abstract;
 using YuckQi.Data.Sql.Dapper.Extensions;
@@ -13,65 +8,55 @@ using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
-namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract
+namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract;
+
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction
 {
-    public abstract class SearchHandlerBase<TEntity, TKey, TScope, TRecord> : SearchHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDbTransaction
+    protected SearchHandlerBase(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
+}
+
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.Handlers.Abstract.SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction
+{
+    private readonly IReadOnlyDictionary<Type, DbType> _dbTypeMap;
+    private readonly ISqlGenerator<TRecord> _sqlGenerator;
+
+    protected SearchHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(mapper)
     {
-        #region Private Members
+        _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
+        _dbTypeMap = dbTypeMap;
+    }
 
-        private readonly IReadOnlyDictionary<Type, DbType> _dbTypeMap;
-        private readonly ISqlGenerator<TRecord> _sqlGenerator;
+    protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    {
+        var sql = _sqlGenerator.GenerateCountQuery(parameters);
+        var total = scope.Connection.ExecuteScalar<Int32>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
 
-        #endregion
+        return total;
+    }
 
+    protected override Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
+    {
+        var sql = _sqlGenerator.GenerateCountQuery(parameters);
+        var total = scope.Connection.ExecuteScalarAsync<Int32>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
 
-        #region Constructors
+        return total;
+    }
 
-        protected SearchHandlerBase(IMapper mapper, ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(mapper)
-        {
-            _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
-            _dbTypeMap = dbTypeMap;
-        }
+    protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+    {
+        var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
+        var records = scope.Connection.Query<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
+        var entities = MapToEntityCollection(records);
 
-        #endregion
+        return entities;
+    }
 
+    protected override async Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken)
+    {
+        var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
+        var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
+        var entities = MapToEntityCollection(records);
 
-        #region Protected Methods
-
-        protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
-        {
-            var sql = _sqlGenerator.GenerateCountQuery(parameters);
-            var total = scope.Connection.ExecuteScalar<Int32>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-
-            return total;
-        }
-
-        protected override Task<Int32> DoCountAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
-        {
-            var sql = _sqlGenerator.GenerateCountQuery(parameters);
-            var total = scope.Connection.ExecuteScalarAsync<Int32>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-
-            return total;
-        }
-
-        protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
-        {
-            var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
-            var records = scope.Connection.Query<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
-
-            return entities;
-        }
-
-        protected override async Task<IReadOnlyCollection<TEntity>> DoSearchAsync(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
-        {
-            var sql = _sqlGenerator.GenerateSearchQuery(parameters, page, sort);
-            var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
-            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(records);
-
-            return entities;
-        }
-
-        #endregion
+        return entities;
     }
 }

@@ -1,12 +1,11 @@
-﻿namespace YuckQi.Data.Handlers.Options
-{
-    public class RevisionOptions
-    {
-        public PropertyHandling RevisionMomentAssignment { get; }
+﻿namespace YuckQi.Data.Handlers.Options;
 
-        public RevisionOptions(PropertyHandling revisionMomentAssignment = PropertyHandling.Manual)
-        {
-            RevisionMomentAssignment = revisionMomentAssignment;
-        }
+public class RevisionOptions
+{
+    public PropertyHandling RevisionMomentAssignment { get; }
+
+    public RevisionOptions(PropertyHandling revisionMomentAssignment = PropertyHandling.Manual)
+    {
+        RevisionMomentAssignment = revisionMomentAssignment;
     }
 }

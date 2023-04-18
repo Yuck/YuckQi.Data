@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using CSharpFunctionalExtensions;
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Handlers.Abstract;
@@ -8,50 +7,46 @@ using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
-namespace YuckQi.Data.DocumentDb.MongoDb.Handlers
+namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
+
+public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
 {
-    public class CreationHandler<TEntity, TKey, TScope, TDocument> : CreationHandlerBase<TEntity, TKey, TScope, TDocument> where TEntity : IEntity<TKey>, ICreated where TKey : struct where TScope : IClientSessionHandle
+    public CreationHandler() : this(null) { }
+
+    public CreationHandler(CreationOptions<TIdentifier>? options) : base(options, null) { }
+}
+
+public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
+{
+    private static readonly Type DocumentType = typeof(TDocument);
+
+    public CreationHandler(IMapper? mapper) : base(mapper) { }
+
+    public CreationHandler(CreationOptions<TIdentifier>? options, IMapper? mapper) : base(options, mapper) { }
+
+    protected override Maybe<TIdentifier> DoCreate(TEntity entity, TScope scope)
     {
-        #region Private Members
+        var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+        var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+        var document = MapToData<TDocument>(entity);
+        if (document == null)
+            throw new NullReferenceException();
 
-        private static readonly Type DocumentType = typeof(TDocument);
+        collection.InsertOne(scope, document);
 
-        #endregion
+        return document.GetIdentifier<TDocument, TIdentifier>();
+    }
 
+    protected override async Task<Maybe<TIdentifier>> DoCreate(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    {
+        var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+        var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+        var document = MapToData<TDocument>(entity);
+        if (document == null)
+            throw new NullReferenceException();
 
-        #region Constructors
+        await collection.InsertOneAsync(scope, document, cancellationToken: cancellationToken);
 
-        public CreationHandler(IMapper mapper) : base(mapper) { }
-
-        public CreationHandler(IMapper mapper, CreationOptions options) : base(mapper, options) { }
-
-        #endregion
-
-
-        #region Protected Methods
-
-        protected override TKey? DoCreate(TEntity entity, TScope scope)
-        {
-            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
-            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-            var document = Mapper.Map<TDocument>(entity);
-
-            collection.InsertOne(scope, document);
-
-            return document.GetKey<TDocument, TKey>();
-        }
-
-        protected override async Task<TKey?> DoCreateAsync(TEntity entity, TScope scope)
-        {
-            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
-            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-            var document = Mapper.Map<TDocument>(entity);
-
-            await collection.InsertOneAsync(scope, document);
-
-            return document.GetKey<TDocument, TKey>();
-        }
-
-        #endregion
+        return document.GetIdentifier<TDocument, TIdentifier>();
     }
 }
