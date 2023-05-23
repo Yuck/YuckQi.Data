@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
+using YuckQi.Data.DocumentDb.DynamoDb.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Sorting;
@@ -10,95 +13,65 @@ using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
-namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers
+namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
+
+public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext
 {
-    public class SearchHandler<TEntity, TKey, TScope, TDocument> : SearchHandlerBase<TEntity, TKey, TScope> where TEntity : IEntity<TKey> where TKey : struct where TScope : IDynamoDBContext
+    public SearchHandler(IMapper mapper) : base(mapper) { }
+
+    protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
     {
-        #region Private Members
+        var task = Task.Run(async () => await DoCount(parameters, scope, default));
+        var result = task.Result;
 
-        private static readonly Type DocumentType = typeof(TDocument);
+        return result;
+    }
 
-        #endregion
+    protected override Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
+    {
+        var table = scope.GetTargetTable<TDocument>();
+        var filter = parameters.ToScanFilter();
+        var search = table.Scan(filter);
+        var count = search.Count;
 
+        return Task.FromResult(count);
+    }
 
-        #region Constructors
+    protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+    {
+        var task = Task.Run(async () => await DoSearch(parameters, page, sort, scope, default));
+        var result = task.Result;
 
-        public SearchHandler(IMapper mapper) : base(mapper) { }
+        return result;
+    }
 
-        #endregion
+    protected override async Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken)
+    {
+        if (sort.Count() > 1)
+            throw new ApplicationException("no, you can't; ddb only supports sorting by a single attribute at a time"); // TODO: Probably not AppException; shouldn't use this anywhere in library code
 
-
-        #region Protected Methods
-
-        protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+        var table = scope.GetTargetTable<TDocument>();
+        var filter = parameters.ToScanFilter();
+        var configuration = new ScanOperationConfig
         {
-            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
-            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TDocument>();
-            var total = collection.CountDocuments(filter);
+            Filter = filter,
+            Limit = page.PageSize
+        };
 
-            return (Int32) total;
+        if (sort.Any())
+        {
+            var s = sort.SingleOrDefault();
+
+            configuration.IndexName = s.Expression;
         }
 
-        protected override async Task<Int32> DoCountAsync(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
-        {
-            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
-            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TDocument>();
-            var total = await collection.CountDocumentsAsync(filter);
+        // TODO: How to start at a specific page of data?
 
-            return (Int32) total;
-        }
+        var search = table.Scan(configuration);
+        var results = await search.GetRemainingAsync(cancellationToken); // TODO: Need supporting methods like for MongoDB where we read a set at a time then get remaining as the last operation
+        var documents = scope.FromDocuments<TDocument>(results);
+        var entities = MapToEntityCollection(documents);
 
-        protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
-        {
-            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
-            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TDocument>();
-            var documents = collection.Find(filter)
-                                      .Sort(GetSortDefinition(sort))
-                                      .Skip((page.PageNumber - 1) * page.PageSize)
-                                      .Limit(page.PageSize)
-                                      .ToList();
-            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(documents);
-
-            return entities;
-        }
-
-        protected override async Task<IReadOnlyCollection<TEntity>> DoSearchAsync(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
-        {
-            var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
-            var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-            var filter = parameters.ToFilterDefinition<TDocument>();
-            var documents = await collection.Find(filter)
-                                            .Sort(GetSortDefinition(sort))
-                                            .Skip((page.PageNumber - 1) * page.PageSize)
-                                            .Limit(page.PageSize)
-                                            .ToListAsync();
-            var entities = Mapper.Map<IReadOnlyCollection<TEntity>>(documents);
-
-            return entities;
-        }
-
-        #endregion
-
-
-        #region Supporting Methods
-
-        private static SortDefinition<TDocument> GetSortDefinition(IEnumerable<SortCriteria> criteria)
-        {
-            var sorts = criteria.Select(t =>
-            {
-                var field = new StringFieldDefinition<TDocument>(t.Expression);
-                var sort = t.Order == SortOrder.Ascending ? Builders<TDocument>.Sort.Ascending(field) : Builders<TDocument>.Sort.Descending(field);
-
-                return sort;
-            });
-            var combined = Builders<TDocument>.Sort.Combine(sorts);
-
-            return combined;
-        }
-
-        #endregion
+        return entities;
     }
 }

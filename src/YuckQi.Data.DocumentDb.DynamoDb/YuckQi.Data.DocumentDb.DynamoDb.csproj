@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
     <Product>YuckQi.Data</Product>
@@ -12,6 +12,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/Yuck/YuckQi.Data</PackageProjectUrl>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,8 +21,6 @@
 
   <ItemGroup>
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.2.14" />
-    <PackageReference Include="YuckQi.Domain" Version="1.3.0" />
-    <PackageReference Include="YuckQi.Extensions.Mapping.Abstractions" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>

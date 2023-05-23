@@ -1,51 +1,30 @@
 ﻿using System;
-using System.Threading;
-using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 using YuckQi.Data.Abstract;
 
-namespace YuckQi.Data.DocumentDb.DynamoDb
+namespace YuckQi.Data.DocumentDb.DynamoDb;
+
+public class UnitOfWork : IUnitOfWork<IDynamoDBContext>
 {
-    public class UnitOfWork : IUnitOfWork<IAmazonDynamoDB>
+    public IDynamoDBContext Scope { get; private set; }
+
+    public UnitOfWork(IDynamoDBContext context)
     {
-        #region Private Members
+        Scope = context ?? throw new ArgumentNullException(nameof(context));
+    }
 
-        #endregion
+    public void Dispose()
+    {
+        if (Scope == null)
+            return;
 
+        Scope?.Dispose();
 
-        #region Properties
+        Scope = null;
+    }
 
-        public IAmazonDynamoDB Scope { get; private set; }
-
-        #endregion
-
-
-        #region Constructors
-
-        public UnitOfWork(IAmazonDynamoDB client)
-        {
-            Scope = client ?? throw new ArgumentNullException(nameof(client));
-        }
-
-        #endregion
-
-
-        #region Public Methods
-
-        public void Dispose()
-        {
-            if (Scope == null)
-                return;
-
-            Scope?.Dispose();
-
-            Scope = null;
-        }
-
-        public void SaveChanges(CancellationToken cancellationToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
+    public void SaveChanges()
+    {
+        throw new NotImplementedException();
     }
 }
