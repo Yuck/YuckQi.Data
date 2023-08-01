@@ -14,20 +14,26 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
-public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext
+public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
     public SearchHandler(IMapper mapper) : base(mapper) { }
 
-    protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var task = Task.Run(async () => await DoCount(parameters, scope, default));
         var result = task.Result;
 
         return result;
     }
 
-    protected override Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
+    protected override Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var table = scope.GetTargetTable<TDocument>();
         var filter = parameters.ToScanFilter();
         var search = table.Scan(filter);
@@ -36,13 +42,16 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
         return Task.FromResult(count);
     }
 
-    protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+    protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var task = Task.Run(async () => await DoSearch(parameters, page, sort, scope, default));
         var result = task.Result;
 
         return result;
     }
 
-    protected override Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken) => throw new NotImplementedException();
+    protected override Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope, CancellationToken cancellationToken) => throw new NotImplementedException();
 }

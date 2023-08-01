@@ -7,19 +7,22 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class RetrievalHandler<TEntity, TIdentifier, TScope> : RetrievalHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
+public class RetrievalHandler<TEntity, TIdentifier, TScope> : RetrievalHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
     public RetrievalHandler() : base(null) { }
 }
 
-public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle
+public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
     private static readonly Type DocumentType = typeof(TDocument);
 
     public RetrievalHandler(IMapper? mapper) : base(mapper) { }
 
-    protected override TEntity? DoGet(TIdentifier identifier, TScope scope)
+    protected override TEntity? DoGet(TIdentifier identifier, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
@@ -31,8 +34,11 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entity;
     }
 
-    protected override async Task<TEntity?> DoGet(TIdentifier identifier, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<TEntity?> DoGet(TIdentifier identifier, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
@@ -44,8 +50,11 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entity;
     }
 
-    protected override TEntity? DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override TEntity? DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
@@ -56,8 +65,11 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entity;
     }
 
-    protected override async Task<TEntity?> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<TEntity?> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
@@ -68,8 +80,11 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entity;
     }
 
-    protected override IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope)
+    protected override IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
@@ -80,8 +95,11 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entities;
     }
 
-    protected override async Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();

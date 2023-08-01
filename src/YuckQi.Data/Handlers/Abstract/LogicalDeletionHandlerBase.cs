@@ -3,7 +3,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : ILogicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : IEquatable<TIdentifier>
+public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : ILogicalDeletionHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly IRevisionHandler<TEntity, TIdentifier, TScope> _reviser;
 
@@ -12,7 +12,7 @@ public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> :
         _reviser = reviser ?? throw new ArgumentNullException(nameof(reviser));
     }
 
-    public TEntity Delete(TEntity entity, TScope scope)
+    public TEntity Delete(TEntity entity, TScope? scope)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -27,7 +27,7 @@ public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> :
         return _reviser.Revise(entity, scope);
     }
 
-    public Task<TEntity> Delete(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    public Task<TEntity> Delete(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -42,7 +42,7 @@ public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> :
         return _reviser.Revise(entity, scope, cancellationToken);
     }
 
-    public TEntity Restore(TEntity entity, TScope scope)
+    public TEntity Restore(TEntity entity, TScope? scope)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -57,7 +57,7 @@ public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> :
         return _reviser.Revise(entity, scope);
     }
 
-    public Task<TEntity> Restore(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    public Task<TEntity> Restore(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));

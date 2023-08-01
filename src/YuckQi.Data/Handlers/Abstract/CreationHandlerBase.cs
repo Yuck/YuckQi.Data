@@ -7,7 +7,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, ICreationHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier>
+public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, ICreationHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly CreationOptions<TIdentifier> _options;
 
@@ -22,7 +22,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         _options = options ?? new CreationOptions<TIdentifier>();
     }
 
-    public TEntity Create(TEntity entity, TScope scope)
+    public TEntity Create(TEntity entity, TScope? scope)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -45,12 +45,12 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return entity;
     }
 
-    public virtual IEnumerable<TEntity> Create(IEnumerable<TEntity> entities, TScope scope)
+    public virtual IEnumerable<TEntity> Create(IEnumerable<TEntity> entities, TScope? scope)
     {
         return entities.Select(entity => Create(entity, scope));
     }
 
-    public async Task<TEntity> Create(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    public async Task<TEntity> Create(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -73,7 +73,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return entity;
     }
 
-    public virtual async Task<IEnumerable<TEntity>> Create(IEnumerable<TEntity> entities, TScope scope, CancellationToken cancellationToken)
+    public virtual async Task<IEnumerable<TEntity>> Create(IEnumerable<TEntity> entities, TScope? scope, CancellationToken cancellationToken)
     {
         var tasks = entities.Select(entity => Create(entity, scope, cancellationToken));
         var results = await Task.WhenAll(tasks);
@@ -81,7 +81,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return results;
     }
 
-    protected abstract Maybe<TIdentifier?> DoCreate(TEntity entity, TScope scope);
+    protected abstract Maybe<TIdentifier?> DoCreate(TEntity entity, TScope? scope);
 
-    protected abstract Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope scope, CancellationToken cancellationToken);
+    protected abstract Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken);
 }

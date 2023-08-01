@@ -8,7 +8,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.MemDb.Handlers;
 
-public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
+public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly ConcurrentDictionary<TIdentifier, TEntity> _entities;
 
@@ -17,7 +17,7 @@ public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEn
         _entities = entities ?? throw new ArgumentNullException(nameof(entities));
     }
 
-    protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope)
     {
         var entities = GetEntities(parameters);
         var count = entities.Count();
@@ -25,9 +25,9 @@ public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEn
         return count;
     }
 
-    protected override Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken) => Task.FromResult(DoCount(parameters, scope));
+    protected override Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope, CancellationToken cancellationToken) => Task.FromResult(DoCount(parameters, scope));
 
-    protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+    protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope)
     {
         var entities = GetEntities(parameters);
         var sorted = entities.AsQueryable().OrderBy(sort);
@@ -36,7 +36,7 @@ public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEn
         return paged.ToList();
     }
 
-    protected override Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken) => Task.FromResult(DoSearch(parameters, page, sort, scope));
+    protected override Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope, CancellationToken cancellationToken) => Task.FromResult(DoSearch(parameters, page, sort, scope));
 
     private IEnumerable<TEntity> GetEntities(IReadOnlyCollection<FilterCriteria> parameters)
     {

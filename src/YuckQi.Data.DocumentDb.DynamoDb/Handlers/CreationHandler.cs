@@ -13,14 +13,17 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
-public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext
+public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
     public CreationHandler(IMapper mapper) : base(mapper) { }
 
     public CreationHandler(CreationOptions<TIdentifier> options, IMapper mapper) : base(options, mapper) { }
 
-    public override IEnumerable<TEntity> Create(IEnumerable<TEntity> entities, TScope scope)
+    public override IEnumerable<TEntity> Create(IEnumerable<TEntity> entities, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var table = scope.GetTargetTable<TDocument>();
         var batch = table.CreateBatchWrite();
         var list = entities.ToList();
@@ -34,8 +37,11 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         return list;
     }
 
-    public override async Task<IEnumerable<TEntity>> Create(IEnumerable<TEntity> entities, TScope scope, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<TEntity>> Create(IEnumerable<TEntity> entities, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var table = scope.GetTargetTable<TDocument>();
         var batch = table.CreateBatchWrite();
         var list = entities.ToList();
@@ -49,16 +55,22 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         return list;
     }
 
-    protected override Maybe<TIdentifier?> DoCreate(TEntity entity, TScope scope)
+    protected override Maybe<TIdentifier?> DoCreate(TEntity entity, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var task = Task.Run(async () => await DoCreate(entity, scope, default));
         var result = task.Result;
 
         return result;
     }
 
-    protected override async Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var document = MapToData<TDocument>(entity) ?? throw new NullReferenceException();
         var table = scope.GetTargetTable<TDocument>();
 

@@ -4,13 +4,13 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IPhysicalDeletionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
+public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IPhysicalDeletionHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
     protected PhysicalDeletionHandlerBase() : this(null) { }
 
     protected PhysicalDeletionHandlerBase(IMapper? mapper) : base(mapper) { }
 
-    public TEntity Delete(TEntity entity, TScope scope)
+    public TEntity Delete(TEntity entity, TScope? scope)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -23,7 +23,7 @@ public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> 
         return entity;
     }
 
-    public async Task<TEntity> Delete(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    public async Task<TEntity> Delete(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -36,7 +36,7 @@ public abstract class PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> 
         return entity;
     }
 
-    protected abstract Boolean DoDelete(TEntity entity, TScope scope);
+    protected abstract Boolean DoDelete(TEntity entity, TScope? scope);
 
-    protected abstract Task<Boolean> DoDelete(TEntity entity, TScope scope, CancellationToken cancellationToken);
+    protected abstract Task<Boolean> DoDelete(TEntity entity, TScope? scope, CancellationToken cancellationToken);
 }

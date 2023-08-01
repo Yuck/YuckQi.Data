@@ -13,7 +13,7 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
-public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext
+public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
     private readonly Func<TIdentifier, Primitive> _hashKeyValueFactory;
     private readonly Func<TIdentifier, Primitive>? _rangeKeyValueFactory;
@@ -26,16 +26,22 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         _rangeKeyValueFactory = rangeKeyValueFactory ?? throw new ArgumentNullException(nameof(rangeKeyValueFactory));
     }
 
-    protected override TEntity? DoGet(TIdentifier key, TScope scope)
+    protected override TEntity? DoGet(TIdentifier key, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var task = Task.Run(async () => await DoGet(key, scope, default));
         var result = task.Result;
 
         return result;
     }
 
-    protected override async Task<TEntity?> DoGet(TIdentifier identifier, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<TEntity?> DoGet(TIdentifier identifier, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var table = scope.GetTargetTable<TDocument>();
         var hashKey = _hashKeyValueFactory(identifier);
         var rangeKey = _rangeKeyValueFactory?.Invoke(identifier);
@@ -48,16 +54,22 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entity;
     }
 
-    protected override TEntity? DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override TEntity? DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var task = Task.Run(async () => await DoGet(parameters, scope, default));
         var result = task.Result;
 
         return result;
     }
 
-    protected override async Task<TEntity?> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<TEntity?> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var table = scope.GetTargetTable<TDocument>();
         var filter = parameters.ToQueryFilter();
         var search = table.Query(filter);
@@ -69,16 +81,22 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         return entity;
     }
 
-    protected override IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope)
+    protected override IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var task = Task.Run(async () => await DoGetList(parameters, scope, default));
         var result = task.Result;
 
         return result;
     }
 
-    protected override async Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var table = scope.GetTargetTable<TDocument>();
         var filter = parameters?.ToScanFilter();
         var search = table.Scan(filter);

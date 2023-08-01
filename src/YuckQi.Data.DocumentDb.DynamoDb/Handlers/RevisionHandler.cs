@@ -12,14 +12,17 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
-public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext
+public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
     public RevisionHandler(IMapper mapper) : base(mapper) { }
 
     public RevisionHandler(RevisionOptions options, IMapper mapper) : base(options, mapper) { }
 
-    public override IEnumerable<TEntity> Revise(IEnumerable<TEntity> entities, TScope scope)
+    public override IEnumerable<TEntity> Revise(IEnumerable<TEntity> entities, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var table = scope.GetTargetTable<TDocument>();
         var batch = table.CreateBatchWrite();
         var list = entities.ToList();
@@ -33,8 +36,11 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         return list;
     }
 
-    public override async Task<IEnumerable<TEntity>> Revise(IEnumerable<TEntity> entities, TScope scope, CancellationToken cancellationToken)
+    public override async Task<IEnumerable<TEntity>> Revise(IEnumerable<TEntity> entities, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var table = scope.GetTargetTable<TDocument>();
         var batch = table.CreateBatchWrite();
         var list = entities.ToList();
@@ -48,16 +54,22 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         return list;
     }
 
-    protected override Boolean DoRevise(TEntity entity, TScope scope)
+    protected override Boolean DoRevise(TEntity entity, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var task = Task.Run(async () => await DoRevise(entity, scope, default));
         var result = task.Result;
 
         return result;
     }
 
-    protected override async Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<Boolean> DoRevise(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var document = MapToData<TDocument>(entity) ?? throw new NullReferenceException();
         var table = scope.GetTargetTable<TDocument>();
 
