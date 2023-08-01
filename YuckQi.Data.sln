@@ -38,8 +38,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.MemDb.UnitTests
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.DocumentDb.DynamoDb", "src\YuckQi.Data.DocumentDb.DynamoDb\YuckQi.Data.DocumentDb.DynamoDb.csproj", "{AF37B3CC-BB0B-4F54-9A48-E476CEA8785C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{56E4ECF9-65A7-4FAF-9099-B7A039B30752}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -110,10 +108,6 @@ Global
 		{AF37B3CC-BB0B-4F54-9A48-E476CEA8785C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF37B3CC-BB0B-4F54-9A48-E476CEA8785C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF37B3CC-BB0B-4F54-9A48-E476CEA8785C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56E4ECF9-65A7-4FAF-9099-B7A039B30752}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56E4ECF9-65A7-4FAF-9099-B7A039B30752}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56E4ECF9-65A7-4FAF-9099-B7A039B30752}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56E4ECF9-65A7-4FAF-9099-B7A039B30752}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -127,7 +121,6 @@ Global
 		{3EC10825-8CE1-4394-A931-B5625B5DAA75} = {413F7FD5-52A6-413D-BCE9-D1C1A4676E8D}
 		{0C367B34-7687-47BA-90AC-A2C897D216AE} = {413F7FD5-52A6-413D-BCE9-D1C1A4676E8D}
 		{FCA0A785-946F-42C0-A9BA-C878A47FD050} = {413F7FD5-52A6-413D-BCE9-D1C1A4676E8D}
-		{56E4ECF9-65A7-4FAF-9099-B7A039B30752} = {413F7FD5-52A6-413D-BCE9-D1C1A4676E8D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3C652094-AB49-4717-B588-36FD50857718}
