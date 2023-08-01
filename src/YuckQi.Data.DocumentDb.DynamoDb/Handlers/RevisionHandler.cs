@@ -12,11 +12,18 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
+public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDynamoDBContext?
+{
+    public RevisionHandler() : this(null) { }
+
+    public RevisionHandler(RevisionOptions? options) : base(options, null) { }
+}
+
 public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
-    public RevisionHandler(IMapper mapper) : base(mapper) { }
+    public RevisionHandler(IMapper? mapper) : base(mapper) { }
 
-    public RevisionHandler(RevisionOptions options, IMapper mapper) : base(options, mapper) { }
+    public RevisionHandler(RevisionOptions? options, IMapper? mapper) : base(options, mapper) { }
 
     public override IEnumerable<TEntity> Revise(IEnumerable<TEntity> entities, TScope? scope)
     {

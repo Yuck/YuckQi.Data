@@ -13,11 +13,18 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
+public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDynamoDBContext?
+{
+    public CreationHandler() : this(null) { }
+
+    public CreationHandler(CreationOptions<TIdentifier>? options) : base(options, null) { }
+}
+
 public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
-    public CreationHandler(IMapper mapper) : base(mapper) { }
+    public CreationHandler(IMapper? mapper) : base(mapper) { }
 
-    public CreationHandler(CreationOptions<TIdentifier> options, IMapper mapper) : base(options, mapper) { }
+    public CreationHandler(CreationOptions<TIdentifier>? options, IMapper? mapper) : base(options, mapper) { }
 
     public override IEnumerable<TEntity> Create(IEnumerable<TEntity> entities, TScope? scope)
     {

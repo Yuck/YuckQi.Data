@@ -8,9 +8,14 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDynamoDBContext?
+{
+    public PhysicalDeletionHandler() : base(null) { }
+}
+
 public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
-    public PhysicalDeletionHandler(IMapper mapper) : base(mapper) { }
+    public PhysicalDeletionHandler(IMapper? mapper) : base(mapper) { }
 
     protected override Boolean DoDelete(TEntity entity, TScope? scope)
     {

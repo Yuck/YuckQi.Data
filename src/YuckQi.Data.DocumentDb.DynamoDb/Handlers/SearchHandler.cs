@@ -14,9 +14,14 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
+public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
+{
+    public SearchHandler() : base(null) { }
+}
+
 public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
-    public SearchHandler(IMapper mapper) : base(mapper) { }
+    public SearchHandler(IMapper? mapper) : base(mapper) { }
 
     protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope)
     {

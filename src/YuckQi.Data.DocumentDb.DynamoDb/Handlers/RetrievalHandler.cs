@@ -13,14 +13,21 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
+public class RetrievalHandler<TEntity, TIdentifier, TScope> : RetrievalHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDynamoDBContext?
+{
+    public RetrievalHandler(Func<TIdentifier, Primitive> hashKeyValueFactory) : base(hashKeyValueFactory, null) { }
+
+    public RetrievalHandler(Func<TIdentifier, Primitive> hashKeyValueFactory, Func<TIdentifier, Primitive>? rangeKeyValueFactory) : base(hashKeyValueFactory, rangeKeyValueFactory, null) { }
+}
+
 public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
     private readonly Func<TIdentifier, Primitive> _hashKeyValueFactory;
     private readonly Func<TIdentifier, Primitive>? _rangeKeyValueFactory;
 
-    public RetrievalHandler(Func<TIdentifier, Primitive> hashKeyValueFactory, IMapper mapper) : this(hashKeyValueFactory, null, mapper) { }
+    public RetrievalHandler(Func<TIdentifier, Primitive> hashKeyValueFactory, IMapper? mapper) : this(hashKeyValueFactory, null, mapper) { }
 
-    public RetrievalHandler(Func<TIdentifier, Primitive> hashKeyValueFactory, Func<TIdentifier, Primitive>? rangeKeyValueFactory, IMapper mapper) : base(mapper)
+    public RetrievalHandler(Func<TIdentifier, Primitive> hashKeyValueFactory, Func<TIdentifier, Primitive>? rangeKeyValueFactory, IMapper? mapper) : base(mapper)
     {
         _hashKeyValueFactory = hashKeyValueFactory ?? throw new ArgumentNullException(nameof(hashKeyValueFactory));
         _rangeKeyValueFactory = rangeKeyValueFactory ?? throw new ArgumentNullException(nameof(rangeKeyValueFactory));
