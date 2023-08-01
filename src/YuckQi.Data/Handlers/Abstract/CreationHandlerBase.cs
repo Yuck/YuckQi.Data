@@ -45,6 +45,11 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return entity;
     }
 
+    public virtual IEnumerable<TEntity> Create(IEnumerable<TEntity> entities, TScope scope)
+    {
+        return entities.Select(entity => Create(entity, scope));
+    }
+
     public async Task<TEntity> Create(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         if (entity == null)
@@ -66,6 +71,14 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         entity.Identifier = identifier.Value;
 
         return entity;
+    }
+
+    public virtual async Task<IEnumerable<TEntity>> Create(IEnumerable<TEntity> entities, TScope scope, CancellationToken cancellationToken)
+    {
+        var tasks = entities.Select(entity => Create(entity, scope, cancellationToken));
+        var results = await Task.WhenAll(tasks);
+
+        return results;
     }
 
     protected abstract Maybe<TIdentifier?> DoCreate(TEntity entity, TScope scope);

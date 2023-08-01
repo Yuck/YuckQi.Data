@@ -37,6 +37,11 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return entity;
     }
 
+    public virtual IEnumerable<TEntity> Revise(IEnumerable<TEntity> entities, TScope scope)
+    {
+        return entities.Select(entity => Revise(entity, scope));
+    }
+
     public async Task<TEntity> Revise(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
         if (entity == null)
@@ -51,6 +56,14 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
             throw new RevisionException<TEntity, TIdentifier>(entity.Identifier);
 
         return entity;
+    }
+
+    public virtual async Task<IEnumerable<TEntity>> Revise(IEnumerable<TEntity> entities, TScope scope, CancellationToken cancellationToken)
+    {
+        var tasks = entities.Select(entity => Revise(entity, scope, cancellationToken));
+        var results = await Task.WhenAll(tasks);
+
+        return results;
     }
 
     protected abstract Boolean DoRevise(TEntity entity, TScope scope);

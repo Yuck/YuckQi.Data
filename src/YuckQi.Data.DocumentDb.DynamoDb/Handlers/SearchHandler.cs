@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
 using YuckQi.Data.DocumentDb.DynamoDb.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
@@ -45,33 +44,5 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
         return result;
     }
 
-    protected override async Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken)
-    {
-        if (sort.Count() > 1)
-            throw new ApplicationException("no, you can't; ddb only supports sorting by a single attribute at a time"); // TODO: Probably not AppException; shouldn't use this anywhere in library code
-
-        var table = scope.GetTargetTable<TDocument>();
-        var filter = parameters.ToScanFilter();
-        var configuration = new ScanOperationConfig
-        {
-            Filter = filter,
-            Limit = page.PageSize
-        };
-
-        if (sort.Any())
-        {
-            var s = sort.SingleOrDefault();
-
-            configuration.IndexName = s.Expression;
-        }
-
-        // TODO: How to start at a specific page of data?
-
-        var search = table.Scan(configuration);
-        var results = await search.GetRemainingAsync(cancellationToken); // TODO: Need supporting methods like for MongoDB where we read a set at a time then get remaining as the last operation
-        var documents = scope.FromDocuments<TDocument>(results);
-        var entities = MapToEntityCollection(documents);
-
-        return entities;
-    }
+    protected override Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken) => throw new NotImplementedException();
 }

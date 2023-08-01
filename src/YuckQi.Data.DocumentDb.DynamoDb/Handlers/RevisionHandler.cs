@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2.DataModel;
@@ -16,6 +18,36 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
 
     public RevisionHandler(RevisionOptions options, IMapper mapper) : base(options, mapper) { }
 
+    public override IEnumerable<TEntity> Revise(IEnumerable<TEntity> entities, TScope scope)
+    {
+        var table = scope.GetTargetTable<TDocument>();
+        var batch = table.CreateBatchWrite();
+        var list = entities.ToList();
+        var documents = list.Select(MapToData<TDocument>);
+
+        foreach (var document in documents)
+            batch.AddDocumentToPut(scope.ToDocument(document));
+
+        Task.Run(async () => await batch.ExecuteAsync());
+
+        return list;
+    }
+
+    public override async Task<IEnumerable<TEntity>> Revise(IEnumerable<TEntity> entities, TScope scope, CancellationToken cancellationToken)
+    {
+        var table = scope.GetTargetTable<TDocument>();
+        var batch = table.CreateBatchWrite();
+        var list = entities.ToList();
+        var documents = list.Select(MapToData<TDocument>);
+
+        foreach (var document in documents)
+            batch.AddDocumentToPut(scope.ToDocument(document));
+
+        await batch.ExecuteAsync(cancellationToken);
+
+        return list;
+    }
+
     protected override Boolean DoRevise(TEntity entity, TScope scope)
     {
         var task = Task.Run(async () => await DoRevise(entity, scope, default));
@@ -26,10 +58,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
 
     protected override async Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken)
     {
-        var document = MapToData<TDocument>(entity);
-        if (document == null)
-            throw new NullReferenceException();
-
+        var document = MapToData<TDocument>(entity) ?? throw new NullReferenceException();
         var table = scope.GetTargetTable<TDocument>();
 
         await table.PutItemAsync(scope.ToDocument(document), cancellationToken);

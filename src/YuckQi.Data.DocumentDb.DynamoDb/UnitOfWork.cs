@@ -6,7 +6,7 @@ namespace YuckQi.Data.DocumentDb.DynamoDb;
 
 public class UnitOfWork : IUnitOfWork<IDynamoDBContext>
 {
-    public IDynamoDBContext Scope { get; private set; }
+    public IDynamoDBContext? Scope { get; private set; }
 
     public UnitOfWork(IDynamoDBContext context)
     {
