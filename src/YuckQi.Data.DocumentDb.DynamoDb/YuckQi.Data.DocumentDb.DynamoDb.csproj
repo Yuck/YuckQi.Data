@@ -2,12 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
     <Product>YuckQi.Data</Product>
     <Version>6.3.0</Version>
-    <Description>An implementation of YuckQi.Data for MongoDB databases.</Description>
+    <Description>An implementation of YuckQi.Data for Amazon DynamoDB databases.</Description>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
@@ -21,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.20.0" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.200.8" />
   </ItemGroup>
 
   <ItemGroup>

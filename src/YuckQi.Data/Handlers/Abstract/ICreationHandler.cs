@@ -7,5 +7,9 @@ public interface ICreationHandler<TEntity, TIdentifier, in TScope> where TEntity
 {
     TEntity Create(TEntity entity, TScope scope);
 
+    IEnumerable<TEntity> Create(IEnumerable<TEntity> entities, TScope scope);
+
     Task<TEntity> Create(TEntity entity, TScope scope, CancellationToken cancellationToken);
+
+    Task<IEnumerable<TEntity>> Create(IEnumerable<TEntity> entities, TScope scope, CancellationToken cancellationToken);
 }

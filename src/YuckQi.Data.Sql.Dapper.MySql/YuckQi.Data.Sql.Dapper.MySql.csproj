@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>6.2.3</Version>
+    <Version>6.3.0</Version>
     <Description>An implementation of YuckQi.Data for MySQL databases using Dapper and SimpleCRUD.</Description>
     <Product>YuckQi.Data</Product>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
