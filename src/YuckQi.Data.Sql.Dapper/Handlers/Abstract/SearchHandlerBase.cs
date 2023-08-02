@@ -12,15 +12,15 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract;
 
 public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
 {
-    protected SearchHandlerBase(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
+    protected SearchHandlerBase(ISqlGenerator sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
 }
 
 public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.Handlers.Abstract.SearchHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
 {
     private readonly IReadOnlyDictionary<Type, DbType> _dbTypeMap;
-    private readonly ISqlGenerator<TRecord> _sqlGenerator;
+    private readonly ISqlGenerator _sqlGenerator;
 
-    protected SearchHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(mapper)
+    protected SearchHandlerBase(ISqlGenerator sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(mapper)
     {
         _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         _dbTypeMap = dbTypeMap;

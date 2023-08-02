@@ -8,7 +8,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.SqlServer;
 
-public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
+public class SqlGenerator<TRecord> : ISqlGenerator
 {
     private const String DefaultSchemaName = "dbo";
     private static readonly String DefaultTableName = typeof(TRecord).Name;

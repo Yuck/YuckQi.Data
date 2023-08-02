@@ -4,7 +4,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Abstract;
 
-public interface ISqlGenerator<TRecord> // TODO: Do I need TRecord? Check projects that use this...there should only be a single generator registered and I don't think implementations need the constraint?
+public interface ISqlGenerator
 {
     String GenerateCountQuery(IReadOnlyCollection<FilterCriteria> parameters);
 
