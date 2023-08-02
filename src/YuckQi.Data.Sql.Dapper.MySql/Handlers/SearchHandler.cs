@@ -11,16 +11,16 @@ public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity
 {
     public SearchHandler() : this(new SqlGenerator<TEntity>()) { }
 
-    public SearchHandler(ISqlGenerator<TEntity> sqlGenerator) : this(sqlGenerator, DbTypeMap.Default) { }
+    public SearchHandler(ISqlGenerator sqlGenerator) : this(sqlGenerator, DbTypeMap.Default) { }
 
-    public SearchHandler(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
+    public SearchHandler(ISqlGenerator sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
 }
 
 public class SearchHandler<TEntity, TIdentifier, TScope, TRecord> : SearchHandlerBase<TEntity, TIdentifier, TScope?, TRecord> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDbTransaction?
 {
     public SearchHandler(IMapper mapper) : this(new SqlGenerator<TRecord>(), mapper) { }
 
-    public SearchHandler(ISqlGenerator<TRecord> sqlGenerator, IMapper mapper) : this(sqlGenerator, DbTypeMap.Default, mapper) { }
+    public SearchHandler(ISqlGenerator sqlGenerator, IMapper mapper) : this(sqlGenerator, DbTypeMap.Default, mapper) { }
 
-    public SearchHandler(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(sqlGenerator, dbTypeMap, mapper) { }
+    public SearchHandler(ISqlGenerator sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(sqlGenerator, dbTypeMap, mapper) { }
 }

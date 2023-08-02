@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Description>An implementation of YuckQi.Data for Oracle databases using Dapper and SimpleCRUD.</Description>
-    <Authors>Kevin J Lambert</Authors>
-    <Version>6.3.1</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Kevin J Lambert</Authors>
+    <Version>6.3.2</Version>
+    <Description>An implementation of YuckQi.Data for Oracle databases using Dapper and SimpleCRUD.</Description>
     <Product>YuckQi.Data</Product>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
