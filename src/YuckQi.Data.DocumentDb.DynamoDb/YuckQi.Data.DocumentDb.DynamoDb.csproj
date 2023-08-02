@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Kevin J Lambert</Authors>
+    <Product>YuckQi.Data</Product>
+    <Version>6.3.1</Version>
+    <Description>An implementation of YuckQi.Data for Amazon DynamoDB databases.</Description>
+    <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Yuck/YuckQi.Data</PackageProjectUrl>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="readme.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.200.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\YuckQi.Data\YuckQi.Data.csproj" />
+  </ItemGroup>
+
+</Project>

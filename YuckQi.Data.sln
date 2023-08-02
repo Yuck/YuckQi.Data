@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
@@ -35,7 +34,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.Sql.Dapper.Orac
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.MemDb", "src\YuckQi.Data.MemDb\YuckQi.Data.MemDb.csproj", "{3C42E3DF-C9D4-473D-93A7-DEC8ED1D6331}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YuckQi.Data.MemDb.UnitTests", "test\YuckQi.Data.MemDb.UnitTests\YuckQi.Data.MemDb.UnitTests.csproj", "{FCA0A785-946F-42C0-A9BA-C878A47FD050}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.MemDb.UnitTests", "test\YuckQi.Data.MemDb.UnitTests\YuckQi.Data.MemDb.UnitTests.csproj", "{FCA0A785-946F-42C0-A9BA-C878A47FD050}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YuckQi.Data.DocumentDb.DynamoDb", "src\YuckQi.Data.DocumentDb.DynamoDb\YuckQi.Data.DocumentDb.DynamoDb.csproj", "{AF37B3CC-BB0B-4F54-9A48-E476CEA8785C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +104,10 @@ Global
 		{FCA0A785-946F-42C0-A9BA-C878A47FD050}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCA0A785-946F-42C0-A9BA-C878A47FD050}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCA0A785-946F-42C0-A9BA-C878A47FD050}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF37B3CC-BB0B-4F54-9A48-E476CEA8785C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF37B3CC-BB0B-4F54-9A48-E476CEA8785C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF37B3CC-BB0B-4F54-9A48-E476CEA8785C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF37B3CC-BB0B-4F54-9A48-E476CEA8785C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

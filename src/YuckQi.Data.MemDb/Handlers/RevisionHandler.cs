@@ -7,7 +7,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.MemDb.Handlers;
 
-public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
+public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly ConcurrentDictionary<TIdentifier, TEntity> _entities;
 
@@ -16,7 +16,13 @@ public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandlerBase
         _entities = entities ?? throw new ArgumentNullException(nameof(entities));
     }
 
-    protected override Boolean DoRevise(TEntity entity, TScope scope) => _entities.TryUpdate(entity.Identifier, entity, _entities.TryGetValue(entity.Identifier, out var current) ? current : throw new RevisionException<TEntity, TIdentifier>(entity.Identifier));
+    protected override Boolean DoRevise(TEntity entity, TScope? scope)
+    {
+        if (entity.Identifier == null)
+            throw new InvalidOperationException();
 
-    protected override Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken) => Task.FromResult(DoRevise(entity, scope));
+        return _entities.TryUpdate(entity.Identifier, entity, _entities.TryGetValue(entity.Identifier, out var current) ? current : throw new RevisionException<TEntity, TIdentifier>(entity.Identifier));
+    }
+
+    protected override Task<Boolean> DoRevise(TEntity entity, TScope? scope, CancellationToken cancellationToken) => Task.FromResult(DoRevise(entity, scope));
 }

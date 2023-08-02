@@ -2,7 +2,7 @@
 
 public interface IUnitOfWork<out TScope> : IDisposable
 {
-    TScope Scope { get; }
+    TScope? Scope { get; }
 
     void SaveChanges();
 }

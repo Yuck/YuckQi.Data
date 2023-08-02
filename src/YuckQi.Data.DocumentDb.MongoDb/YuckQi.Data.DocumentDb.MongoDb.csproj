@@ -6,7 +6,7 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
     <Product>YuckQi.Data</Product>
-    <Version>6.1.0</Version>
+    <Version>6.3.1</Version>
     <Description>An implementation of YuckQi.Data for MongoDB databases.</Description>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MongoDB.Driver" Version="2.18.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.20.0" />
   </ItemGroup>
 
   <ItemGroup>

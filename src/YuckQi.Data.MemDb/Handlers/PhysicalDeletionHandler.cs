@@ -4,7 +4,7 @@ using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.MemDb.Handlers;
 
-public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly ConcurrentDictionary<TIdentifier, TEntity> _entities;
 
@@ -13,7 +13,13 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDel
         _entities = entities ?? throw new ArgumentNullException(nameof(entities));
     }
 
-    protected override Boolean DoDelete(TEntity entity, TScope scope) => _entities.TryRemove(entity.Identifier, out _);
+    protected override Boolean DoDelete(TEntity entity, TScope? scope)
+    {
+        if (entity.Identifier == null)
+            throw new InvalidOperationException();
 
-    protected override Task<Boolean> DoDelete(TEntity entity, TScope scope, CancellationToken cancellationToken) => Task.FromResult(DoDelete(entity, scope));
+        return _entities.TryRemove(entity.Identifier, out _);
+    }
+
+    protected override Task<Boolean> DoDelete(TEntity entity, TScope? scope, CancellationToken cancellationToken) => Task.FromResult(DoDelete(entity, scope));
 }

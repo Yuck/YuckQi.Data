@@ -8,39 +8,26 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct where TScope : IClientSessionHandle
+public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
-    #region Constructors
-
     public RevisionHandler() : this(null) { }
 
     public RevisionHandler(RevisionOptions? options) : base(options, null) { }
-
-    #endregion
 }
 
-public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct where TScope : IClientSessionHandle
+public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
-    #region Constructors
-
     public RevisionHandler(IMapper? mapper) : base(mapper) { }
 
     public RevisionHandler(RevisionOptions? options, IMapper? mapper) : base(options, mapper) { }
 
-    #endregion
-
-
-    #region Private Members
-
     private static readonly Type DocumentType = typeof(TDocument);
 
-    #endregion
-
-
-    #region Protected Methods
-
-    protected override Boolean DoRevise(TEntity entity, TScope scope)
+    protected override Boolean DoRevise(TEntity entity, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
@@ -55,8 +42,11 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         return result.ModifiedCount > 0;
     }
 
-    protected override async Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<Boolean> DoRevise(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
@@ -70,6 +60,4 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
 
         return result.ModifiedCount > 0;
     }
-
-    #endregion
 }

@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System.Collections;
+using System.Data;
 using Dapper;
 using YuckQi.Data.Filtering;
 
@@ -14,14 +15,31 @@ public static class DynamicParameterExtensions
             return result;
 
         foreach (var parameter in parameters)
-        {
-            var name = parameter.FieldName;
-            var value = parameter.Value;
-            var type = value?.GetType();
-            var dbType = dbTypeMap != null && type != null && dbTypeMap.TryGetValue(type, out var mapped) ? (DbType?) mapped : null;
+            if (parameter.Operation == FilterOperation.In)
+            {
+                var set = parameter.Value is IEnumerable enumerable
+                              ? enumerable.Cast<Object>().ToArray()
+                              : throw new ArgumentException($"{nameof(parameter.Value)} must be convertible to {nameof(IEnumerable)}.");
 
-            result.Add(name, value, dbType);
-        }
+                for (var i = 0; i < set.Length; i++)
+                {
+                    var name = $"{parameter.FieldName}{i}";
+                    var value = set[i];
+                    var type = value?.GetType();
+                    var dbType = dbTypeMap != null && type != null && dbTypeMap.TryGetValue(type, out var mapped) ? (DbType?) mapped : null;
+
+                    result.Add(name, value, dbType);
+                }
+            }
+            else
+            {
+                var name = parameter.FieldName;
+                var value = parameter.Value;
+                var type = value?.GetType();
+                var dbType = dbTypeMap != null && type != null && dbTypeMap.TryGetValue(type, out var mapped) ? (DbType?) mapped : null;
+
+                result.Add(name, value, dbType);
+            }
 
         return result;
     }

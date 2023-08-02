@@ -8,29 +8,28 @@ namespace YuckQi.Data.DocumentDb.MongoDb.Extensions;
 
 public static class DocumentModelExtensions
 {
-    #region Constants
-
     private const String DefaultObjectIdPropertyName = "_id";
-
-    #endregion
-
-
-    #region Private Members
 
     private static readonly ConcurrentDictionary<Type, String> CollectionNameByType = new();
     private static readonly ConcurrentDictionary<Type, String> DatabaseNameByType = new();
     private static readonly ConcurrentDictionary<Type, PropertyInfo> IdentifierByType = new();
 
-    #endregion
-
-
-    #region Extension Methods
-
     public static String? GetCollectionName(this Type? type) => type != null ? CollectionNameByType.GetOrAdd(type, identifier => GetCollectionAttribute(identifier)?.Name ?? identifier.Name) : null;
 
     public static String? GetDatabaseName(this Type? type) => type != null ? DatabaseNameByType.GetOrAdd(type, identifier => GetDatabaseAttribute(identifier).Name) : null;
 
-    public static TIdentifier? GetIdentifier<TDocument, TIdentifier>(this TDocument document) where TIdentifier : struct => document != null ? GetIdentifierPropertyInfo(typeof(TDocument))?.GetValue(document) as TIdentifier? : null;
+    public static TIdentifier GetIdentifier<TDocument, TIdentifier>(this TDocument document) where TIdentifier : struct
+    {
+        if (document == null)
+            return default;
+
+        var property = GetIdentifierPropertyInfo(typeof(TDocument));
+        var value = property?.GetValue(document);
+        if (value is TIdentifier identifier)
+            return identifier;
+
+        return default;
+    }
 
     public static StringFieldDefinition<TDocument, TIdentifier?>? GetIdentifierFieldDefinition<TDocument, TIdentifier>(this Type? type) where TIdentifier : struct
     {
@@ -46,11 +45,6 @@ public static class DocumentModelExtensions
 
         return field;
     }
-
-    #endregion
-
-
-    #region Supporting Methods
 
     private static CollectionAttribute? GetCollectionAttribute(MemberInfo type) => type.GetCustomAttribute(typeof(CollectionAttribute)) as CollectionAttribute;
 
@@ -74,6 +68,4 @@ public static class DocumentModelExtensions
 
         throw new NullReferenceException();
     }
-
-    #endregion
 }

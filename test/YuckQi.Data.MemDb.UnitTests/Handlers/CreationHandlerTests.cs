@@ -37,7 +37,7 @@ public class CreationHandlerTests
         var scope = new Object();
         var entity = new SurLaTable { Identifier = 1, Name = "ABC" };
 
-        var _ = creator.Create(entity, scope);
+        creator.Create(entity, scope);
 
         Assert.That(() => creator.Create(entity, scope), Throws.Exception.TypeOf<CreationException<SurLaTable>>());
     }

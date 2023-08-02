@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Reflection;
 using Dapper;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
@@ -9,23 +10,11 @@ namespace YuckQi.Data.Sql.Dapper.Oracle;
 
 public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
 {
-    #region Private Members
-
     private static readonly String DefaultTableName = typeof(TRecord).Name;
     private static readonly TableAttribute? TableAttribute = typeof(TRecord).GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
 
-    #endregion
-
-
-    #region Properties
-
     private static String? SchemaName => TableAttribute?.Schema;
     private static String TableName => TableAttribute?.Name ?? DefaultTableName;
-
-    #endregion
-
-
-    #region Public Methods
 
     public String GenerateCountQuery(IReadOnlyCollection<FilterCriteria> parameters)
     {
@@ -64,11 +53,6 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
         return sql;
     }
 
-    #endregion
-
-
-    #region Supporting Methods
-
     private static String BuildColumnsSql()
     {
         var properties = typeof(TRecord).GetProperties().Where(t => t.CustomAttributes.All(u => u.AttributeType != typeof(IgnoreSelectAttribute)));
@@ -93,6 +77,7 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
             FilterOperation.Equal => value != null ? "=" : "is",
             FilterOperation.GreaterThan => ">",
             FilterOperation.GreaterThanOrEqual => ">=",
+            FilterOperation.In => "in",
             FilterOperation.LessThan => "<",
             FilterOperation.LessThanOrEqual => "<=",
             FilterOperation.NotEqual => value != null ? "!=" : "is not",
@@ -106,10 +91,22 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
     {
         var filter = String.Join(" and ", parameters?.Select(t =>
         {
+            if (t is { Operation: FilterOperation.In, Value: not IEnumerable })
+                throw new ArgumentException($"{nameof(t.Value)} must be convertible to {nameof(IEnumerable)}.");
+
             var column = $"\"{t.FieldName}\"";
             var value = t.Value;
             var comparison = BuildComparison(value, t.Operation);
-            var parameter = value != null ? $":{t.FieldName}" : "null";
+            var set = t.Value is IEnumerable enumerable
+                          ? enumerable.Cast<Object>().ToArray().Select((_, i) => $":{t.FieldName}{i}").ToList()
+                          : null;
+            var parameter = t.Operation == FilterOperation.In
+                                ? set != null && set.Any()
+                                      ? $"({String.Join(",", set)})"
+                                      : "(null)"
+                                : value != null
+                                    ? $":{t.FieldName}"
+                                    : "null";
 
             return $"({column} {comparison} {parameter})";
         }) ?? Array.Empty<String>());
@@ -122,6 +119,4 @@ public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
     {
         return String.Join(Environment.NewLine, fragments.Where(t => ! String.IsNullOrWhiteSpace(t)));
     }
-
-    #endregion
 }

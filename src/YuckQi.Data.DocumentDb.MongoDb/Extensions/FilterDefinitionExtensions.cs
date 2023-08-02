@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using System.Collections;
+using MongoDB.Driver;
 using YuckQi.Data.Filtering;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Extensions;
@@ -15,7 +16,12 @@ public static class FilterDefinitionExtensions
 
         foreach (var parameter in parameters)
         {
+            if (parameter is { Operation: FilterOperation.In, Value: not IEnumerable })
+                throw new ArgumentException($"{nameof(parameter.Value)} must be convertible to {nameof(IEnumerable)}.");
+
             var field = new StringFieldDefinition<TDocument, Object?>(parameter.FieldName);
+            var set = (parameter.Value as IEnumerable)?.Cast<Object>();
+
             switch (parameter.Operation)
             {
                 case FilterOperation.Equal:
@@ -26,6 +32,9 @@ public static class FilterDefinitionExtensions
                     break;
                 case FilterOperation.GreaterThanOrEqual:
                     result.Add(builder.Gte(field, parameter.Value));
+                    break;
+                case FilterOperation.In:
+                    result.Add(builder.In(field, set));
                     break;
                 case FilterOperation.LessThan:
                     result.Add(builder.Lt(field, parameter.Value));

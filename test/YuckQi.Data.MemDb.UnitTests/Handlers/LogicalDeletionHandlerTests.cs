@@ -47,7 +47,8 @@ public class LogicalDeletionHandlerTests
         var deleted = deleter.Delete(created, scope);
         var deletionMomentUtc = deleted.DeletionMomentUtc;
         var revisionMomentUtc = deleted.RevisionMomentUtc;
-        var _ = deleter.Delete(created, scope);
+
+        deleter.Delete(created, scope);
 
         Assert.Multiple(() =>
         {

@@ -156,6 +156,38 @@ public class FilterDefinitionExtensionTests
         });
     }
 
+    [Test]
+    public void FilterCriteria_In_IsValid()
+    {
+        var criteria = new[] { new FilterCriteria("Id", FilterOperation.In, new[] { 123, 456 }) };
+        var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
+        var registry = BsonSerializer.SerializerRegistry;
+        var serializer = registry.GetSerializer<SurLaTableRecord>();
+        var query = definition?.Render(serializer, registry);
+
+        Assert.Multiple(() =>
+        {
+            if (query != null)
+            {
+                Assert.That(query.ElementCount, Is.EqualTo(1));
+                Assert.That(query.Elements.First().Name, Is.EqualTo("_id"));
+                Assert.That(query.ToString(), Is.EqualTo("{ \"_id\" : { \"$in\" : [123, 456] } }"));
+            }
+            else
+            {
+                throw new NullReferenceException();
+            }
+        });
+    }
+
+    [Test]
+    public void FilterCriteria_In_WithInvalidParameter_IsNotValid()
+    {
+        var criteria = new[] { new FilterCriteria("Id", FilterOperation.In, 123) };
+
+        Assert.Throws<ArgumentException>(() => criteria.ToFilterDefinition<SurLaTableRecord>());
+    }
+
     public class SurLaTableRecord
     {
         [BsonId] public Int32 Id { get; set; }

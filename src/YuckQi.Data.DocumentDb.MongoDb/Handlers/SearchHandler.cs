@@ -9,31 +9,22 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
     public SearchHandler() : base(null) { }
 }
 
-public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IClientSessionHandle
+public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
-    #region Private Members
-
     private static readonly Type DocumentType = typeof(TDocument);
-
-    #endregion
-
-
-    #region Constructors
 
     public SearchHandler(IMapper? mapper) : base(mapper) { }
 
-    #endregion
-
-
-    #region Protected Methods
-
-    protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override Int32 DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
@@ -42,8 +33,11 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
         return (Int32) total;
     }
 
-    protected override async Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<Int32> DoCount(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
@@ -52,8 +46,11 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
         return (Int32) total;
     }
 
-    protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope)
+    protected override IReadOnlyCollection<TEntity> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
@@ -67,8 +64,11 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
         return entities;
     }
 
-    protected override async Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<IReadOnlyCollection<TEntity>> DoSearch(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var filter = parameters.ToFilterDefinition<TDocument>();
@@ -81,11 +81,6 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
 
         return entities;
     }
-
-    #endregion
-
-
-    #region Supporting Methods
 
     private static SortDefinition<TDocument> GetSortDefinition(IEnumerable<SortCriteria> criteria)
     {
@@ -100,6 +95,4 @@ public class SearchHandler<TEntity, TIdentifier, TScope, TDocument> : SearchHand
 
         return combined;
     }
-
-    #endregion
 }

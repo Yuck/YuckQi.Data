@@ -132,6 +132,33 @@ public class SearchHandlerTests
         }
     }
 
+    [Test]
+    public void F()
+    {
+        var entities = new ConcurrentDictionary<Int32, SurLaTable>();
+        var creator = new CreationHandler<SurLaTable, Int32, Object>(entities, new CreationOptions<Int32>(() => entities.Count + 1));
+        var searcher = new SearchHandler<SurLaTable, Int32, Object>(entities);
+        var scope = new Object();
+        for (var i = 0; i < 50; i++)
+            creator.Create(new SurLaTable { Name = GetRandomName() }, scope);
+
+        Assert.That(entities.Count, Is.EqualTo(50));
+
+        var parameters = new[] { new FilterCriteria("Identifier", FilterOperation.In, new[] { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 }) };
+        var page = new Page(1, 50);
+        var sort = new[] { new SortCriteria("Name", SortOrder.Descending) }.OrderBy(_ => 1);
+        var found = searcher.Search(parameters, page, sort, scope);
+
+        var items = found.Items.ToArray();
+        for (var i = 1; i < items.Length; i++)
+        {
+            var current = items[i];
+            var previous = items[i - 1];
+
+            Assert.That(current.Name, Is.LessThanOrEqualTo(previous.Name));
+        }
+    }
+
     private static String GetRandomName(Int32 length = 5)
     {
         var name = new StringBuilder();

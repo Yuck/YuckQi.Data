@@ -5,24 +5,12 @@ namespace YuckQi.Data.DocumentDb.MongoDb;
 
 public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
 {
-    #region Private Members
-
     private readonly IMongoClient _client;
     private readonly Object _lock = new();
     private readonly ClientSessionOptions? _options;
     private Lazy<IClientSessionHandle>? _session;
 
-    #endregion
-
-
-    #region Properties
-
     public IClientSessionHandle Scope => _session != null ? _session.Value : throw new NullReferenceException();
-
-    #endregion
-
-
-    #region Constructors
 
     public UnitOfWork(IMongoClient client, ClientSessionOptions? options = null)
     {
@@ -30,11 +18,6 @@ public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
         _options = options;
         _session = new Lazy<IClientSessionHandle>(() => _client.StartSession(_options));
     }
-
-    #endregion
-
-
-    #region Public Methods
 
     public void Dispose()
     {
@@ -60,6 +43,4 @@ public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
             _session = new Lazy<IClientSessionHandle>(() => _client.StartSession(_options));
         }
     }
-
-    #endregion
 }

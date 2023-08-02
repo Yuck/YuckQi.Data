@@ -123,6 +123,35 @@ public class SqlGeneratorTests
         Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] <= @Name);"));
     }
 
+    [Test]
+    public void GenerateGetQuery_WithInOperation_IsValid()
+    {
+        var generator = new SqlGenerator<SurLaTableRecord>();
+        var parameters = new[] { new FilterCriteria("Name", FilterOperation.In, new[] { "Bill", "Billy", "Mac", "Buddy" }) };
+        var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] in (@Name0,@Name1,@Name2,@Name3));"));
+    }
+
+    [Test]
+    public void GenerateGetQuery_WithInOperation_AndEmptySet_IsValid()
+    {
+        var generator = new SqlGenerator<SurLaTableRecord>();
+        var parameters = new[] { new FilterCriteria("Name", FilterOperation.In, new String[] { }) };
+        var sql = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " ");
+
+        Assert.That(sql, Is.EqualTo("select [Id], [Name] from [dbo].[SurLaTable] where ([Name] in (null));"));
+    }
+
+    [Test]
+    public void GenerateGetQuery_WithInOperation_AndInvalidParameter_IsNotValid()
+    {
+        var generator = new SqlGenerator<SurLaTableRecord>();
+        var parameters = new[] { new FilterCriteria("Name", FilterOperation.In, 1234) };
+
+        Assert.Throws<ArgumentException>(() => { _ = generator.GenerateGetQuery(parameters).Replace(Environment.NewLine, " "); });
+    }
+
     [Table("SurLaTable")]
     public class SurLaTableRecord
     {

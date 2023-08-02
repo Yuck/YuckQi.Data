@@ -5,24 +5,12 @@ namespace YuckQi.Data.Sql;
 
 public class UnitOfWork<TScope, TDbConnection> : IUnitOfWork<TScope> where TScope : class, IDbTransaction where TDbConnection : class, IDbConnection
 {
-    #region Private Members
-
     private TDbConnection? _connection;
     private readonly IsolationLevel _isolation;
     private readonly Object _lock = new();
     private Lazy<TScope>? _transaction;
 
-    #endregion
-
-
-    #region Properties
-
     public TScope Scope => _transaction != null ? _transaction.Value : throw new NullReferenceException();
-
-    #endregion
-
-
-    #region Constructors
 
     public UnitOfWork(TDbConnection connection, IsolationLevel isolation = IsolationLevel.ReadCommitted)
     {
@@ -30,11 +18,6 @@ public class UnitOfWork<TScope, TDbConnection> : IUnitOfWork<TScope> where TScop
         _isolation = isolation;
         _transaction = new Lazy<TScope>(StartTransaction);
     }
-
-    #endregion
-
-
-    #region Public Methods
 
     public void Dispose()
     {
@@ -69,11 +52,6 @@ public class UnitOfWork<TScope, TDbConnection> : IUnitOfWork<TScope> where TScop
         }
     }
 
-    #endregion
-
-
-    #region Supporting Methods
-
     private TScope StartTransaction()
     {
         lock (_lock)
@@ -84,6 +62,4 @@ public class UnitOfWork<TScope, TDbConnection> : IUnitOfWork<TScope> where TScop
             return _connection != null ? (TScope) _connection.BeginTransaction(_isolation) : throw new NullReferenceException();
         }
     }
-
-    #endregion
 }

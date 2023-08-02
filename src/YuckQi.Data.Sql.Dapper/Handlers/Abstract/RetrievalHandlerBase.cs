@@ -8,22 +8,15 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract;
 
-public class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : RetrievalHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : RetrievalHandlerBase<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
 {
     protected RetrievalHandlerBase(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
 }
 
-public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.Handlers.Abstract.RetrievalHandlerBase<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : struct where TScope : IDbTransaction
+public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.Handlers.Abstract.RetrievalHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
 {
-    #region Private Members
-
     private readonly IReadOnlyDictionary<Type, DbType> _dbTypeMap;
     private readonly ISqlGenerator<TRecord> _sqlGenerator;
-
-    #endregion
-
-
-    #region Constructors
 
     protected RetrievalHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(mapper)
     {
@@ -31,29 +24,33 @@ public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.
         _dbTypeMap = dbTypeMap;
     }
 
-    #endregion
-
-
-    #region Public Methods
-
-    protected override TEntity? DoGet(TIdentifier identifier, TScope scope)
+    protected override TEntity? DoGet(TIdentifier identifier, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var record = scope.Connection.Get<TRecord>(identifier, scope);
         var entity = MapToEntity(record);
 
         return entity;
     }
 
-    protected override async Task<TEntity?> DoGet(TIdentifier identifier, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<TEntity?> DoGet(TIdentifier identifier, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var record = await scope.Connection.GetAsync<TRecord>(identifier, scope);
         var entity = MapToEntity(record);
 
         return entity;
     }
 
-    protected override TEntity? DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope)
+    protected override TEntity? DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var sql = _sqlGenerator.GenerateGetQuery(parameters);
         var record = scope.Connection.QuerySingleOrDefault<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
         var entity = MapToEntity(record);
@@ -61,8 +58,11 @@ public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.
         return entity;
     }
 
-    protected override async Task<TEntity?> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<TEntity?> DoGet(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var sql = _sqlGenerator.GenerateGetQuery(parameters);
         var record = await scope.Connection.QuerySingleOrDefaultAsync<TRecord>(sql, parameters.ToDynamicParameters(_dbTypeMap), scope);
         var entity = MapToEntity(record);
@@ -70,8 +70,11 @@ public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.
         return entity;
     }
 
-    protected override IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope)
+    protected override IReadOnlyCollection<TEntity> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope? scope)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var sql = _sqlGenerator.GenerateGetQuery(parameters);
         var records = scope.Connection.Query<TRecord>(sql, parameters?.ToDynamicParameters(_dbTypeMap), scope);
         var entities = MapToEntityCollection(records);
@@ -79,14 +82,15 @@ public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.
         return entities;
     }
 
-    protected override async Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope scope, CancellationToken cancellationToken)
+    protected override async Task<IReadOnlyCollection<TEntity>> DoGetList(IReadOnlyCollection<FilterCriteria>? parameters, TScope? scope, CancellationToken cancellationToken)
     {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
         var sql = _sqlGenerator.GenerateGetQuery(parameters);
         var records = await scope.Connection.QueryAsync<TRecord>(sql, parameters?.ToDynamicParameters(_dbTypeMap), scope);
         var entities = MapToEntityCollection(records);
 
         return entities;
     }
-
-    #endregion
 }

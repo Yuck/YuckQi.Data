@@ -6,16 +6,9 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IRevisionHandler<TEntity, TIdentifier, TScope> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct
+public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IRevisionHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
-    #region Private Members
-
     private readonly RevisionOptions _options;
-
-    #endregion
-
-
-    #region Constructors
 
     protected RevisionHandlerBase() : this(null, null) { }
 
@@ -28,12 +21,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         _options = options ?? new RevisionOptions();
     }
 
-    #endregion
-
-
-    #region Public Methods
-
-    public TEntity Revise(TEntity entity, TScope scope)
+    public TEntity Revise(TEntity entity, TScope? scope)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -49,7 +37,12 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return entity;
     }
 
-    public async Task<TEntity> Revise(TEntity entity, TScope scope, CancellationToken cancellationToken)
+    public virtual IEnumerable<TEntity> Revise(IEnumerable<TEntity> entities, TScope? scope)
+    {
+        return entities.Select(entity => Revise(entity, scope));
+    }
+
+    public async Task<TEntity> Revise(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity));
@@ -65,14 +58,15 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return entity;
     }
 
-    #endregion
+    public virtual async Task<IEnumerable<TEntity>> Revise(IEnumerable<TEntity> entities, TScope? scope, CancellationToken cancellationToken)
+    {
+        var tasks = entities.Select(entity => Revise(entity, scope, cancellationToken));
+        var results = await Task.WhenAll(tasks);
 
+        return results;
+    }
 
-    #region Protected Methods
+    protected abstract Boolean DoRevise(TEntity entity, TScope? scope);
 
-    protected abstract Boolean DoRevise(TEntity entity, TScope scope);
-
-    protected abstract Task<Boolean> DoRevise(TEntity entity, TScope scope, CancellationToken cancellationToken);
-
-    #endregion
+    protected abstract Task<Boolean> DoRevise(TEntity entity, TScope? scope, CancellationToken cancellationToken);
 }
