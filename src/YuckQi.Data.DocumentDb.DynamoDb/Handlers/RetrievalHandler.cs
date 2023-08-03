@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Amazon.DynamoDBv2.DataModel;
+﻿using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using YuckQi.Data.DocumentDb.DynamoDb.Extensions;
 using YuckQi.Data.Filtering;
@@ -80,9 +75,8 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         var table = scope.GetTargetTable<TDocument>();
         var filter = parameters.ToQueryFilter();
         var search = table.Query(filter);
-        var results = await search.GetRemainingAsync(cancellationToken);
-        var result = results.SingleOrDefault();
-        var document = scope.FromDocument<TDocument>(result);
+        var documents = await GetDocuments(scope, search, cancellationToken);
+        var document = documents.SingleOrDefault();
         var entity = MapToEntity(document);
 
         return entity;
@@ -105,12 +99,27 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
             throw new ArgumentNullException(nameof(scope));
 
         var table = scope.GetTargetTable<TDocument>();
-        var filter = parameters?.ToScanFilter();
-        var search = table.Scan(filter);
-        var results = await search.GetRemainingAsync(cancellationToken);
-        var documents = scope.FromDocuments<TDocument>(results);
+        var filter = parameters?.ToQueryFilter();
+        var search = table.Query(filter);
+        var documents = await GetDocuments(scope, search, cancellationToken);
         var entities = MapToEntityCollection(documents);
 
         return entities;
+    }
+
+    private static async Task<IEnumerable<TDocument>> GetDocuments(TScope? scope, Search? search, CancellationToken cancellationToken)
+    {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+        if (search == null)
+            throw new ArgumentNullException(nameof(search));
+
+        var documents = new List<Document>();
+
+        while (! search.IsDone)
+            documents.AddRange(await search.GetNextSetAsync(cancellationToken));
+        documents.AddRange(await search.GetRemainingAsync(cancellationToken));
+
+        return scope.FromDocuments<TDocument>(documents);
     }
 }
