@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>6.3.2</Version>
+    <Version>6.3.3</Version>
     <Description>An implementation of YuckQi.Data for Oracle databases using Dapper and SimpleCRUD.</Description>
     <Product>YuckQi.Data</Product>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
