@@ -5,9 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Product>YuckQi.Data</Product>
-    <Version>6.3.1</Version>
+    <Version>6.3.4</Version>
     <Description>An implementation of YuckQi.Data for MongoDB databases.</Description>
+    <Product>YuckQi.Data</Product>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

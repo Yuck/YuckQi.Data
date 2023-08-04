@@ -10,15 +10,15 @@ namespace YuckQi.Data.Sql.Dapper.Handlers.Abstract;
 
 public class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : RetrievalHandlerBase<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
 {
-    protected RetrievalHandlerBase(ISqlGenerator<TEntity> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
+    protected RetrievalHandlerBase(ISqlGenerator sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
 }
 
 public class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TRecord> : Data.Handlers.Abstract.RetrievalHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
 {
     private readonly IReadOnlyDictionary<Type, DbType> _dbTypeMap;
-    private readonly ISqlGenerator<TRecord> _sqlGenerator;
+    private readonly ISqlGenerator _sqlGenerator;
 
-    protected RetrievalHandlerBase(ISqlGenerator<TRecord> sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(mapper)
+    protected RetrievalHandlerBase(ISqlGenerator sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(mapper)
     {
         _sqlGenerator = sqlGenerator ?? throw new ArgumentNullException(nameof(sqlGenerator));
         _dbTypeMap = dbTypeMap;

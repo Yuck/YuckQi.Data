@@ -8,7 +8,7 @@ using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Oracle;
 
-public class SqlGenerator<TRecord> : ISqlGenerator<TRecord>
+public class SqlGenerator<TRecord> : ISqlGenerator
 {
     private static readonly String DefaultTableName = typeof(TRecord).Name;
     private static readonly TableAttribute? TableAttribute = typeof(TRecord).GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
