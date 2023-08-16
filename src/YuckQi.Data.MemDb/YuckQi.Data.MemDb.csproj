@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>Kevin J Lambert</Authors>
-    <Version>6.3.4</Version>
+    <Version>6.4.0</Version>
     <Description>An implementation of YuckQi.Data for a in-memory "database" (ConcurrentDictionary), ideal for rapid development without external dependencies.</Description>
     <Product>YuckQi.Data</Product>
     <RepositoryUrl>https://github.com/Yuck/YuckQi.Data.git</RepositoryUrl>
