@@ -1,5 +1,4 @@
-﻿using System;
-using Amazon.DynamoDBv2.DataModel;
+﻿using Amazon.DynamoDBv2.DataModel;
 using YuckQi.Data.Abstract;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb;

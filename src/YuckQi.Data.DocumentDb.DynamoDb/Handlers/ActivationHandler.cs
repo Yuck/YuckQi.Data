@@ -1,5 +1,4 @@
-﻿using System;
-using Amazon.DynamoDBv2.DataModel;
+﻿using Amazon.DynamoDBv2.DataModel;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;

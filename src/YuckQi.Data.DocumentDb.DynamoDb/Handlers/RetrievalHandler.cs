@@ -28,12 +28,12 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
         _rangeKeyValueFactory = rangeKeyValueFactory ?? throw new ArgumentNullException(nameof(rangeKeyValueFactory));
     }
 
-    protected override TEntity? DoGet(TIdentifier key, TScope? scope)
+    protected override TEntity? DoGet(TIdentifier identifier, TScope? scope)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var task = Task.Run(async () => await DoGet(key, scope, default));
+        var task = Task.Run(async () => await DoGet(identifier, scope, default));
         var result = task.Result;
 
         return result;

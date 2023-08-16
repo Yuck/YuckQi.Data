@@ -2,7 +2,6 @@
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract;
-using YuckQi.Data.MemDb.Filtering;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.MemDb.Handlers;
