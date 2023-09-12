@@ -9,7 +9,7 @@ public static class FilterDefinitionExtensions
     public static FilterDefinition<TDocument>? ToFilterDefinition<TDocument>(this IEnumerable<FilterCriteria>? parameters)
     {
         if (parameters == null)
-            return null;
+            return Builders<TDocument>.Filter.Empty;
 
         var builder = Builders<TDocument>.Filter;
         var result = new List<FilterDefinition<TDocument>>();
