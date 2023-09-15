@@ -6,7 +6,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb;
 public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
 {
     private readonly IMongoClient _client;
-    private readonly Object _lock = new();
+    private readonly Object _lock = new ();
     private readonly ClientSessionOptions? _options;
     private Lazy<IClientSessionHandle>? _session;
 
@@ -24,7 +24,9 @@ public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
         if (_session == null)
             return;
 
-        Scope.AbortTransaction();
+        if (Scope.IsInTransaction)
+            Scope.AbortTransaction();
+
         Scope.Dispose();
 
         _session = null;
@@ -37,8 +39,8 @@ public class UnitOfWork : IUnitOfWork<IClientSessionHandle>
             if (_session == null)
                 throw new InvalidOperationException();
 
-            Scope.CommitTransaction();
-            Scope.Dispose();
+            if (Scope.IsInTransaction)
+                Scope.CommitTransaction();
 
             _session = new Lazy<IClientSessionHandle>(() => _client.StartSession(_options));
         }

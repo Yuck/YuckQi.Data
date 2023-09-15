@@ -7,7 +7,7 @@ public class UnitOfWork<TScope, TDbConnection> : IUnitOfWork<TScope> where TScop
 {
     private TDbConnection? _connection;
     private readonly IsolationLevel _isolation;
-    private readonly Object _lock = new();
+    private readonly Object _lock = new ();
     private Lazy<TScope>? _transaction;
 
     public TScope Scope => _transaction != null ? _transaction.Value : throw new NullReferenceException();

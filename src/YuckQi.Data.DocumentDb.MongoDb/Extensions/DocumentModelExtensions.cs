@@ -10,9 +10,9 @@ public static class DocumentModelExtensions
 {
     private const String DefaultObjectIdPropertyName = "_id";
 
-    private static readonly ConcurrentDictionary<Type, String> CollectionNameByType = new();
-    private static readonly ConcurrentDictionary<Type, String> DatabaseNameByType = new();
-    private static readonly ConcurrentDictionary<Type, PropertyInfo> IdentifierByType = new();
+    private static readonly ConcurrentDictionary<Type, String> CollectionNameByType = new ();
+    private static readonly ConcurrentDictionary<Type, String> DatabaseNameByType = new ();
+    private static readonly ConcurrentDictionary<Type, PropertyInfo> IdentifierByType = new ();
 
     public static String? GetCollectionName(this Type? type) => type != null ? CollectionNameByType.GetOrAdd(type, identifier => GetCollectionAttribute(identifier)?.Name ?? identifier.Name) : null;
 
