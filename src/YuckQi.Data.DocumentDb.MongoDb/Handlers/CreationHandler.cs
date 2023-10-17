@@ -24,6 +24,36 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
 
     public CreationHandler(CreationOptions<TIdentifier>? options, IMapper? mapper) : base(options, mapper) { }
 
+    public override IEnumerable<TEntity> Create(IEnumerable<TEntity> entities, TScope? scope)
+    {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
+        var list = entities.ToList();
+        var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+        var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+        var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();
+
+        collection.InsertMany(scope, documents);
+
+        return list;
+    }
+
+    public override async Task<IEnumerable<TEntity>> Create(IEnumerable<TEntity> entities, TScope? scope, CancellationToken cancellationToken)
+    {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
+        var list = entities.ToList();
+        var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+        var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+        var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();
+
+        await collection.InsertManyAsync(scope, documents, cancellationToken: cancellationToken);
+
+        return list;
+    }
+
     protected override Maybe<TIdentifier> DoCreate(TEntity entity, TScope? scope)
     {
         if (scope == null)

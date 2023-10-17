@@ -22,4 +22,16 @@ public abstract class WriteHandlerBase<TEntity>
                      : throw new InvalidOperationException($"Unable to map '{typeof(TEntity).Name}' to {typeof(T).Name}; {nameof(Mapper)} instance is null.")
         };
     }
+
+    protected IReadOnlyCollection<T> MapToDataCollection<T>(IEnumerable<TEntity>? entities)
+    {
+        return entities switch
+        {
+            null => Array.Empty<T>(),
+            IEnumerable<T> data => data.ToList(),
+            _ => Mapper != null
+                     ? Mapper.Map<IReadOnlyCollection<T>>(entities)
+                     : throw new InvalidOperationException($"Unable to map '{typeof(IEnumerable<TEntity>).Name}' to {typeof(IEnumerable<T>).Name}; {nameof(Mapper)} instance is null.")
+        };
+    }
 }

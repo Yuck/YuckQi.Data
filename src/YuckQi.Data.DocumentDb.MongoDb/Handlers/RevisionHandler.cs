@@ -17,11 +17,55 @@ public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandler<TEn
 
 public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
+    private static readonly Type DocumentType = typeof(TDocument);
+
     public RevisionHandler(IMapper? mapper) : base(mapper) { }
 
     public RevisionHandler(RevisionOptions? options, IMapper? mapper) : base(options, mapper) { }
 
-    private static readonly Type DocumentType = typeof(TDocument);
+    public override IEnumerable<TEntity> Revise(IEnumerable<TEntity> entities, TScope? scope)
+    {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
+        var list = entities.ToList();
+        var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+        var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
+        var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();
+
+        foreach (var document in documents)
+        {
+            var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+            var filter = Builders<TDocument>.Filter.Eq(field, identifier);
+
+            collection.ReplaceOne(scope, filter, document);
+        }
+
+        return list;
+    }
+
+    public override async Task<IEnumerable<TEntity>> Revise(IEnumerable<TEntity> entities, TScope? scope, CancellationToken cancellationToken)
+    {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
+        var list = entities.ToList();
+        var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
+        var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
+        var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
+        var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();
+
+        foreach (var document in documents)
+        {
+            var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+            var filter = Builders<TDocument>.Filter.Eq(field, identifier);
+
+            await collection.ReplaceOneAsync(scope, filter, document, cancellationToken: cancellationToken);
+        }
+
+        return list;
+    }
 
     protected override Boolean DoRevise(TEntity entity, TScope? scope)
     {
