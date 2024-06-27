@@ -1,14 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Amazon.DynamoDBv2.DataModel;
+﻿using Amazon.DynamoDBv2.DataModel;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb.Handlers;
 
-public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IDynamoDBContext?
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
     public PhysicalDeletionHandler() : base(null) { }
 }

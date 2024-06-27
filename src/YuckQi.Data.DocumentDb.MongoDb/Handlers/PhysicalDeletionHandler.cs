@@ -6,12 +6,12 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope> : PhysicalDeletionHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
     public PhysicalDeletionHandler() : base(null) { }
 }
 
-public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
+public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : PhysicalDeletionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
     private static readonly Type DocumentType = typeof(TDocument);
 
@@ -26,7 +26,7 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var document = GetDocument(entity);
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
-        var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+        var identifier = document != null ? document.GetIdentifier<TDocument, TIdentifier>() : default;
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var result = collection.DeleteOne(scope, filter);
 
@@ -42,7 +42,7 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var document = GetDocument(entity);
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
-        var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+        var identifier = document != null ? document.GetIdentifier<TDocument, TIdentifier>() : default;
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         var result = await collection.DeleteOneAsync(scope, filter, cancellationToken: cancellationToken);
 

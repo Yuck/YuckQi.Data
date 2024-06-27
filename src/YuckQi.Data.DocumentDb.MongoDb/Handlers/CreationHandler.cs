@@ -9,14 +9,14 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
+public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
     public CreationHandler() : this(null) { }
 
     public CreationHandler(CreationOptions<TIdentifier>? options) : base(options, null) { }
 }
 
-public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
+public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : CreationHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
     private static readonly Type DocumentType = typeof(TDocument);
 
@@ -54,7 +54,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         return list;
     }
 
-    protected override Maybe<TIdentifier> DoCreate(TEntity entity, TScope? scope)
+    protected override Maybe<TIdentifier?> DoCreate(TEntity entity, TScope? scope)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
@@ -68,7 +68,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         return document.GetIdentifier<TDocument, TIdentifier>();
     }
 
-    protected override async Task<Maybe<TIdentifier>> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken)
+    protected override async Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));

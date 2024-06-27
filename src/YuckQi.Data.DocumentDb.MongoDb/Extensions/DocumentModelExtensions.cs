@@ -18,7 +18,7 @@ public static class DocumentModelExtensions
 
     public static String? GetDatabaseName(this Type? type) => type != null ? DatabaseNameByType.GetOrAdd(type, identifier => GetDatabaseAttribute(identifier).Name) : null;
 
-    public static TIdentifier GetIdentifier<TDocument, TIdentifier>(this TDocument document) where TIdentifier : struct
+    public static TIdentifier? GetIdentifier<TDocument, TIdentifier>(this TDocument document)
     {
         if (document == null)
             return default;
@@ -31,7 +31,7 @@ public static class DocumentModelExtensions
         return default;
     }
 
-    public static StringFieldDefinition<TDocument, TIdentifier?>? GetIdentifierFieldDefinition<TDocument, TIdentifier>(this Type? type) where TIdentifier : struct
+    public static StringFieldDefinition<TDocument, TIdentifier?>? GetIdentifierFieldDefinition<TDocument, TIdentifier>(this Type? type)
     {
         if (type == null)
             return null;

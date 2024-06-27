@@ -8,14 +8,14 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.DocumentDb.MongoDb.Handlers;
 
-public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
+public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
     public RevisionHandler() : this(null) { }
 
     public RevisionHandler(RevisionOptions? options) : base(options, null) { }
 }
 
-public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : struct, IEquatable<TIdentifier> where TScope : IClientSessionHandle?
+public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : RevisionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IClientSessionHandle?
 {
     private static readonly Type DocumentType = typeof(TDocument);
 
@@ -36,7 +36,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
 
         foreach (var document in documents)
         {
-            var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+            var identifier = document != null ? document.GetIdentifier<TDocument, TIdentifier>() : default;
             var filter = Builders<TDocument>.Filter.Eq(field, identifier);
 
             collection.ReplaceOne(scope, filter, document);
@@ -58,7 +58,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
 
         foreach (var document in documents)
         {
-            var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+            var identifier = document != null ? document.GetIdentifier<TDocument, TIdentifier>() : default;
             var filter = Builders<TDocument>.Filter.Eq(field, identifier);
 
             await collection.ReplaceOneAsync(scope, filter, document, cancellationToken: cancellationToken);
@@ -76,7 +76,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
         var document = MapToData<TDocument>(entity);
-        var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+        var identifier = document != null ? document.GetIdentifier<TDocument, TIdentifier>() : default;
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         if (document == null)
             throw new NullReferenceException();
@@ -95,7 +95,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
         var document = MapToData<TDocument>(entity);
-        var identifier = document?.GetIdentifier<TDocument, TIdentifier>();
+        var identifier = document != null ? document.GetIdentifier<TDocument, TIdentifier>() : default;
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         if (document == null)
             throw new NullReferenceException();
