@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using CSharpFunctionalExtensions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
@@ -16,13 +15,13 @@ public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandlerBase
         _entities = entities ?? throw new ArgumentNullException(nameof(entities));
     }
 
-    protected override Maybe<TIdentifier?> DoCreate(TEntity entity, TScope? scope)
+    protected override TIdentifier? DoCreate(TEntity entity, TScope? scope)
     {
         if (entity.Identifier == null)
             throw new InvalidOperationException();
 
-        return _entities.TryAdd(entity.Identifier, entity) ? entity.Identifier : Maybe<TIdentifier?>.None;
+        return _entities.TryAdd(entity.Identifier, entity) ? entity.Identifier : default;
     }
 
-    protected override Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken) => Task.FromResult(DoCreate(entity, scope));
+    protected override Task<TIdentifier?> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken) => Task.FromResult(DoCreate(entity, scope));
 }

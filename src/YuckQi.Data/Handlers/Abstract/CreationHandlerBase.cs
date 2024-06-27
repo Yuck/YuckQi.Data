@@ -1,5 +1,4 @@
-﻿using CSharpFunctionalExtensions;
-using YuckQi.Data.Exceptions;
+﻿using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -37,10 +36,10 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
             revised.RevisionMomentUtc = entity.CreationMomentUtc;
 
         var identifier = DoCreate(entity, scope);
-        if (identifier.HasNoValue)
+        if (identifier == null)
             throw new CreationException<TEntity>();
 
-        entity.Identifier = identifier.Value;
+        entity.Identifier = identifier;
 
         return entity;
     }
@@ -65,10 +64,10 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
             revised.RevisionMomentUtc = entity.CreationMomentUtc;
 
         var identifier = await DoCreate(entity, scope, cancellationToken);
-        if (identifier.HasNoValue)
+        if (identifier == null)
             throw new CreationException<TEntity>();
 
-        entity.Identifier = identifier.Value;
+        entity.Identifier = identifier;
 
         return entity;
     }
@@ -81,7 +80,7 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         return results;
     }
 
-    protected abstract Maybe<TIdentifier?> DoCreate(TEntity entity, TScope? scope);
+    protected abstract TIdentifier? DoCreate(TEntity entity, TScope? scope);
 
-    protected abstract Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken);
+    protected abstract Task<TIdentifier?> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken);
 }

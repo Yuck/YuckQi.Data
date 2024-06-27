@@ -1,5 +1,4 @@
 ﻿using Amazon.DynamoDBv2.DataModel;
-using CSharpFunctionalExtensions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
@@ -57,7 +56,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         return list;
     }
 
-    protected override Maybe<TIdentifier?> DoCreate(TEntity entity, TScope? scope)
+    protected override TIdentifier? DoCreate(TEntity entity, TScope? scope)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
@@ -68,7 +67,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         return result;
     }
 
-    protected override async Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken)
+    protected override async Task<TIdentifier?> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
@@ -78,6 +77,6 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
 
         await table.PutItemAsync(scope.ToDocument(document), cancellationToken);
 
-        return Maybe<TIdentifier?>.From(entity.Identifier);
+        return entity.Identifier;
     }
 }

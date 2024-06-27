@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using CSharpFunctionalExtensions;
 using Dapper;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
@@ -22,23 +21,23 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHa
 
     public CreationHandler(CreationOptions<TIdentifier>? options, IMapper? mapper) : base(options, mapper) { }
 
-    protected override Maybe<TIdentifier?> DoCreate(TEntity entity, TScope? scope)
+    protected override TIdentifier? DoCreate(TEntity entity, TScope? scope)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
         var record = MapToData<TRecord>(entity) ?? throw new InvalidOperationException();
 
-        return Maybe.From(scope.Connection.Insert<TIdentifier?, TRecord>(record, scope));
+        return scope.Connection.Insert<TIdentifier?, TRecord>(record, scope);
     }
 
-    protected override async Task<Maybe<TIdentifier?>> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken)
+    protected override Task<TIdentifier?> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken)
     {
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
         var record = MapToData<TRecord>(entity) ?? throw new InvalidOperationException();
 
-        return Maybe.From(await scope.Connection.InsertAsync<TIdentifier?, TRecord>(record, scope));
+        return scope.Connection.InsertAsync<TIdentifier?, TRecord>(record, scope);
     }
 }
