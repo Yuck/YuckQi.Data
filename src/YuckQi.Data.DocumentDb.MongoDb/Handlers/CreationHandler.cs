@@ -28,7 +28,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var list = entities.ToList();
+        var list = entities.Select(PreProcess).ToList();
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();
@@ -43,7 +43,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var list = entities.ToList();
+        var list = entities.Select(PreProcess).ToList();
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();

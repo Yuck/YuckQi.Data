@@ -28,7 +28,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var list = entities.ToList();
+        var list = entities.Select(PreProcess).ToList();
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
@@ -50,7 +50,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var list = entities.ToList();
+        var list = entities.Select(PreProcess).ToList();
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();

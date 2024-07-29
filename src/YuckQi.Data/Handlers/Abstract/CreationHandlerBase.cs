@@ -28,18 +28,8 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        if (_options.IdentifierFactory != null)
-            entity.Identifier = _options.IdentifierFactory();
-        if (_options.CreationMomentAssignment == PropertyHandling.Auto)
-            entity.CreationMomentUtc = DateTime.UtcNow;
-        if (_options.RevisionMomentAssignment == PropertyHandling.Auto && entity is IRevised revised)
-            revised.RevisionMomentUtc = entity.CreationMomentUtc;
-
-        var identifier = DoCreate(entity, scope);
-        if (identifier == null)
-            throw new CreationException<TEntity>();
-
-        entity.Identifier = identifier;
+        entity = PreProcess(entity);
+        entity.Identifier = DoCreate(entity, scope) ?? throw new CreationException<TEntity>();
 
         return entity;
     }
@@ -56,18 +46,8 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        if (_options.IdentifierFactory != null)
-            entity.Identifier = _options.IdentifierFactory();
-        if (_options.CreationMomentAssignment == PropertyHandling.Auto)
-            entity.CreationMomentUtc = DateTime.UtcNow;
-        if (_options.RevisionMomentAssignment == PropertyHandling.Auto && entity is IRevised revised)
-            revised.RevisionMomentUtc = entity.CreationMomentUtc;
-
-        var identifier = await DoCreate(entity, scope, cancellationToken);
-        if (identifier == null)
-            throw new CreationException<TEntity>();
-
-        entity.Identifier = identifier;
+        entity = PreProcess(entity);
+        entity.Identifier = await DoCreate(entity, scope, cancellationToken) ?? throw new CreationException<TEntity>();
 
         return entity;
     }
@@ -83,4 +63,16 @@ public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteH
     protected abstract TIdentifier? DoCreate(TEntity entity, TScope? scope);
 
     protected abstract Task<TIdentifier?> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken);
+
+    protected TEntity PreProcess(TEntity entity)
+    {
+        if (_options.IdentifierFactory != null)
+            entity.Identifier = _options.IdentifierFactory();
+        if (_options.CreationMomentAssignment == PropertyHandling.Auto)
+            entity.CreationMomentUtc = DateTime.UtcNow;
+        if (_options.RevisionMomentAssignment == PropertyHandling.Auto && entity is IRevised revised)
+            revised.RevisionMomentUtc = entity.CreationMomentUtc;
+
+        return entity;
+    }
 }

@@ -28,10 +28,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        if (_options.RevisionMomentAssignment == PropertyHandling.Auto)
-            entity.RevisionMomentUtc = DateTime.UtcNow;
-
-        if (! DoRevise(entity, scope))
+        if (! DoRevise(PreProcess(entity), scope))
             throw new RevisionException<TEntity, TIdentifier>(entity.Identifier);
 
         return entity;
@@ -49,10 +46,7 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        if (_options.RevisionMomentAssignment == PropertyHandling.Auto)
-            entity.RevisionMomentUtc = DateTime.UtcNow;
-
-        if (! await DoRevise(entity, scope, cancellationToken))
+        if (! await DoRevise(PreProcess(entity), scope, cancellationToken))
             throw new RevisionException<TEntity, TIdentifier>(entity.Identifier);
 
         return entity;
@@ -69,4 +63,12 @@ public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteH
     protected abstract Boolean DoRevise(TEntity entity, TScope? scope);
 
     protected abstract Task<Boolean> DoRevise(TEntity entity, TScope? scope, CancellationToken cancellationToken);
+
+    protected TEntity PreProcess(TEntity entity)
+    {
+        if (_options.RevisionMomentAssignment == PropertyHandling.Auto)
+            entity.RevisionMomentUtc = DateTime.UtcNow;
+
+        return entity;
+    }
 }

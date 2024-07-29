@@ -23,12 +23,12 @@ public static class DocumentModelExtensions
         if (document == null)
             return default;
 
-        var property = GetIdentifierPropertyInfo(typeof(TDocument));
-        var value = property?.GetValue(document);
+        var property = GetIdentifierPropertyInfo(typeof(TDocument)) ?? throw new InvalidOperationException($"{typeof(TDocument).Name} identifier property could not be determined.");
+        var value = property.GetValue(document);
         if (value is TIdentifier identifier)
             return identifier;
 
-        return default;
+        throw new InvalidOperationException($"{typeof(TDocument).Name} identifier type {property.PropertyType.Name} does not match declared type {typeof(TIdentifier).Name}.");
     }
 
     public static StringFieldDefinition<TDocument, TIdentifier?>? GetIdentifierFieldDefinition<TDocument, TIdentifier>(this Type? type)

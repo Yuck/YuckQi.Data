@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
@@ -20,7 +21,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandlerBase
         if (entity.Identifier == null)
             throw new InvalidOperationException();
 
-        return _entities.TryAdd(entity.Identifier, entity) ? entity.Identifier : default;
+        return _entities.TryAdd(entity.Identifier, entity) ? entity.Identifier : throw new CreationException<TEntity>();
     }
 
     protected override Task<TIdentifier?> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken) => Task.FromResult(DoCreate(entity, scope));

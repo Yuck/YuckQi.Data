@@ -8,7 +8,7 @@ namespace YuckQi.Data.DocumentDb.MongoDb.UnitTests.ExtensionTests;
 
 public class DocumentModelExtensionTests
 {
-    private static readonly SurLaTableRecord? NullSurLaTableRecord = null;
+    private static readonly SurLaTableDocument? NullSurLaTableRecord = null;
     private static readonly Type? NullType = null;
 
     [SetUp]
@@ -25,7 +25,7 @@ public class DocumentModelExtensionTests
     [Test]
     public async Task GetCollectionName_WithMultipleRequests_IsValid()
     {
-        var type = typeof(SurLaTableRecord);
+        var type = typeof(SurLaTableDocument);
         var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetCollectionName())).ToList();
 
         await Task.WhenAll(tasks);
@@ -46,7 +46,7 @@ public class DocumentModelExtensionTests
     [Test]
     public async Task GetDatabaseName_WithMultipleRequests_IsValid()
     {
-        var type = typeof(SurLaTableRecord);
+        var type = typeof(SurLaTableDocument);
         var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetDatabaseName())).ToList();
 
         await Task.WhenAll(tasks);
@@ -59,7 +59,7 @@ public class DocumentModelExtensionTests
     [Test]
     public void GetIdentifierFieldDefinition_WithNullType_IsNull()
     {
-        var name = NullType.GetIdentifierFieldDefinition<SurLaTableRecord, Int32>();
+        var name = NullType.GetIdentifierFieldDefinition<SurLaTableDocument, Int32>();
 
         Assert.That(name, Is.Null);
     }
@@ -67,13 +67,13 @@ public class DocumentModelExtensionTests
     [Test]
     public async Task GetIdentifierFieldDefinition_WithMultipleRequests_IsValid()
     {
-        var type = typeof(SurLaTableRecord);
-        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetIdentifierFieldDefinition<SurLaTableRecord, Int32>())).ToList();
+        var type = typeof(SurLaTableDocument);
+        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => type.GetIdentifierFieldDefinition<SurLaTableDocument, Int32>())).ToList();
 
         await Task.WhenAll(tasks);
 
         var registry = BsonSerializer.SerializerRegistry;
-        var serializer = registry.GetSerializer<SurLaTableRecord>();
+        var serializer = registry.GetSerializer<SurLaTableDocument>();
         var first = tasks.First().Result;
         var field = first?.Render(serializer, registry).FieldName;
 
@@ -83,7 +83,7 @@ public class DocumentModelExtensionTests
     [Test]
     public void GetIdentifier_WithNullRecord_IsNull()
     {
-        var name = NullSurLaTableRecord?.GetIdentifier<SurLaTableRecord, Int32>();
+        var name = NullSurLaTableRecord?.GetIdentifier<SurLaTableDocument, Int32>();
 
         Assert.That(name, Is.Null);
     }
@@ -91,8 +91,8 @@ public class DocumentModelExtensionTests
     [Test]
     public async Task GetIdentifier_WithMultipleRequests_IsValid()
     {
-        var record = new SurLaTableRecord { Id = 1, Name = "test" };
-        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => record.GetIdentifier<SurLaTableRecord, Int32>())).ToList();
+        var document = new SurLaTableDocument { Id = 1, Name = "test" };
+        var tasks = new[] { 1, 2, 3, 4, 5 }.Select(_ => Task.Run(() => document.GetIdentifier<SurLaTableDocument, Int32>())).ToList();
 
         await Task.WhenAll(tasks);
 
@@ -102,7 +102,7 @@ public class DocumentModelExtensionTests
     }
 
     [Database("Tableau")]
-    public class SurLaTableRecord
+    public class SurLaTableDocument
     {
         [BsonId] public Int32 Id { get; set; }
         public String Name { get; set; } = String.Empty;
