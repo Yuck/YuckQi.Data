@@ -2,7 +2,7 @@
 using Dapper;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
-using YuckQi.Data.Sql.Dapper.Abstract;
+using YuckQi.Data.Sql.Dapper.Abstract.Interfaces;
 using YuckQi.Data.Sql.Dapper.Extensions;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;

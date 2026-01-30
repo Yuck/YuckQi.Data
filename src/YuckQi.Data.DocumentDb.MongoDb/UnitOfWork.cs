@@ -1,5 +1,5 @@
 ﻿using MongoDB.Driver;
-using YuckQi.Data.Abstract;
+using YuckQi.Data.Abstract.Interfaces;
 
 namespace YuckQi.Data.DocumentDb.MongoDb;
 

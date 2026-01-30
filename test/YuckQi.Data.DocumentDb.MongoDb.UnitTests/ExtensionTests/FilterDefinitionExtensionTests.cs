@@ -1,5 +1,6 @@
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using NUnit.Framework;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
 using YuckQi.Data.Filtering;
@@ -18,7 +19,8 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition?.Render(serializer, registry);
+        var arguments = new RenderArgs<SurLaTableRecord>(serializer, registry);
+        var query = definition?.Render(arguments);
 
         Assert.Multiple(() =>
         {
@@ -43,7 +45,8 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition?.Render(serializer, registry);
+        var arguments = new RenderArgs<SurLaTableRecord>(serializer, registry);
+        var query = definition?.Render(arguments);
 
         Assert.Multiple(() =>
         {
@@ -67,7 +70,8 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition?.Render(serializer, registry);
+        var arguments = new RenderArgs<SurLaTableRecord>(serializer, registry);
+        var query = definition?.Render(arguments);
 
         Assert.Multiple(() =>
         {
@@ -91,7 +95,8 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition?.Render(serializer, registry);
+        var arguments = new RenderArgs<SurLaTableRecord>(serializer, registry);
+        var query = definition?.Render(arguments);
 
         Assert.Multiple(() =>
         {
@@ -115,7 +120,8 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition?.Render(serializer, registry);
+        var arguments = new RenderArgs<SurLaTableRecord>(serializer, registry);
+        var query = definition?.Render(arguments);
 
         Assert.Multiple(() =>
         {
@@ -139,7 +145,8 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition?.Render(serializer, registry);
+        var arguments = new RenderArgs<SurLaTableRecord>(serializer, registry);
+        var query = definition?.Render(arguments);
 
         Assert.Multiple(() =>
         {
@@ -163,7 +170,8 @@ public class FilterDefinitionExtensionTests
         var definition = criteria.ToFilterDefinition<SurLaTableRecord>();
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableRecord>();
-        var query = definition?.Render(serializer, registry);
+        var arguments = new RenderArgs<SurLaTableRecord>(serializer, registry);
+        var query = definition?.Render(arguments);
 
         Assert.Multiple(() =>
         {

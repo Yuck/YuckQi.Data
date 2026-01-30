@@ -1,6 +1,6 @@
 ﻿using System;
 using Amazon.DynamoDBv2.DataModel;
-using YuckQi.Data.Abstract;
+using YuckQi.Data.Abstract.Interfaces;
 
 namespace YuckQi.Data.DocumentDb.DynamoDb;
 

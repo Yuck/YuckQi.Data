@@ -1,7 +1,7 @@
 ﻿using YuckQi.Data.Filtering;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Handlers.Abstract;
+namespace YuckQi.Data.Handlers.Abstract.Interfaces;
 
 public interface IRetrievalHandler<TEntity, in TIdentifier, in TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
@@ -13,9 +13,9 @@ public interface IRetrievalHandler<TEntity, in TIdentifier, in TScope> where TEn
 
     Task<TEntity?> Get(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope, CancellationToken cancellationToken);
 
-    TEntity? Get(Object parameters, TScope? scope);
+    TEntity? Get(object parameters, TScope? scope);
 
-    Task<TEntity?> Get(Object parameters, TScope? scope, CancellationToken cancellationToken);
+    Task<TEntity?> Get(object parameters, TScope? scope, CancellationToken cancellationToken);
 
     IReadOnlyCollection<TEntity> GetList(TScope? scope);
 
@@ -25,7 +25,7 @@ public interface IRetrievalHandler<TEntity, in TIdentifier, in TScope> where TEn
 
     Task<IReadOnlyCollection<TEntity>> GetList(IReadOnlyCollection<FilterCriteria> parameters, TScope? scope, CancellationToken cancellationToken);
 
-    IReadOnlyCollection<TEntity> GetList(Object parameters, TScope? scope);
+    IReadOnlyCollection<TEntity> GetList(object parameters, TScope? scope);
 
-    Task<IReadOnlyCollection<TEntity>> GetList(Object parameters, TScope? scope, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<TEntity>> GetList(object parameters, TScope? scope, CancellationToken cancellationToken);
 }

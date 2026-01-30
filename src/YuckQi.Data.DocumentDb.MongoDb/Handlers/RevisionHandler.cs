@@ -83,7 +83,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
 
         var result = collection.ReplaceOne(scope, filter, document);
 
-        return result.ModifiedCount > 0;
+        return result.ModifiedCount > 0 || result.MatchedCount > 0;
     }
 
     protected override async Task<Boolean> DoRevise(TEntity entity, TScope? scope, CancellationToken cancellationToken)
@@ -102,6 +102,6 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
 
         var result = await collection.ReplaceOneAsync(scope, filter, document, cancellationToken: cancellationToken);
 
-        return result.ModifiedCount > 0;
+        return result.ModifiedCount > 0 || result.MatchedCount > 0;
     }
 }

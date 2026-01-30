@@ -74,7 +74,7 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
 
         var table = scope.GetTargetTable<TDocument>();
         var filter = parameters.ToQueryFilter();
-        var search = table.Query(filter);
+        var search = table.Query(filter) as Search;
         var documents = await GetDocuments(scope, search, cancellationToken);
         var document = documents.SingleOrDefault();
         var entity = MapToEntity(document);
@@ -100,7 +100,7 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : Retriev
 
         var table = scope.GetTargetTable<TDocument>();
         var filter = parameters?.ToQueryFilter();
-        var search = table.Query(filter);
+        var search = table.Query(filter) as Search;
         var documents = await GetDocuments(scope, search, cancellationToken);
         var entities = MapToEntityCollection(documents);
 

@@ -1,5 +1,6 @@
 ﻿using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using NUnit.Framework;
 using YuckQi.Data.DocumentDb.MongoDb.Attributes;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
@@ -75,9 +76,10 @@ public class DocumentModelExtensionTests
         var registry = BsonSerializer.SerializerRegistry;
         var serializer = registry.GetSerializer<SurLaTableDocument>();
         var first = tasks.First().Result;
-        var field = first?.Render(serializer, registry).FieldName;
+        var arguments = new RenderArgs<SurLaTableDocument>(serializer, registry);
+        var field = first?.Render(arguments).FieldName;
 
-        Assert.That(tasks.All(t => Equals(t.Result?.Render(serializer, registry).FieldName, field)), Is.True);
+        Assert.That(tasks.All(t => Equals(t.Result?.Render(arguments).FieldName, field)), Is.True);
     }
 
     [Test]

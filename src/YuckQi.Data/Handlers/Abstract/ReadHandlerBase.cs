@@ -11,7 +11,7 @@ public abstract class ReadHandlerBase<TEntity>
         Mapper = mapper;
     }
 
-    protected TEntity? MapToEntity<T>(T? data)
+    protected virtual TEntity? MapToEntity<T>(T? data)
     {
         return data switch
         {
@@ -23,7 +23,7 @@ public abstract class ReadHandlerBase<TEntity>
         };
     }
 
-    protected IReadOnlyCollection<TEntity> MapToEntityCollection<T>(IEnumerable<T>? data)
+    protected virtual IReadOnlyCollection<TEntity> MapToEntityCollection<T>(IEnumerable<T>? data)
     {
         return data switch
         {

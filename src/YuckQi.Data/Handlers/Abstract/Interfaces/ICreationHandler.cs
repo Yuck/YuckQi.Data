@@ -1,7 +1,7 @@
 ﻿using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Handlers.Abstract;
+namespace YuckQi.Data.Handlers.Abstract.Interfaces;
 
 public interface ICreationHandler<TEntity, TIdentifier, in TScope> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier>
 {

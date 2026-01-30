@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using YuckQi.Data.Sql.Dapper.Abstract;
+using YuckQi.Data.Sql.Dapper.Abstract.Interfaces;
 using YuckQi.Data.Sql.Dapper.Handlers.Abstract;
 using YuckQi.Data.Sql.Dapper.MySql.Internal;
 using YuckQi.Domain.Entities.Abstract;

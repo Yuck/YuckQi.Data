@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
-using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Data.MemDb.Filtering;
 using YuckQi.Domain.Entities.Abstract;
 

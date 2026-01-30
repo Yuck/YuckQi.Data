@@ -1,4 +1,4 @@
-﻿namespace YuckQi.Data.Abstract;
+﻿namespace YuckQi.Data.Abstract.Interfaces;
 
 public interface IUnitOfWork<out TScope> : IDisposable
 {

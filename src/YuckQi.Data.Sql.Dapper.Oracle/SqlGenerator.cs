@@ -3,7 +3,7 @@ using System.Reflection;
 using Dapper;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Sorting;
-using YuckQi.Data.Sql.Dapper.Abstract;
+using YuckQi.Data.Sql.Dapper.Abstract.Interfaces;
 using YuckQi.Domain.ValueObjects.Abstract;
 
 namespace YuckQi.Data.Sql.Dapper.Oracle;

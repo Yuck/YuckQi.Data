@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 

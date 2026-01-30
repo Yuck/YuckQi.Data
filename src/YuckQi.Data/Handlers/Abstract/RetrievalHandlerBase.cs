@@ -1,5 +1,6 @@
 ﻿using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
+using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 

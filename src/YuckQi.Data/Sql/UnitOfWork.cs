@@ -1,5 +1,5 @@
 ﻿using System.Data;
-using YuckQi.Data.Abstract;
+using YuckQi.Data.Abstract.Interfaces;
 
 namespace YuckQi.Data.Sql;
 

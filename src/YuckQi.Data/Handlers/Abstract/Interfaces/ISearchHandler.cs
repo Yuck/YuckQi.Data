@@ -3,7 +3,7 @@ using YuckQi.Data.Sorting;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Domain.ValueObjects.Abstract;
 
-namespace YuckQi.Data.Handlers.Abstract;
+namespace YuckQi.Data.Handlers.Abstract.Interfaces;
 
 public interface ISearchHandler<TEntity, TIdentifier, in TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
@@ -11,7 +11,7 @@ public interface ISearchHandler<TEntity, TIdentifier, in TScope> where TEntity :
 
     Task<IPage<TEntity>> Search(IReadOnlyCollection<FilterCriteria> parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope, CancellationToken cancellationToken);
 
-    IPage<TEntity> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope);
+    IPage<TEntity> Search(object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope);
 
-    Task<IPage<TEntity>> Search(Object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope, CancellationToken cancellationToken);
+    Task<IPage<TEntity>> Search(object parameters, IPage page, IOrderedEnumerable<SortCriteria> sort, TScope? scope, CancellationToken cancellationToken);
 }

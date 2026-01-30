@@ -11,7 +11,7 @@ public abstract class WriteHandlerBase<TEntity>
         Mapper = mapper;
     }
 
-    protected T? MapToData<T>(TEntity? entity)
+    protected virtual T? MapToData<T>(TEntity? entity)
     {
         return entity switch
         {
@@ -23,7 +23,7 @@ public abstract class WriteHandlerBase<TEntity>
         };
     }
 
-    protected IReadOnlyCollection<T> MapToDataCollection<T>(IEnumerable<TEntity>? entities)
+    protected virtual IReadOnlyCollection<T> MapToDataCollection<T>(IEnumerable<TEntity>? entities)
     {
         return entities switch
         {

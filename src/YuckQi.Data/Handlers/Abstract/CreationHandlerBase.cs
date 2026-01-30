@@ -1,4 +1,5 @@
 ﻿using YuckQi.Data.Exceptions;
+using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
