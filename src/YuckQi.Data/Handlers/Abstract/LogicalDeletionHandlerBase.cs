@@ -1,10 +1,15 @@
-﻿using YuckQi.Data.Handlers.Abstract.Interfaces;
+using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : ILogicalDeletionHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : IEquatable<TIdentifier>
+public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : IEquatable<TIdentifier>
+{
+    protected LogicalDeletionHandlerBase(IRevisionHandler<TEntity, TIdentifier, TScope> reviser) : base(reviser) { }
+}
+
+public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope, TData> : ILogicalDeletionHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly IRevisionHandler<TEntity, TIdentifier, TScope> _reviser;
 

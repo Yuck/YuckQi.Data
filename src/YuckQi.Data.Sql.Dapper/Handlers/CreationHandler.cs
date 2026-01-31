@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using Dapper;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
@@ -15,7 +15,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandler<TEn
     public CreationHandler(CreationOptions<TIdentifier>? options) : base(options, null) { }
 }
 
-public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
+public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHandlerBase<TEntity, TIdentifier, TScope?, TRecord> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
 {
     public CreationHandler(IMapper? mapper) : base(mapper) { }
 

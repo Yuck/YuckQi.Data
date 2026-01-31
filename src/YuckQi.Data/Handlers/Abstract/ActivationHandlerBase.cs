@@ -1,10 +1,15 @@
-﻿using YuckQi.Data.Handlers.Abstract.Interfaces;
+using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class ActivationHandlerBase<TEntity, TIdentifier, TScope> : IActivationHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IActivated, IRevised where TIdentifier : IEquatable<TIdentifier>
+public abstract class ActivationHandlerBase<TEntity, TIdentifier, TScope> : ActivationHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, IActivated, IRevised where TIdentifier : IEquatable<TIdentifier>
+{
+    protected ActivationHandlerBase(IRevisionHandler<TEntity, TIdentifier, TScope?> reviser) : base(reviser) { }
+}
+
+public abstract class ActivationHandlerBase<TEntity, TIdentifier, TScope, TData> : IActivationHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IActivated, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly IRevisionHandler<TEntity, TIdentifier, TScope?> _reviser;
 

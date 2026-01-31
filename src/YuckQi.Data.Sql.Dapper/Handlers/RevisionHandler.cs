@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using Dapper;
 using YuckQi.Data.Handlers.Abstract;
 using YuckQi.Data.Handlers.Options;
@@ -15,7 +15,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope> : RevisionHandler<TEn
     public RevisionHandler(RevisionOptions? options) : base(options, null) { }
 }
 
-public class RevisionHandler<TEntity, TIdentifier, TScope, TRecord> : RevisionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
+public class RevisionHandler<TEntity, TIdentifier, TScope, TRecord> : RevisionHandlerBase<TEntity, TIdentifier, TScope?, TRecord> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
 {
     public RevisionHandler(IMapper mapper) : base(mapper) { }
 

@@ -1,8 +1,14 @@
-﻿using YuckQi.Extensions.Mapping.Abstractions;
+using YuckQi.Data.Handlers.Internal;
+using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class WriteHandlerBase<TEntity>
+public abstract class WriteHandlerBase<TEntity> : WriteHandlerBase<TEntity, TEntity>
+{
+    protected WriteHandlerBase(IMapper? mapper) : base(mapper) { }
+}
+
+public abstract class WriteHandlerBase<TEntity, TData>
 {
     protected IMapper? Mapper { get; }
 
@@ -11,27 +17,23 @@ public abstract class WriteHandlerBase<TEntity>
         Mapper = mapper;
     }
 
+    protected virtual TData? MapToData(TEntity? entity)
+    {
+        return DataMapper.MapToTarget<TEntity, TData>(entity, Mapper);
+    }
+
     protected virtual T? MapToData<T>(TEntity? entity)
     {
-        return entity switch
-        {
-            null => default,
-            T data => data,
-            _ => Mapper != null
-                     ? Mapper.Map<T>(entity)
-                     : throw new InvalidOperationException($"Unable to map '{typeof(TEntity).Name}' to {typeof(T).Name}; {nameof(Mapper)} instance is null.")
-        };
+        return DataMapper.MapToTarget<TEntity, T>(entity, Mapper);
+    }
+
+    protected virtual IReadOnlyCollection<TData> MapToDataCollection(IEnumerable<TEntity>? entities)
+    {
+        return DataMapper.MapToTargetCollection<TEntity, TData>(entities, Mapper);
     }
 
     protected virtual IReadOnlyCollection<T> MapToDataCollection<T>(IEnumerable<TEntity>? entities)
     {
-        return entities switch
-        {
-            null => Array.Empty<T>(),
-            IEnumerable<T> data => data.ToList(),
-            _ => Mapper != null
-                     ? Mapper.Map<IReadOnlyCollection<T>>(entities)
-                     : throw new InvalidOperationException($"Unable to map '{typeof(IEnumerable<TEntity>).Name}' to {typeof(IEnumerable<T>).Name}; {nameof(Mapper)} instance is null.")
-        };
+        return DataMapper.MapToTargetCollection<TEntity, T>(entities, Mapper);
     }
 }

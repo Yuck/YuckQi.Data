@@ -1,4 +1,4 @@
-﻿using YuckQi.Data.Exceptions;
+using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
@@ -7,7 +7,18 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, IRevisionHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier>
+public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope> : RevisionHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier>
+{
+    protected RevisionHandlerBase() : this(null, null) { }
+
+    protected RevisionHandlerBase(RevisionOptions? options) : this(options, null) { }
+
+    protected RevisionHandlerBase(IMapper? mapper) : this(null, mapper) { }
+
+    protected RevisionHandlerBase(RevisionOptions? options, IMapper? mapper) : base(options, mapper) { }
+}
+
+public abstract class RevisionHandlerBase<TEntity, TIdentifier, TScope, TData> : WriteHandlerBase<TEntity, TData>, IRevisionHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly RevisionOptions _options;
 

@@ -1,4 +1,4 @@
-﻿using YuckQi.Data.Exceptions;
+using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
@@ -7,7 +7,18 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : WriteHandlerBase<TEntity>, ICreationHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier>
+public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope> : CreationHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier>
+{
+    protected CreationHandlerBase() : this(null, null) { }
+
+    protected CreationHandlerBase(CreationOptions<TIdentifier>? options) : this(options, null) { }
+
+    protected CreationHandlerBase(IMapper? mapper) : this(null, mapper) { }
+
+    protected CreationHandlerBase(CreationOptions<TIdentifier>? options, IMapper? mapper) : base(options, mapper) { }
+}
+
+public abstract class CreationHandlerBase<TEntity, TIdentifier, TScope, TData> : WriteHandlerBase<TEntity, TData>, ICreationHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier>
 {
     private readonly CreationOptions<TIdentifier> _options;
 
