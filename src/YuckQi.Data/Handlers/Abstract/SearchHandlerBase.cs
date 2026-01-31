@@ -1,4 +1,4 @@
-﻿using YuckQi.Data.Extensions;
+using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Data.Sorting;
@@ -9,7 +9,14 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : ReadHandlerBase<TEntity>, ISearchHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope> : SearchHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
+{
+    protected SearchHandlerBase() : this(null) { }
+
+    protected SearchHandlerBase(IMapper? mapper) : base(mapper) { }
+}
+
+public abstract class SearchHandlerBase<TEntity, TIdentifier, TScope, TData> : ReadHandlerBase<TEntity, TData>, ISearchHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
     protected SearchHandlerBase() : this(null) { }
 

@@ -1,4 +1,4 @@
-﻿using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using YuckQi.Data.DocumentDb.DynamoDb.Extensions;
 using YuckQi.Data.Filtering;
@@ -15,7 +15,7 @@ public class RetrievalHandler<TEntity, TIdentifier, TScope> : RetrievalHandler<T
     public RetrievalHandler(Func<TIdentifier, Primitive> hashKeyValueFactory, Func<TIdentifier, Primitive>? rangeKeyValueFactory) : base(hashKeyValueFactory, rangeKeyValueFactory, null) { }
 }
 
-public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
+public class RetrievalHandler<TEntity, TIdentifier, TScope, TDocument> : RetrievalHandlerBase<TEntity, TIdentifier, TScope?, TDocument> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDynamoDBContext?
 {
     private readonly Func<TIdentifier, Primitive> _hashKeyValueFactory;
     private readonly Func<TIdentifier, Primitive>? _rangeKeyValueFactory;

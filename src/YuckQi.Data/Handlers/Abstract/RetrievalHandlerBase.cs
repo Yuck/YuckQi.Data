@@ -1,4 +1,4 @@
-﻿using YuckQi.Data.Extensions;
+using YuckQi.Data.Extensions;
 using YuckQi.Data.Filtering;
 using YuckQi.Data.Handlers.Abstract.Interfaces;
 using YuckQi.Domain.Entities.Abstract;
@@ -6,7 +6,12 @@ using YuckQi.Extensions.Mapping.Abstractions;
 
 namespace YuckQi.Data.Handlers.Abstract;
 
-public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : ReadHandlerBase<TEntity>, IRetrievalHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
+public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope> : RetrievalHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
+{
+    protected RetrievalHandlerBase(IMapper? mapper) : base(mapper) { }
+}
+
+public abstract class RetrievalHandlerBase<TEntity, TIdentifier, TScope, TData> : ReadHandlerBase<TEntity, TData>, IRetrievalHandler<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {
     protected RetrievalHandlerBase(IMapper? mapper) : base(mapper) { }
 
