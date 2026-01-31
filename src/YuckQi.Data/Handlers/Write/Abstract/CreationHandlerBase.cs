@@ -1,6 +1,6 @@
 using YuckQi.Data.Exceptions;
 using YuckQi.Data.Handlers.Write.Abstract.Interfaces;
-using YuckQi.Data.Handlers.Options;
+using YuckQi.Data.Handlers.Write.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;

@@ -1,0 +1,12 @@
+using System.Data;
+using YuckQi.Data.Handlers.Write.Abstract;
+using YuckQi.Data.Handlers.Write.Abstract.Interfaces;
+using YuckQi.Domain.Aspects.Abstract;
+using YuckQi.Domain.Entities.Abstract;
+
+namespace YuckQi.Data.Sql.Dapper.Handlers.Write;
+
+public class LogicalDeletionHandler<TEntity, TIdentifier, TScope> : LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope?> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
+{
+    public LogicalDeletionHandler(IRevisionHandler<TEntity, TIdentifier, TScope?> reviser) : base(reviser) { }
+}

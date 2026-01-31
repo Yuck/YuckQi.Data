@@ -1,0 +1,26 @@
+using System.Data;
+using YuckQi.Data.Sql.Dapper.Abstract.Interfaces;
+using YuckQi.Data.Sql.Dapper.Handlers.Read.Abstract;
+using YuckQi.Data.Sql.Dapper.Oracle.Internal;
+using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
+
+namespace YuckQi.Data.Sql.Dapper.Oracle.Handlers.Read;
+
+public class SearchHandler<TEntity, TIdentifier, TScope> : SearchHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
+{
+    public SearchHandler() : this(new SqlGenerator<TEntity>()) { }
+
+    public SearchHandler(ISqlGenerator sqlGenerator) : this(sqlGenerator, DbTypeMap.Default) { }
+
+    public SearchHandler(ISqlGenerator sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap) : base(sqlGenerator, dbTypeMap, null) { }
+}
+
+public class SearchHandler<TEntity, TIdentifier, TScope, TRecord> : SearchHandlerBase<TEntity, TIdentifier, TScope?, TRecord> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
+{
+    public SearchHandler(IMapper mapper) : this(new SqlGenerator<TRecord>(), mapper) { }
+
+    public SearchHandler(ISqlGenerator sqlGenerator, IMapper mapper) : this(sqlGenerator, DbTypeMap.Default, mapper) { }
+
+    public SearchHandler(ISqlGenerator sqlGenerator, IReadOnlyDictionary<Type, DbType> dbTypeMap, IMapper? mapper) : base(sqlGenerator, dbTypeMap, mapper) { }
+}

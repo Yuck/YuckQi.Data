@@ -1,0 +1,43 @@
+using System.Data;
+using Dapper;
+using YuckQi.Data.Handlers.Write.Abstract;
+using YuckQi.Data.Handlers.Write.Options;
+using YuckQi.Domain.Aspects.Abstract;
+using YuckQi.Domain.Entities.Abstract;
+using YuckQi.Extensions.Mapping.Abstractions;
+
+namespace YuckQi.Data.Sql.Dapper.Handlers.Write;
+
+public class CreationHandler<TEntity, TIdentifier, TScope> : CreationHandler<TEntity, TIdentifier, TScope?, TEntity> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
+{
+    public CreationHandler() : this(null) { }
+
+    public CreationHandler(CreationOptions<TIdentifier>? options) : base(options, null) { }
+}
+
+public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHandlerBase<TEntity, TIdentifier, TScope?, TRecord> where TEntity : IEntity<TIdentifier>, ICreated where TIdentifier : IEquatable<TIdentifier> where TScope : IDbTransaction?
+{
+    public CreationHandler(IMapper? mapper) : base(mapper) { }
+
+    public CreationHandler(CreationOptions<TIdentifier>? options, IMapper? mapper) : base(options, mapper) { }
+
+    protected override TIdentifier? DoCreate(TEntity entity, TScope? scope)
+    {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
+        var record = MapToData(entity) ?? throw new InvalidOperationException();
+
+        return scope.Connection.Insert<TIdentifier?, TRecord>(record, scope);
+    }
+
+    protected override Task<TIdentifier?> DoCreate(TEntity entity, TScope? scope, CancellationToken cancellationToken)
+    {
+        if (scope == null)
+            throw new ArgumentNullException(nameof(scope));
+
+        var record = MapToData(entity) ?? throw new InvalidOperationException();
+
+        return scope.Connection.InsertAsync<TIdentifier?, TRecord>(record, scope);
+    }
+}
