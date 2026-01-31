@@ -1,6 +1,6 @@
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
-using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Write.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -32,7 +32,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
-        var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();
+        var documents = MapToDataCollection(list) ?? throw new NullReferenceException();
 
         foreach (var document in documents)
         {
@@ -54,7 +54,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
-        var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();
+        var documents = MapToDataCollection(list) ?? throw new NullReferenceException();
 
         foreach (var document in documents)
         {
@@ -75,7 +75,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
-        var document = MapToData<TDocument>(entity);
+        var document = MapToData(entity);
         var identifier = document != null ? document.GetIdentifier<TDocument, TIdentifier>() : default;
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         if (document == null)
@@ -94,7 +94,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
         var field = DocumentType.GetIdentifierFieldDefinition<TDocument, TIdentifier>();
-        var document = MapToData<TDocument>(entity);
+        var document = MapToData(entity);
         var identifier = document != null ? document.GetIdentifier<TDocument, TIdentifier>() : default;
         var filter = Builders<TDocument>.Filter.Eq(field, identifier);
         if (document == null)

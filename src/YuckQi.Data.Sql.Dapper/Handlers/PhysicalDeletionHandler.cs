@@ -1,6 +1,6 @@
 using System.Data;
 using Dapper;
-using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Write.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
@@ -20,7 +20,7 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TRecord> : Ph
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        return scope.Connection.Delete(MapToData<TRecord>(entity), scope) > 0;
+        return scope.Connection.Delete(MapToData(entity), scope) > 0;
     }
 
     protected override async Task<Boolean> DoDelete(TEntity entity, TScope? scope, CancellationToken cancellationToken)
@@ -28,6 +28,6 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TRecord> : Ph
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        return await scope.Connection.DeleteAsync(MapToData<TRecord>(entity), scope) > 0;
+        return await scope.Connection.DeleteAsync(MapToData(entity), scope) > 0;
     }
 }

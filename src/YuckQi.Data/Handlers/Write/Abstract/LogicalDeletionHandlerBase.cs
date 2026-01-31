@@ -1,8 +1,8 @@
-using YuckQi.Data.Handlers.Abstract.Interfaces;
+using YuckQi.Data.Handlers.Write.Abstract.Interfaces;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Handlers.Abstract;
+namespace YuckQi.Data.Handlers.Write.Abstract;
 
 public abstract class LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope> : LogicalDeletionHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, IDeleted, IRevised where TIdentifier : IEquatable<TIdentifier>
 {

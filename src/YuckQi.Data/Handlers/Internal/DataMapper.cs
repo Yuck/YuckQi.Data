@@ -2,9 +2,13 @@
 
 namespace YuckQi.Data.Handlers.Internal;
 
-internal static class DataMapper
+internal sealed class DataMapper
 {
-    public static TTarget? MapToTarget<TSource, TTarget>(TSource? source, IMapper? mapper)
+    private static readonly Lazy<DataMapper> DefaultInstance = new(() => new DataMapper());
+
+    public static DataMapper Default => DefaultInstance.Value;
+    
+    public TTarget? MapToTarget<TSource, TTarget>(TSource? source, IMapper? mapper)
     {
         return source switch
         {
@@ -16,7 +20,7 @@ internal static class DataMapper
         };
     }
 
-    public static IReadOnlyCollection<TTarget> MapToTargetCollection<TSource, TTarget>(IEnumerable<TSource>? source, IMapper? mapper)
+    public IReadOnlyCollection<TTarget> MapToTargetCollection<TSource, TTarget>(IEnumerable<TSource>? source, IMapper? mapper)
     {
         return source switch
         {

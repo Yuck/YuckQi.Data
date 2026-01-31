@@ -1,5 +1,5 @@
 using Amazon.DynamoDBv2.DataModel;
-using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Write.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 using YuckQi.Extensions.Mapping.Abstractions;
 
@@ -30,7 +30,7 @@ public class PhysicalDeletionHandler<TEntity, TIdentifier, TScope, TDocument> : 
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var document = MapToData<TDocument>(entity) ?? throw new NullReferenceException();
+        var document = MapToData(entity) ?? throw new NullReferenceException();
         var table = scope.GetTargetTable<TDocument>();
 
         await table.DeleteItemAsync(scope.ToDocument(document), cancellationToken);

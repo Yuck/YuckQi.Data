@@ -1,6 +1,6 @@
 using MongoDB.Driver;
 using YuckQi.Data.DocumentDb.MongoDb.Extensions;
-using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Write.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -31,7 +31,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         var list = entities.Select(PreProcess).ToList();
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();
+        var documents = MapToDataCollection(list) ?? throw new NullReferenceException();
 
         collection.InsertMany(scope, documents);
 
@@ -46,7 +46,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
         var list = entities.Select(PreProcess).ToList();
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var documents = MapToDataCollection<TDocument>(list) ?? throw new NullReferenceException();
+        var documents = MapToDataCollection(list) ?? throw new NullReferenceException();
 
         await collection.InsertManyAsync(scope, documents, cancellationToken: cancellationToken);
 
@@ -60,7 +60,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
 
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var document = MapToData<TDocument>(entity) ?? throw new NullReferenceException();
+        var document = MapToData(entity) ?? throw new NullReferenceException();
 
         collection.InsertOne(scope, document);
 
@@ -74,7 +74,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TDocument> : Creation
 
         var database = scope.Client.GetDatabase(DocumentType.GetDatabaseName());
         var collection = database.GetCollection<TDocument>(DocumentType.GetCollectionName());
-        var document = MapToData<TDocument>(entity) ?? throw new NullReferenceException();
+        var document = MapToData(entity) ?? throw new NullReferenceException();
 
         await collection.InsertOneAsync(scope, document, cancellationToken: cancellationToken);
 

@@ -1,7 +1,7 @@
-﻿using YuckQi.Data.Filtering;
+using YuckQi.Data.Filtering;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Handlers.Abstract.Interfaces;
+namespace YuckQi.Data.Handlers.Read.Abstract.Interfaces;
 
 public interface IRetrievalHandler<TEntity, in TIdentifier, in TScope> where TEntity : IEntity<TIdentifier> where TIdentifier : IEquatable<TIdentifier>
 {

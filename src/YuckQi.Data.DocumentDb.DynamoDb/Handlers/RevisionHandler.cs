@@ -1,5 +1,5 @@
 using Amazon.DynamoDBv2.DataModel;
-using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Write.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -28,7 +28,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         var table = scope.GetTargetTable<TDocument>();
         var batch = table.CreateBatchWrite();
         var list = entities.ToList();
-        var documents = list.Select(MapToData<TDocument>);
+        var documents = list.Select(MapToData);
 
         foreach (var document in documents)
             batch.AddDocumentToPut(scope.ToDocument(document));
@@ -46,7 +46,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         var table = scope.GetTargetTable<TDocument>();
         var batch = table.CreateBatchWrite();
         var list = entities.ToList();
-        var documents = list.Select(MapToData<TDocument>);
+        var documents = list.Select(MapToData);
 
         foreach (var document in documents)
             batch.AddDocumentToPut(scope.ToDocument(document));
@@ -72,7 +72,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TDocument> : Revision
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var document = MapToData<TDocument>(entity) ?? throw new NullReferenceException();
+        var document = MapToData(entity) ?? throw new NullReferenceException();
         var table = scope.GetTargetTable<TDocument>();
 
         await table.PutItemAsync(scope.ToDocument(document), cancellationToken);

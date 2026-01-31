@@ -1,6 +1,6 @@
 using System.Data;
 using Dapper;
-using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Write.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -26,7 +26,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHa
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var record = MapToData<TRecord>(entity) ?? throw new InvalidOperationException();
+        var record = MapToData(entity) ?? throw new InvalidOperationException();
 
         return scope.Connection.Insert<TIdentifier?, TRecord>(record, scope);
     }
@@ -36,7 +36,7 @@ public class CreationHandler<TEntity, TIdentifier, TScope, TRecord> : CreationHa
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        var record = MapToData<TRecord>(entity) ?? throw new InvalidOperationException();
+        var record = MapToData(entity) ?? throw new InvalidOperationException();
 
         return scope.Connection.InsertAsync<TIdentifier?, TRecord>(record, scope);
     }

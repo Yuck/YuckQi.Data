@@ -1,6 +1,6 @@
 using System.Data;
 using Dapper;
-using YuckQi.Data.Handlers.Abstract;
+using YuckQi.Data.Handlers.Write.Abstract;
 using YuckQi.Data.Handlers.Options;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
@@ -26,7 +26,7 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TRecord> : RevisionHa
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        return scope.Connection.Update(MapToData<TRecord>(entity), scope) > 0;
+        return scope.Connection.Update(MapToData(entity), scope) > 0;
     }
 
     protected override async Task<Boolean> DoRevise(TEntity entity, TScope? scope, CancellationToken cancellationToken)
@@ -34,6 +34,6 @@ public class RevisionHandler<TEntity, TIdentifier, TScope, TRecord> : RevisionHa
         if (scope == null)
             throw new ArgumentNullException(nameof(scope));
 
-        return await scope.Connection.UpdateAsync(MapToData<TRecord>(entity), scope, token: cancellationToken) > 0;
+        return await scope.Connection.UpdateAsync(MapToData(entity), scope, token: cancellationToken) > 0;
     }
 }

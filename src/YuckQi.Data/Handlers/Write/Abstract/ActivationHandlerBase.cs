@@ -1,8 +1,8 @@
-using YuckQi.Data.Handlers.Abstract.Interfaces;
+using YuckQi.Data.Handlers.Write.Abstract.Interfaces;
 using YuckQi.Domain.Aspects.Abstract;
 using YuckQi.Domain.Entities.Abstract;
 
-namespace YuckQi.Data.Handlers.Abstract;
+namespace YuckQi.Data.Handlers.Write.Abstract;
 
 public abstract class ActivationHandlerBase<TEntity, TIdentifier, TScope> : ActivationHandlerBase<TEntity, TIdentifier, TScope, TEntity> where TEntity : IEntity<TIdentifier>, IActivated, IRevised where TIdentifier : IEquatable<TIdentifier>
 {
